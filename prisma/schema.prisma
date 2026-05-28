@@ -3,18 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Setting {
-  key       String   @id
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
 }
 
 model Article {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   slug      String   @unique
   title     String
   tag       String
