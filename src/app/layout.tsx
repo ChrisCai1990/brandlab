@@ -14,9 +14,19 @@ export const metadata: Metadata = {
     type: "website",
     locale: "zh_CN",
     siteName: "品牌拾研社 · BrandLab",
+    url: "https://brandlab.cn",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "品牌拾研社 · BrandLab",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/opengraph-image"],
   },
 };
 

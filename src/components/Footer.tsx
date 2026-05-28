@@ -77,7 +77,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-[#2D6A4F] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#6B7A6E]">© 2024 品牌拾研社 · BrandLab. All rights reserved.</p>
+          <p className="text-xs text-[#6B7A6E]">© 2026 品牌拾研社 · BrandLab. All rights reserved.</p>
           <p className="text-xs text-[#6B7A6E]">认真 · 实用 · 有审美，不说废话</p>
         </div>
       </div>

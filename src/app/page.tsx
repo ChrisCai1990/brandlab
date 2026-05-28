@@ -1,52 +1,14 @@
 import Link from "next/link";
+import { articles } from "@/lib/articles";
 
 const modules = [
-  { id: "positioning", icon: "◎", title: "个人定位", desc: "找准差异化定位，让别人一眼记住你" },
-  { id: "visual", icon: "◈", title: "视觉表达", desc: "建立统一视觉系统，让账号颜值出圈" },
-  { id: "content", icon: "◇", title: "内容运营", desc: "高效产出，打造让人刷不停的内容体系" },
-  { id: "growth", icon: "◉", title: "账号增长", desc: "从0到1涨粉，掌握核心增长方法论" },
-  { id: "platform", icon: "◐", title: "平台策略", desc: "读懂各平台算法，让内容被更多人看到" },
-  { id: "cases", icon: "◑", title: "IP案例", desc: "拆解真实成长路径，找可复制的规律" },
-  { id: "tools", icon: "◒", title: "工具方法", desc: "效率工具 + 实用模板，让创作更省力" },
-];
-
-const latestPosts = [
-  {
-    tag: "个人定位",
-    title: "为什么你发了100条内容，还是没人关注你？",
-    desc: "定位模糊是账号增长最大的隐形杀手。3步找到你的差异化标签。",
-    date: "01-15",
-  },
-  {
-    tag: "内容运营",
-    title: "一条爆款内容的底层结构拆解",
-    desc: "痛点钩子 → 核心公式 → 三步拆解 → 案例 → 避坑 → 行动建议。",
-    date: "01-14",
-  },
-  {
-    tag: "账号增长",
-    title: "小红书算法最新变化，你必须知道的3件事",
-    desc: "平台规则变了，内容策略也要跟着变。这篇帮你把握最新方向。",
-    date: "01-13",
-  },
-  {
-    tag: "视觉表达",
-    title: "封面设计的5个黄金原则，让点击率翻倍",
-    desc: "封面是内容的门面。这5个原则适用于所有平台，掌握了就是竞争壁垒。",
-    date: "01-12",
-  },
-  {
-    tag: "平台策略",
-    title: "2024年做个人品牌，首选哪个平台？",
-    desc: "小红书、抖音、公众号……不同阶段选不同平台，这篇帮你想清楚。",
-    date: "01-11",
-  },
-  {
-    tag: "IP案例",
-    title: "拆解一个从0到10万粉的账号成长路径",
-    desc: "不谈运气，只谈方法论。3个可以直接复制的关键动作。",
-    date: "01-10",
-  },
+  { category: "个人定位", icon: "◎", title: "个人定位", desc: "找准差异化定位，让别人一眼记住你" },
+  { category: "视觉表达", icon: "◈", title: "视觉表达", desc: "建立统一视觉系统，让账号颜值出圈" },
+  { category: "内容运营", icon: "◇", title: "内容运营", desc: "高效产出，打造让人刷不停的内容体系" },
+  { category: "账号增长", icon: "◉", title: "账号增长", desc: "从0到1涨粉，掌握核心增长方法论" },
+  { category: "平台策略", icon: "◐", title: "平台策略", desc: "读懂各平台算法，让内容被更多人看到" },
+  { category: "IP案例",   icon: "◑", title: "IP案例",   desc: "拆解真实成长路径，找可复制的规律" },
+  { category: "工具方法", icon: "◒", title: "工具方法", desc: "效率工具 + 实用模板，让创作更省力" },
 ];
 
 const resources = [
@@ -54,6 +16,17 @@ const resources = [
   { title: "账号定位Brief模板", desc: "一页纸梳理定位、受众、内容策略，清晰再出发", icon: "📋" },
   { title: "视觉系统设计模板", desc: "封面×4套 + 配色方案 + 字体规范，告别视觉混乱", icon: "🎨" },
 ];
+
+// 取最新 6 篇，格式化日期为 MM-DD
+const latestPosts = articles.slice(0, 6).map((a) => ({
+  slug: a.slug,
+  tag: a.tag,
+  title: a.title,
+  desc: a.desc,
+  date: a.date.slice(5), // "2024-01-15" → "01-15"
+}));
+
+const featured = articles[0];
 
 export default function HomePage() {
   return (
@@ -104,7 +77,7 @@ export default function HomePage() {
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: "200+", label: "条实用干货" },
+                  { value: `${articles.length}`, label: "条实用干货" },
                   { value: "5000+", label: "位创作者在用" },
                   { value: "每日", label: "持续更新" },
                 ].map((s) => (
@@ -115,24 +88,24 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Featured article card */}
-              <Link href="/library" className="group block bg-[#1A2E22] rounded-xl p-5 hover:bg-[#2D6A4F] transition-colors">
+              {/* Featured article card — 动态取第一篇 */}
+              <Link href={`/library/${featured.slug}`} className="group block bg-[#1A2E22] rounded-xl p-5 hover:bg-[#2D6A4F] transition-colors">
                 <div className="text-xs text-[#6BAF8A] mb-2 font-medium">今日干货</div>
                 <h3 className="text-sm font-bold text-white mb-2 group-hover:text-[#A8D5BB] transition-colors leading-snug">
-                  为什么你发了100条内容，还是没人关注你？
+                  {featured.title}
                 </h3>
                 <p className="text-xs text-[#A8D5BB] leading-relaxed line-clamp-2">
-                  定位模糊是账号增长最大的隐形杀手。3步找到你的差异化标签，让每一条内容都有精准落点。
+                  {featured.desc}
                 </p>
                 <div className="mt-3 text-xs text-[#6BAF8A] group-hover:text-white transition-colors">阅读全文 →</div>
               </Link>
 
-              {/* Module pills */}
+              {/* Module pills — 用中文分类名 */}
               <div className="flex flex-wrap gap-2">
                 {modules.map((m) => (
                   <Link
-                    key={m.id}
-                    href={`/library?category=${m.id}`}
+                    key={m.category}
+                    href={`/library?category=${encodeURIComponent(m.category)}`}
                     className="text-xs bg-white border border-[#C8DDD2] text-[#6B7A6E] px-3 py-1.5 rounded-full hover:border-[#6BAF8A] hover:text-[#2D6A4F] transition-colors"
                   >
                     {m.title}
@@ -160,8 +133,8 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
             {modules.map((mod) => (
               <Link
-                key={mod.id}
-                href={`/library?category=${mod.id}`}
+                key={mod.category}
+                href={`/library?category=${encodeURIComponent(mod.category)}`}
                 className="group bg-white border border-[#C8DDD2] rounded-xl p-4 hover:border-[#6BAF8A] hover:bg-[#E8F5EE] transition-all"
               >
                 <div className="text-xl text-[#6BAF8A] mb-2.5 group-hover:text-[#2D6A4F] transition-colors">
@@ -180,7 +153,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-            {/* Left: Latest posts (2/3 width) */}
+            {/* Left: Latest posts (2/3 width) — 动态从 articles 取 */}
             <div className="lg:col-span-2">
               <div className="flex items-end justify-between mb-6">
                 <div>
@@ -193,10 +166,10 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-3">
-                {latestPosts.map((post, i) => (
+                {latestPosts.map((post) => (
                   <Link
-                    key={i}
-                    href="/library"
+                    key={post.slug}
+                    href={`/library/${post.slug}`}
                     className="group flex items-start gap-4 bg-white border border-[#C8DDD2] rounded-xl px-5 py-4 hover:border-[#6BAF8A] transition-all"
                   >
                     <div className="shrink-0 text-right hidden sm:block">

@@ -3,6 +3,43 @@
 import { useState } from "react";
 import Link from "next/link";
 
+const AI_PROMPT_TEMPLATE = `你是一位专业的社交媒体内容策划师，请帮我生成一份30天的内容排期计划。
+
+【我的账号信息】
+- 账号方向 / 定位：[请填写，例如：职场干货博主、油皮护肤、副业变现]
+- 目标平台：[请填写，例如：小红书 / 抖音 / 公众号]
+- 每周发布频率：[请填写，例如：每周5条]
+- 目标受众：[可选，例如：25-35岁职场女性]
+
+【内容类型分类（7类，请交替使用）】
+1. 个人定位 — 建立人设与差异化认知
+2. 内容运营 — 创作技巧、选题方法
+3. 账号增长 — 涨粉策略、平台规则
+4. 视觉表达 — 封面设计、排版技巧
+5. 平台策略 — 算法解读、发布时机
+6. IP案例 — 拆解成功博主的路径
+7. 工具方法 — 实用工具推荐与教程
+
+【钩子类型（5种，请交替使用）】
+- 痛点型：直击用户最痛的问题
+- 数字型：具体数字增加可信度
+- 案例型：真实案例引发代入感
+- 反常识型：打破固有认知
+- 对比型：两种情况形成反差
+
+【输出要求】
+请以表格形式输出，包含以下列：
+| 第X天 | 内容类型 | 钩子类型 | 选题标题 | 核心角度（一句话）|
+
+每条选题标题要：
+1. 包含我的账号关键词
+2. 有明确的用户利益点
+3. 长度控制在20字以内
+4. 符合目标平台的标题风格
+
+请只生成有发布计划的天数（跳过休息日），并在最后补充3条备用选题。`;
+
+
 const CONTENT_TYPES = [
   { label: "个人定位", bg: "bg-[#E8F5EE]", text: "text-[#2D6A4F]" },
   { label: "内容运营", bg: "bg-blue-50", text: "text-blue-600" },
@@ -83,10 +120,17 @@ export default function CalendarPage() {
   const [schedule, setSchedule] = useState<DayItem[]>([]);
   const [generated, setGenerated] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   function handleGenerate() {
     setSchedule(generateSchedule(direction, frequency));
     setGenerated(true);
+  }
+
+  function handleCopyPrompt() {
+    navigator.clipboard.writeText(AI_PROMPT_TEMPLATE);
+    setCopiedPrompt(true);
+    setTimeout(() => setCopiedPrompt(false), 2000);
   }
 
   function handleCopy() {
@@ -257,6 +301,54 @@ export default function CalendarPage() {
             </div>
           </>
         )}
+
+        {/* AI Prompt Section */}
+        <div className="mt-16 border-t border-[#C8DDD2] pt-14">
+          <div className="mb-6">
+            <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">进阶方案</p>
+            <h2 className="text-xl font-bold text-[#1A2E22] mb-2">用 AI 生成更个性化的排期</h2>
+            <p className="text-sm text-[#6B7A6E]">
+              把下方提示词复制到 ChatGPT 或 Claude，填入你的账号信息，即可获得一份更丰富、更有针对性的30天内容计划。
+            </p>
+          </div>
+
+          <div className="border border-[#C8DDD2] rounded-2xl overflow-hidden">
+            <div className="bg-[#F7FBF8] border-b border-[#C8DDD2] px-5 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-[#1A2E22]">AI 提示词模板</span>
+                <span className="text-[10px] text-[#6BAF8A] bg-[#E8F5EE] px-2 py-0.5 rounded-full">可直接使用</span>
+              </div>
+              <button
+                onClick={handleCopyPrompt}
+                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-1.5 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
+              >
+                {copiedPrompt ? "✓ 已复制" : "复制提示词"}
+              </button>
+            </div>
+
+            <div className="bg-white px-6 py-5">
+              <pre className="text-[11px] text-[#3D5048] leading-relaxed whitespace-pre-wrap font-mono">
+                {AI_PROMPT_TEMPLATE}
+              </pre>
+            </div>
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { step: "01", title: "复制提示词", desc: "点击上方「复制提示词」按钮" },
+              { step: "02", title: "填入你的信息", desc: "将 [ ] 内的内容替换为你的账号实际情况" },
+              { step: "03", title: "粘贴到 AI 工具", desc: "发送给 ChatGPT / Claude，即刻获得定制排期" },
+            ].map((item) => (
+              <div key={item.step} className="flex gap-3 items-start bg-[#F7FBF8] border border-[#E0EBE5] rounded-xl p-4">
+                <span className="text-xs font-bold text-[#6BAF8A] shrink-0 mt-0.5">{item.step}</span>
+                <div>
+                  <p className="text-xs font-bold text-[#1A2E22] mb-0.5">{item.title}</p>
+                  <p className="text-[11px] text-[#6B7A6E] leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

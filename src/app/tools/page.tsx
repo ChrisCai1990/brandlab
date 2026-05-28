@@ -16,44 +16,44 @@ const templates = [
     href: "/tools/calendar",
   },
   {
-    title: "账号定位Brief模板",
-    desc: "一页纸梳理你的账号定位、目标受众、内容策略、差异化标签，清晰再出发。",
-    tags: ["PDF", "Notion"],
+    title: "账号定位Brief生成器",
+    desc: "填写账号方向、受众、变现目标，自动生成一句话定位 + 内容策略 + 差异化标签。",
+    tags: ["在线工具"],
     type: "免费",
     icon: "📋",
-    href: "/contact",
+    href: "/tools/brief",
   },
   {
     title: "视觉系统设计模板",
-    desc: "封面模板 × 4套 + 配色方案 + 字体规范，建立账号视觉一致性，告别乱糟糟。",
-    tags: ["Canva", "Figma"],
+    desc: "选择账号风格，生成配色方案 + 字体规范 + 三种封面构图模板，建立视觉一致性。",
+    tags: ["在线工具"],
     type: "免费",
     icon: "🎨",
-    href: "/contact",
+    href: "/tools/visual",
   },
   {
     title: "爆款选题生成器",
-    desc: "输入你的定位和关键词，自动生成5个爆款选题方向，再也不愁没内容写。",
+    desc: "输入你的账号方向，一键生成覆盖5种钩子类型的10个爆款选题，再也不愁没内容写。",
     tags: ["在线工具"],
-    type: "即将上线",
+    type: "免费",
     icon: "⚡",
-    href: "",
+    href: "/tools/topics",
   },
   {
     title: "粉丝画像分析表",
-    desc: "从平台数据提炼真实用户画像，帮你精准定位目标受众，内容更有方向感。",
-    tags: ["Excel"],
+    desc: "填写受众年龄、性别、痛点、行为偏好，生成结构化画像 + 内容策略 + 变现路径匹配。",
+    tags: ["在线工具"],
     type: "免费",
     icon: "👥",
-    href: "/contact",
+    href: "/tools/audience",
   },
   {
     title: "变现路径规划表",
-    desc: "根据粉丝量级和账号方向，匹配最优变现策略，清晰看到你的下一步。",
-    tags: ["PDF"],
+    desc: "告诉我你的粉丝量和账号方向，生成最适合你的变现方式优先级 + 三阶段行动路线图。",
+    tags: ["在线工具"],
     type: "免费",
     icon: "💰",
-    href: "/contact",
+    href: "/tools/monetize",
   },
 ];
 
@@ -108,7 +108,7 @@ export default function ToolsPage() {
                 </div>
                 {t.type === "免费" && t.href && (
                   <Link href={t.href} className="text-xs text-[#2D6A4F] font-medium hover:text-[#1B4332] transition-colors">
-                    获取 →
+                    {t.tags.includes("在线工具") ? "使用 →" : "获取 →"}
                   </Link>
                 )}
               </div>
