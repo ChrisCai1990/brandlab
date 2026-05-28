@@ -30,9 +30,9 @@ ENV PATH="/app/node_modules/.bin:$PATH"
 # Copy prisma schema before npm ci so postinstall can run prisma generate
 COPY prisma/schema.prisma ./prisma/schema.prisma
 
-# Install production deps only — triggers prisma generate via @prisma/client postinstall
+# Install production deps and explicitly generate Prisma client
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npx prisma generate
 
 # Copy Next.js build output
 COPY --from=builder /app/.next ./.next
