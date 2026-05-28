@@ -18,7 +18,7 @@ async function getDbArticle(slug: string) {
 
 async function getAllDbSlugs() {
   try {
-    const rows = await prisma.article.findMany({ where: { published: true }, select: { slug: true } });
+    const rows: { slug: string }[] = await prisma.article.findMany({ where: { published: true }, select: { slug: true } });
     return rows.map((r) => r.slug);
   } catch {
     return [];
@@ -116,8 +116,35 @@ export default async function ArticlePage({
     ? articles.filter((a) => a.tag === meta.tag && a.slug !== slug).slice(0, 3)
     : [];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: meta.title,
+    description: meta.desc,
+    datePublished: meta.date,
+    author: {
+      "@type": "Organization",
+      name: "品牌拾研社",
+      url: "https://brandlab.cn",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "品牌拾研社",
+      url: "https://brandlab.cn",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://brandlab.cn/library/${slug}`,
+    },
+    keywords: meta.tag,
+  };
+
   return (
     <div className="bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="border-b border-[#C8DDD2] bg-[#F7FBF8]">
         <div className="max-w-7xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6B7A6E]">
           <Link href="/" className="hover:text-[#2D6A4F] transition-colors">首页</Link>

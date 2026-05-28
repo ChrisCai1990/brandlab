@@ -4,8 +4,17 @@ import { LogoutButton } from "@/components/admin/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
+type ArticleRow = {
+  id: string;
+  title: string;
+  tag: string;
+  published: boolean;
+  date: Date;
+  slug: string;
+};
+
 export default async function AdminArticlesPage() {
-  const articles = await prisma.article.findMany({
+  const articles: ArticleRow[] = await prisma.article.findMany({
     orderBy: { createdAt: "desc" },
     select: { id: true, title: true, tag: true, published: true, date: true, slug: true },
   });

@@ -6,7 +6,9 @@ import { LibraryFilter } from "@/components/LibraryFilter";
 
 export const dynamic = "force-dynamic";
 
-async function getDbArticles() {
+type DbArticle = { slug: string; title: string; tag: string; desc: string; date: Date; readTime: string };
+
+async function getDbArticles(): Promise<DbArticle[]> {
   try {
     return await prisma.article.findMany({
       where: { published: true },
