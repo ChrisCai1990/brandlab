@@ -1,9 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "prisma generate && prisma db push && npm run db:seed && next build"
+buildCommand = "prisma generate && next build"
 
 [deploy]
-startCommand = "npm run start"
+startCommand = "prisma db push && npm run db:seed && npm run start"
 healthcheckPath = "/"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
