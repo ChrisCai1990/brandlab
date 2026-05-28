@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signToken, COOKIE_NAME } from "@/lib/auth";
+import { signToken, verifyPassword, COOKIE_NAME } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   const { password } = await req.json();
 
-  if (password !== process.env.ADMIN_PASSWORD) {
+  let valid = false;
+  try {
+    const setting = await prisma.setting.findUnique({ where: { key: "admin_password" } });
+    if (setting) {
+      valid = await verifyPassword(password, setting.value);
+    } else {
+      valid = password === process.env.ADMIN_PASSWORD;
+    }
+  } catch {
+    // Setting 表尚未创建时回退到环境变量
+    valid = password === process.env.ADMIN_PASSWORD;
+  }
+
+  if (!valid) {
     return NextResponse.json({ error: "密码错误" }, { status: 401 });
   }
 

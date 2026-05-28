@@ -35,6 +35,12 @@ export default async function AdminArticlesPage() {
           >
             查看网站 ↗
           </Link>
+          <Link
+            href="/admin/settings"
+            className="text-xs text-[#6B7A6E] border border-[#C8DDD2] px-3 py-2 rounded-lg hover:border-[#6BAF8A] transition-colors"
+          >
+            设置
+          </Link>
           <LogoutButton />
           <Link
             href="/admin/articles/new"
