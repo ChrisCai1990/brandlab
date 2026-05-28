@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { articles as staticArticles, categories } from "@/lib/articles";
@@ -51,11 +51,11 @@ export default async function LibraryPage({
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <div className="bg-[#E8F5EE] border-b border-[#C8DDD2] py-14 px-8">
+      <div className="bg-[#e6f4f3] border-b border-[#b2d8d5] py-14 px-8">
         <div className="max-w-7xl mx-auto">
-          <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">内容库</p>
-          <h1 className="text-4xl font-bold text-[#1A2E22] mb-2">每天一条干货</h1>
-          <p className="text-sm text-[#6B7A6E]">{merged.length} 篇精选文章 · 7大模块 · 持续更新</p>
+          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">内容库</p>
+          <h1 className="text-4xl font-bold text-[#0d2e2c] mb-2">每天一条干货</h1>
+          <p className="text-sm text-[#5a7e7c]">{merged.length} 篇精选文章 · 7大模块 · 持续更新</p>
         </div>
       </div>
 
@@ -65,10 +65,10 @@ export default async function LibraryPage({
         </Suspense>
 
         {/* Count */}
-        <p className="text-xs text-[#6B7A6E] mb-5">
+        <p className="text-xs text-[#5a7e7c] mb-5">
           共 {filtered.length} 篇
           {category && category !== "全部" && (
-            <span className="ml-1 text-[#2D6A4F] font-medium">· {category}</span>
+            <span className="ml-1 text-[#0f766e] font-medium">· {category}</span>
           )}
         </p>
 
@@ -78,21 +78,21 @@ export default async function LibraryPage({
             <Link
               key={article.slug}
               href={`/library/${article.slug}`}
-              className="group border border-[#C8DDD2] rounded-xl p-6 hover:border-[#6BAF8A] hover:shadow-sm transition-all"
+              className="group border border-[#b2d8d5] rounded-xl p-6 hover:border-[#5eada7] hover:shadow-sm transition-all"
             >
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#E8F5EE] text-[#2D6A4F]">
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#e6f4f3] text-[#0f766e]">
                   {article.tag}
                 </span>
-                <span className="text-[10px] text-[#6B7A6E]">{article.readTime} 分钟</span>
+                <span className="text-[10px] text-[#5a7e7c]">{article.readTime} 分钟</span>
               </div>
-              <h3 className="text-sm font-bold text-[#1A2E22] mb-2 group-hover:text-[#1B4332] transition-colors leading-snug">
+              <h3 className="text-sm font-bold text-[#0d2e2c] mb-2 group-hover:text-[#134e4a] transition-colors leading-snug">
                 {article.title}
               </h3>
-              <p className="text-xs text-[#6B7A6E] leading-relaxed line-clamp-2 mb-4">{article.desc}</p>
+              <p className="text-xs text-[#5a7e7c] leading-relaxed line-clamp-2 mb-4">{article.desc}</p>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#C8DDD2]">{article.date}</span>
-                <span className="text-xs text-[#6BAF8A] group-hover:text-[#2D6A4F] transition-colors">
+                <span className="text-[10px] text-[#b2d8d5]">{article.date}</span>
+                <span className="text-xs text-[#5eada7] group-hover:text-[#0f766e] transition-colors">
                   阅读全文 →
                 </span>
               </div>

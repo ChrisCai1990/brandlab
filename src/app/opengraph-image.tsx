@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/og";
+﻿import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt = "品牌拾研社 · BrandLab";
@@ -10,7 +10,7 @@ export default function OGImage() {
     (
       <div
         style={{
-          background: "#1A2E22",
+          background: "#0d2e2c",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -35,7 +35,7 @@ export default function OGImage() {
               width: "56px",
               height: "56px",
               borderRadius: "14px",
-              background: "#2D6A4F",
+              background: "#0f766e",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -48,7 +48,7 @@ export default function OGImage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontSize: "20px", fontWeight: "bold", color: "white" }}>品牌拾研社</span>
-            <span style={{ fontSize: "14px", color: "#6BAF8A" }}>BrandLab</span>
+            <span style={{ fontSize: "14px", color: "#5eada7" }}>BrandLab</span>
           </div>
         </div>
 
@@ -69,7 +69,7 @@ export default function OGImage() {
         </div>
 
         {/* Subtitle */}
-        <div style={{ fontSize: "24px", color: "#A8D5BB", maxWidth: "700px" }}>
+        <div style={{ fontSize: "24px", color: "#99ceca", maxWidth: "700px" }}>
           专为创作者、超级个体、想靠账号变现的创业者
         </div>
 
@@ -79,8 +79,8 @@ export default function OGImage() {
             <div
               key={tag}
               style={{
-                background: "#2D6A4F",
-                color: "#A8D5BB",
+                background: "#0f766e",
+                color: "#99ceca",
                 fontSize: "16px",
                 padding: "8px 18px",
                 borderRadius: "999px",

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -45,7 +45,7 @@ const HOOK_TYPES = [
   { label: "数字型", color: "bg-blue-50 text-blue-600", desc: "具体数字增可信度" },
   { label: "案例型", color: "bg-amber-50 text-amber-600", desc: "真实故事引共鸣" },
   { label: "反常识型", color: "bg-violet-50 text-violet-600", desc: "打破固有认知" },
-  { label: "对比型", color: "bg-[#E8F5EE] text-[#2D6A4F]", desc: "制造强烈反差" },
+  { label: "对比型", color: "bg-[#e6f4f3] text-[#0f766e]", desc: "制造强烈反差" },
 ];
 
 const PLATFORM_OPTIONS = ["小红书", "抖音", "公众号", "视频号", "B站"];
@@ -129,38 +129,38 @@ export default function TopicsPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="border-b border-[#C8DDD2] bg-[#F7FBF8]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6B7A6E]">
-          <Link href="/" className="hover:text-[#2D6A4F]">首页</Link>
+      <div className="border-b border-[#b2d8d5] bg-[#f0f9f8]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#5a7e7c]">
+          <Link href="/" className="hover:text-[#0f766e]">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#2D6A4F]">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#0f766e]">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1A2E22] font-medium">爆款选题生成器</span>
+          <span className="text-[#0d2e2c] font-medium">爆款选题生成器</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1A2E22] mb-3">爆款选题生成器</h1>
-          <p className="text-sm text-[#6B7A6E]">输入你的账号方向，生成覆盖5种钩子类型的爆款选题，再也不愁没内容写</p>
+          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-[#0d2e2c] mb-3">爆款选题生成器</h1>
+          <p className="text-sm text-[#5a7e7c]">输入你的账号方向，生成覆盖5种钩子类型的爆款选题，再也不愁没内容写</p>
         </div>
 
         {/* Hook 说明 */}
         <div className="grid grid-cols-5 gap-2 mb-8">
           {HOOK_TYPES.map((h) => (
-            <div key={h.label} className={`rounded-xl p-3 text-center ${h.color.split(" ")[0]} border border-[#C8DDD2]`}>
+            <div key={h.label} className={`rounded-xl p-3 text-center ${h.color.split(" ")[0]} border border-[#b2d8d5]`}>
               <p className={`text-xs font-bold ${h.color.split(" ")[1]} mb-0.5`}>{h.label}</p>
-              <p className="text-[10px] text-[#6B7A6E]">{h.desc}</p>
+              <p className="text-[10px] text-[#5a7e7c]">{h.desc}</p>
             </div>
           ))}
         </div>
 
         {/* Input */}
-        <div className="bg-[#F7FBF8] border border-[#C8DDD2] rounded-2xl p-8 mb-10">
+        <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-2xl p-8 mb-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-2">
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">
                 账号方向 / 定位 <span className="text-rose-400">*</span>
               </label>
               <input
@@ -169,12 +169,12 @@ export default function TopicsPage() {
                 onChange={(e) => setNiche(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && niche.trim() && handleGenerate()}
                 placeholder="例如：职场晋升、副业变现、油皮护肤"
-                className="w-full border border-[#C8DDD2] rounded-lg px-4 py-3 text-sm text-[#1A2E22] placeholder-[#6B7A6E]/40 focus:outline-none focus:border-[#2D6A4F] bg-white"
+                className="w-full border border-[#b2d8d5] rounded-lg px-4 py-3 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
               />
-              <p className="text-[10px] text-[#6B7A6E] mt-1.5">越具体，选题越精准</p>
+              <p className="text-[10px] text-[#5a7e7c] mt-1.5">越具体，选题越精准</p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-2">目标平台</label>
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">目标平台</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map((p) => (
                   <button
@@ -182,8 +182,8 @@ export default function TopicsPage() {
                     onClick={() => setPlatform(p)}
                     className={`text-xs px-4 py-2 rounded-full border transition-all ${
                       platform === p
-                        ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium"
-                        : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"
+                        ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium"
+                        : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"
                     }`}
                   >
                     {p}
@@ -196,7 +196,7 @@ export default function TopicsPage() {
             <button
               onClick={handleGenerate}
               disabled={!niche.trim()}
-              className="bg-[#1A2E22] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#2D6A4F] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-[#0d2e2c] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               生成选题 ⚡
             </button>
@@ -208,12 +208,12 @@ export default function TopicsPage() {
           <>
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-lg font-bold text-[#1A2E22]">爆款选题列表</h2>
-                <p className="text-xs text-[#6B7A6E] mt-1">共 {topics.length} 个选题 · 基于「{niche}」方向 · {platform}平台风格</p>
+                <h2 className="text-lg font-bold text-[#0d2e2c]">爆款选题列表</h2>
+                <p className="text-xs text-[#5a7e7c] mt-1">共 {topics.length} 个选题 · 基于「{niche}」方向 · {platform}平台风格</p>
               </div>
               <button
                 onClick={copyAll}
-                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-2 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
+                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
               >
                 {copiedAll ? "✓ 已复制" : "复制全部"}
               </button>
@@ -223,22 +223,22 @@ export default function TopicsPage() {
               {topics.map((t, i) => (
                 <div
                   key={i}
-                  className="group border border-[#C8DDD2] rounded-xl px-5 py-4 hover:border-[#6BAF8A] hover:shadow-sm transition-all bg-white flex items-start gap-4"
+                  className="group border border-[#b2d8d5] rounded-xl px-5 py-4 hover:border-[#5eada7] hover:shadow-sm transition-all bg-white flex items-start gap-4"
                 >
-                  <span className="text-xs font-bold text-[#C8DDD2] w-5 shrink-0 mt-0.5">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-xs font-bold text-[#b2d8d5] w-5 shrink-0 mt-0.5">{String(i + 1).padStart(2, "0")}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${t.hook.color}`}>
                         {t.hook.label}
                       </span>
-                      <span className="text-[10px] text-[#C8DDD2]">{"★".repeat(t.stars)}{"☆".repeat(5 - t.stars)}</span>
+                      <span className="text-[10px] text-[#b2d8d5]">{"★".repeat(t.stars)}{"☆".repeat(5 - t.stars)}</span>
                     </div>
-                    <h3 className="text-sm font-bold text-[#1A2E22] mb-1 leading-snug">{t.title}</h3>
-                    <p className="text-[11px] text-[#6B7A6E]">核心角度：{t.angle}</p>
+                    <h3 className="text-sm font-bold text-[#0d2e2c] mb-1 leading-snug">{t.title}</h3>
+                    <p className="text-[11px] text-[#5a7e7c]">核心角度：{t.angle}</p>
                   </div>
                   <button
                     onClick={() => copyOne(i, t.title)}
-                    className="text-[10px] border border-[#C8DDD2] text-[#6B7A6E] px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:border-[#2D6A4F] hover:text-[#2D6A4F] shrink-0"
+                    className="text-[10px] border border-[#b2d8d5] text-[#5a7e7c] px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:border-[#0f766e] hover:text-[#0f766e] shrink-0"
                   >
                     {copiedIdx === i ? "✓" : "复制"}
                   </button>
@@ -246,12 +246,12 @@ export default function TopicsPage() {
               ))}
             </div>
 
-            <div className="mt-8 bg-[#1A2E22] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="mt-8 bg-[#0d2e2c] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-white mb-1">想要更多定制选题？</p>
-                <p className="text-xs text-[#A8D5BB]">加入社群，获取竞品选题拆解 + 爆款结构模板</p>
+                <p className="text-xs text-[#99ceca]">加入社群，获取竞品选题拆解 + 爆款结构模板</p>
               </div>
-              <Link href="/contact" className="shrink-0 text-xs bg-[#1B4332] border border-[#6BAF8A] text-white px-5 py-2.5 rounded-lg hover:bg-[#2D6A4F] transition-colors">
+              <Link href="/contact" className="shrink-0 text-xs bg-[#134e4a] border border-[#5eada7] text-white px-5 py-2.5 rounded-lg hover:bg-[#0f766e] transition-colors">
                 加入社群
               </Link>
             </div>
@@ -259,18 +259,18 @@ export default function TopicsPage() {
         )}
 
         {/* AI Prompt */}
-        <div className="mt-16 border-t border-[#C8DDD2] pt-14">
+        <div className="mt-16 border-t border-[#b2d8d5] pt-14">
           <div className="mb-6">
-            <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">进阶方案</p>
-            <h2 className="text-xl font-bold text-[#1A2E22] mb-2">用 AI 生成更精准的爆款选题</h2>
-            <p className="text-sm text-[#6B7A6E]">把下方提示词复制到 ChatGPT 或 Claude，填入你的具体情况，即可获得20个高度定制的爆款选题。</p>
+            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">进阶方案</p>
+            <h2 className="text-xl font-bold text-[#0d2e2c] mb-2">用 AI 生成更精准的爆款选题</h2>
+            <p className="text-sm text-[#5a7e7c]">把下方提示词复制到 ChatGPT 或 Claude，填入你的具体情况，即可获得20个高度定制的爆款选题。</p>
           </div>
-          <div className="border border-[#C8DDD2] rounded-2xl overflow-hidden">
-            <div className="bg-[#F7FBF8] border-b border-[#C8DDD2] px-5 py-3 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#1A2E22]">AI 提示词模板</span>
+          <div className="border border-[#b2d8d5] rounded-2xl overflow-hidden">
+            <div className="bg-[#f0f9f8] border-b border-[#b2d8d5] px-5 py-3 flex items-center justify-between">
+              <span className="text-xs font-medium text-[#0d2e2c]">AI 提示词模板</span>
               <button
                 onClick={() => { navigator.clipboard.writeText(AI_PROMPT); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
-                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-1.5 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
+                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-1.5 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
               >
                 {copiedPrompt ? "✓ 已复制" : "复制提示词"}
               </button>

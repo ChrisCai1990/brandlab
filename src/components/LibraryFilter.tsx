@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -34,8 +34,8 @@ export function LibraryFilter({
           onClick={() => setCategory(cat)}
           className={`text-xs font-medium px-4 py-2 rounded-full border transition-colors ${
             active === cat
-              ? "bg-[#1B4332] text-white border-[#1B4332]"
-              : "bg-white text-[#6B7A6E] border-[#C8DDD2] hover:border-[#6BAF8A] hover:text-[#2D6A4F]"
+              ? "bg-[#134e4a] text-white border-[#134e4a]"
+              : "bg-white text-[#5a7e7c] border-[#b2d8d5] hover:border-[#5eada7] hover:text-[#0f766e]"
           }`}
         >
           {cat}

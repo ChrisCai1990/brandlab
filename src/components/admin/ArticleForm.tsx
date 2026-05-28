@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -100,11 +100,11 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
         <div>
           <button
             onClick={() => router.push("/admin/articles")}
-            className="text-xs text-[#6B7A6E] hover:text-[#2D6A4F] transition-colors mb-1"
+            className="text-xs text-[#5a7e7c] hover:text-[#0f766e] transition-colors mb-1"
           >
             ← 返回列表
           </button>
-          <h1 className="text-xl font-bold text-[#1A2E22]">
+          <h1 className="text-xl font-bold text-[#0d2e2c]">
             {isEdit ? "编辑文章" : "新建文章"}
           </h1>
         </div>
@@ -120,14 +120,14 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
-            className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-2 rounded-lg hover:border-[#6BAF8A] transition-colors disabled:opacity-40"
+            className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#5eada7] transition-colors disabled:opacity-40"
           >
             保存草稿
           </button>
           <button
             onClick={() => handleSave(true)}
             disabled={saving}
-            className="text-xs bg-[#1A2E22] text-white px-4 py-2 rounded-lg hover:bg-[#2D6A4F] transition-colors disabled:opacity-40 font-medium"
+            className="text-xs bg-[#0d2e2c] text-white px-4 py-2 rounded-lg hover:bg-[#0f766e] transition-colors disabled:opacity-40 font-medium"
           >
             {saving ? "保存中..." : "发布"}
           </button>
@@ -142,82 +142,82 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
 
       <div className="space-y-5">
         {/* Title */}
-        <div className="bg-white border border-[#C8DDD2] rounded-2xl p-6">
-          <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-2">标题</label>
+        <div className="bg-white border border-[#b2d8d5] rounded-2xl p-6">
+          <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">标题</label>
           <input
             type="text"
             value={form.title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="文章标题"
-            className="w-full text-lg font-bold text-[#1A2E22] border-none outline-none placeholder-[#C8DDD2]"
+            className="w-full text-lg font-bold text-[#0d2e2c] border-none outline-none placeholder-[#b2d8d5]"
           />
         </div>
 
         {/* Meta row */}
-        <div className="bg-white border border-[#C8DDD2] rounded-2xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white border border-[#b2d8d5] rounded-2xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-[10px] font-medium text-[#6BAF8A] tracking-widest uppercase mb-1.5">Slug (URL)</label>
+            <label className="block text-[10px] font-medium text-[#5eada7] tracking-widest uppercase mb-1.5">Slug (URL)</label>
             <input
               type="text"
               value={form.slug}
               onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              className="w-full text-xs text-[#1A2E22] border border-[#C8DDD2] rounded-lg px-3 py-2 focus:outline-none focus:border-[#2D6A4F]"
+              className="w-full text-xs text-[#0d2e2c] border border-[#b2d8d5] rounded-lg px-3 py-2 focus:outline-none focus:border-[#0f766e]"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-medium text-[#6BAF8A] tracking-widest uppercase mb-1.5">分类</label>
+            <label className="block text-[10px] font-medium text-[#5eada7] tracking-widest uppercase mb-1.5">分类</label>
             <select
               value={form.tag}
               onChange={(e) => setForm((f) => ({ ...f, tag: e.target.value }))}
-              className="w-full text-xs text-[#1A2E22] border border-[#C8DDD2] rounded-lg px-3 py-2 focus:outline-none focus:border-[#2D6A4F] bg-white"
+              className="w-full text-xs text-[#0d2e2c] border border-[#b2d8d5] rounded-lg px-3 py-2 focus:outline-none focus:border-[#0f766e] bg-white"
             >
               {TAGS.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-[10px] font-medium text-[#6BAF8A] tracking-widest uppercase mb-1.5">发布日期</label>
+            <label className="block text-[10px] font-medium text-[#5eada7] tracking-widest uppercase mb-1.5">发布日期</label>
             <input
               type="date"
               value={form.date}
               onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-              className="w-full text-xs text-[#1A2E22] border border-[#C8DDD2] rounded-lg px-3 py-2 focus:outline-none focus:border-[#2D6A4F]"
+              className="w-full text-xs text-[#0d2e2c] border border-[#b2d8d5] rounded-lg px-3 py-2 focus:outline-none focus:border-[#0f766e]"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-medium text-[#6BAF8A] tracking-widest uppercase mb-1.5">阅读时长（分钟）</label>
+            <label className="block text-[10px] font-medium text-[#5eada7] tracking-widest uppercase mb-1.5">阅读时长（分钟）</label>
             <input
               type="text"
               value={form.readTime}
               onChange={(e) => setForm((f) => ({ ...f, readTime: e.target.value }))}
-              className="w-full text-xs text-[#1A2E22] border border-[#C8DDD2] rounded-lg px-3 py-2 focus:outline-none focus:border-[#2D6A4F]"
+              className="w-full text-xs text-[#0d2e2c] border border-[#b2d8d5] rounded-lg px-3 py-2 focus:outline-none focus:border-[#0f766e]"
             />
           </div>
         </div>
 
         {/* Desc */}
-        <div className="bg-white border border-[#C8DDD2] rounded-2xl p-6">
-          <label className="block text-[10px] font-medium text-[#6BAF8A] tracking-widest uppercase mb-2">摘要</label>
+        <div className="bg-white border border-[#b2d8d5] rounded-2xl p-6">
+          <label className="block text-[10px] font-medium text-[#5eada7] tracking-widest uppercase mb-2">摘要</label>
           <textarea
             value={form.desc}
             onChange={(e) => setForm((f) => ({ ...f, desc: e.target.value }))}
             placeholder="一两句话描述文章核心价值"
             rows={2}
-            className="w-full text-sm text-[#6B7A6E] border-none outline-none resize-none placeholder-[#C8DDD2] leading-relaxed"
+            className="w-full text-sm text-[#5a7e7c] border-none outline-none resize-none placeholder-[#b2d8d5] leading-relaxed"
           />
         </div>
 
         {/* Content */}
-        <div className="bg-white border border-[#C8DDD2] rounded-2xl p-6">
+        <div className="bg-white border border-[#b2d8d5] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
-            <label className="block text-[10px] font-medium text-[#6BAF8A] tracking-widest uppercase">正文（Markdown）</label>
-            <span className="text-[10px] text-[#6B7A6E]">{form.content.length} 字</span>
+            <label className="block text-[10px] font-medium text-[#5eada7] tracking-widest uppercase">正文（Markdown）</label>
+            <span className="text-[10px] text-[#5a7e7c]">{form.content.length} 字</span>
           </div>
           <textarea
             value={form.content}
             onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
             placeholder={`## 痛点切入\n\n你的开头...\n\n## 核心方法\n\n内容...`}
             rows={24}
-            className="w-full text-sm text-[#3D5048] font-mono border-none outline-none resize-y placeholder-[#C8DDD2] leading-relaxed"
+            className="w-full text-sm text-[#3D5048] font-mono border-none outline-none resize-y placeholder-[#b2d8d5] leading-relaxed"
           />
         </div>
       </div>

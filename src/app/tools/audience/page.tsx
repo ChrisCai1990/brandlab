@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -189,60 +189,60 @@ export default function AudiencePage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="border-b border-[#C8DDD2] bg-[#F7FBF8]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6B7A6E]">
-          <Link href="/" className="hover:text-[#2D6A4F]">首页</Link>
+      <div className="border-b border-[#b2d8d5] bg-[#f0f9f8]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#5a7e7c]">
+          <Link href="/" className="hover:text-[#0f766e]">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#2D6A4F]">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#0f766e]">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1A2E22] font-medium">粉丝画像分析表</span>
+          <span className="text-[#0d2e2c] font-medium">粉丝画像分析表</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1A2E22] mb-3">粉丝画像分析表</h1>
-          <p className="text-sm text-[#6B7A6E]">填写你对受众的了解，生成结构化的粉丝画像，让每条内容都有精准落点</p>
+          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-[#0d2e2c] mb-3">粉丝画像分析表</h1>
+          <p className="text-sm text-[#5a7e7c]">填写你对受众的了解，生成结构化的粉丝画像，让每条内容都有精准落点</p>
         </div>
 
         {/* Form */}
-        <div className="bg-[#F7FBF8] border border-[#C8DDD2] rounded-2xl p-8 mb-10 space-y-7">
+        <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-2xl p-8 mb-10 space-y-7">
           {/* 账号方向 */}
           <div>
-            <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-2">账号方向</label>
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">账号方向</label>
             <input
               type="text"
               value={form.niche}
               onChange={(e) => setForm(f => ({ ...f, niche: e.target.value }))}
               placeholder="例如：职场干货、油皮护肤、副业变现"
-              className="w-full border border-[#C8DDD2] rounded-lg px-4 py-2.5 text-sm text-[#1A2E22] placeholder-[#6B7A6E]/40 focus:outline-none focus:border-[#2D6A4F] bg-white"
+              className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
             />
           </div>
 
           {/* 年龄 + 性别 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
                 主要年龄层 <span className="text-rose-400">*</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {AGE_OPTIONS.map((a) => (
                   <button key={a} onClick={() => setForm(f => ({ ...f, age: a }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.age === a ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.age === a ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {a}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
                 性别比例 <span className="text-rose-400">*</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {GENDER_OPTIONS.map((g) => (
                   <button key={g} onClick={() => setForm(f => ({ ...f, gender: g }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.gender === g ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.gender === g ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {g}
                   </button>
                 ))}
@@ -253,22 +253,22 @@ export default function AudiencePage() {
           {/* 地域 + 活跃时间 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">地域分布</label>
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">地域分布</label>
               <div className="flex flex-wrap gap-2">
                 {REGION_OPTIONS.map((r) => (
                   <button key={r} onClick={() => setForm(f => ({ ...f, region: r }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.region === r ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.region === r ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {r}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">主要活跃时间</label>
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">主要活跃时间</label>
               <div className="flex flex-wrap gap-2">
                 {ACTIVE_OPTIONS.map((a) => (
                   <button key={a} onClick={() => setForm(f => ({ ...f, activeTime: a }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.activeTime === a ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.activeTime === a ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {a}
                   </button>
                 ))}
@@ -278,14 +278,14 @@ export default function AudiencePage() {
 
           {/* 核心痛点 */}
           <div>
-            <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-1">
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-1">
               核心痛点（最多选4个）
             </label>
-            <p className="text-[10px] text-[#6B7A6E] mb-3">已选 {form.pains.length}/4</p>
+            <p className="text-[10px] text-[#5a7e7c] mb-3">已选 {form.pains.length}/4</p>
             <div className="flex flex-wrap gap-2">
               {PAIN_OPTIONS.map((p) => (
                 <button key={p} onClick={() => togglePain(p)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.pains.includes(p) ? "border-rose-400 bg-rose-50 text-rose-600 font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.pains.includes(p) ? "border-rose-400 bg-rose-50 text-rose-600 font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                   {p}
                 </button>
               ))}
@@ -294,11 +294,11 @@ export default function AudiencePage() {
 
           {/* 消费行为 */}
           <div>
-            <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">粉丝消费行为偏好</label>
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">粉丝消费行为偏好</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {CONSUME_OPTIONS.map((c) => (
                 <button key={c} onClick={() => setForm(f => ({ ...f, consume: c }))}
-                  className={`text-xs px-3 py-2 rounded-lg border transition-all text-center ${form.consume === c ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                  className={`text-xs px-3 py-2 rounded-lg border transition-all text-center ${form.consume === c ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                   {c}
                 </button>
               ))}
@@ -309,7 +309,7 @@ export default function AudiencePage() {
             <button
               onClick={handleGenerate}
               disabled={!canGenerate}
-              className="bg-[#1A2E22] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#2D6A4F] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-[#0d2e2c] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               生成画像 →
             </button>
@@ -321,18 +321,18 @@ export default function AudiencePage() {
           <>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-bold text-[#1A2E22]">你的粉丝画像</h2>
-                <p className="text-xs text-[#6B7A6E] mt-1">{result.persona.name}</p>
+                <h2 className="text-lg font-bold text-[#0d2e2c]">你的粉丝画像</h2>
+                <p className="text-xs text-[#5a7e7c] mt-1">{result.persona.name}</p>
               </div>
               <button onClick={copyResult}
-                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-2 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors">
+                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors">
                 {copied ? "✓ 已复制" : "复制全部"}
               </button>
             </div>
 
             <div className="space-y-4">
               {/* 核心画像卡片 */}
-              <div className="bg-[#1A2E22] rounded-xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-[#0d2e2c] rounded-xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   { label: "年龄层", value: result.persona.age },
                   { label: "性别偏向", value: result.persona.gender },
@@ -340,27 +340,27 @@ export default function AudiencePage() {
                   { label: "活跃时段", value: result.persona.activeTime || "碎片化时间" },
                 ].map((item) => (
                   <div key={item.label} className="text-center">
-                    <p className="text-[10px] text-[#6BAF8A] mb-1">{item.label}</p>
+                    <p className="text-[10px] text-[#5eada7] mb-1">{item.label}</p>
                     <p className="text-xs font-bold text-white">{item.value}</p>
                   </div>
                 ))}
               </div>
-              <div className="border border-[#C8DDD2] rounded-xl p-5">
-                <p className="text-[10px] text-[#6BAF8A] font-medium mb-1">用户特征概述</p>
+              <div className="border border-[#b2d8d5] rounded-xl p-5">
+                <p className="text-[10px] text-[#5eada7] font-medium mb-1">用户特征概述</p>
                 <p className="text-xs text-[#3D5048] leading-relaxed">{result.persona.trait}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 心理特征 */}
-                <div className="border border-[#C8DDD2] rounded-xl p-5">
-                  <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-4">心理特征</p>
+                <div className="border border-[#b2d8d5] rounded-xl p-5">
+                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">心理特征</p>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-[10px] text-[#6BAF8A] font-medium mb-1">行为偏好</p>
+                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">行为偏好</p>
                       <p className="text-xs text-[#3D5048] leading-relaxed">{result.psychology.gender}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#6BAF8A] font-medium mb-1.5">核心痛点</p>
+                      <p className="text-[10px] text-[#5eada7] font-medium mb-1.5">核心痛点</p>
                       <div className="flex flex-wrap gap-1.5">
                         {result.psychology.pains.map((p) => (
                           <span key={p} className="text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-medium">{p}</span>
@@ -368,26 +368,26 @@ export default function AudiencePage() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#6BAF8A] font-medium mb-1">行为动机</p>
+                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">行为动机</p>
                       <p className="text-xs text-[#3D5048] leading-relaxed">{result.psychology.motivation}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* 行为特征 */}
-                <div className="border border-[#C8DDD2] rounded-xl p-5">
-                  <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-4">行为特征</p>
+                <div className="border border-[#b2d8d5] rounded-xl p-5">
+                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">行为特征</p>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-[10px] text-[#6BAF8A] font-medium mb-1">内容消费策略</p>
+                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">内容消费策略</p>
                       <p className="text-xs text-[#3D5048] leading-relaxed">{result.behavior.consume}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#6BAF8A] font-medium mb-1">指标优先级</p>
-                      <p className="text-xs font-medium text-[#2D6A4F]">{result.behavior.priority}</p>
+                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">指标优先级</p>
+                      <p className="text-xs font-medium text-[#0f766e]">{result.behavior.priority}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#6BAF8A] font-medium mb-1">关注决策路径</p>
+                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">关注决策路径</p>
                       <p className="text-xs text-[#3D5048] leading-relaxed">{result.behavior.decision}</p>
                     </div>
                   </div>
@@ -396,8 +396,8 @@ export default function AudiencePage() {
 
               {/* 内容策略 + 变现匹配 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-[#C8DDD2] rounded-xl p-5">
-                  <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-4">内容策略建议</p>
+                <div className="border border-[#b2d8d5] rounded-xl p-5">
+                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">内容策略建议</p>
                   <div className="space-y-3">
                     {[
                       { label: "选题钩子", value: result.content.hook },
@@ -405,14 +405,14 @@ export default function AudiencePage() {
                       { label: "传播引爆点", value: result.content.viral },
                     ].map((r) => (
                       <div key={r.label}>
-                        <p className="text-[10px] text-[#6BAF8A] font-medium mb-0.5">{r.label}</p>
+                        <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">{r.label}</p>
                         <p className="text-xs text-[#3D5048] leading-relaxed">{r.value}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="border border-[#C8DDD2] rounded-xl p-5">
-                  <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-4">变现路径匹配</p>
+                <div className="border border-[#b2d8d5] rounded-xl p-5">
+                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">变现路径匹配</p>
                   <div className="space-y-3">
                     {[
                       { label: "推荐变现路径", value: result.monetize.path },
@@ -420,7 +420,7 @@ export default function AudiencePage() {
                       { label: "信任建立节点", value: result.monetize.trust },
                     ].map((r) => (
                       <div key={r.label}>
-                        <p className="text-[10px] text-[#6BAF8A] font-medium mb-0.5">{r.label}</p>
+                        <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">{r.label}</p>
                         <p className="text-xs text-[#3D5048] leading-relaxed">{r.value}</p>
                       </div>
                     ))}
@@ -429,12 +429,12 @@ export default function AudiencePage() {
               </div>
             </div>
 
-            <div className="mt-8 bg-[#1A2E22] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="mt-8 bg-[#0d2e2c] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-white mb-1">想要更精准的受众分析？</p>
-                <p className="text-xs text-[#A8D5BB]">加入社群，获取完整粉丝画像Excel模板 + 平台数据解读指南</p>
+                <p className="text-xs text-[#99ceca]">加入社群，获取完整粉丝画像Excel模板 + 平台数据解读指南</p>
               </div>
-              <Link href="/contact" className="shrink-0 text-xs bg-[#1B4332] border border-[#6BAF8A] text-white px-5 py-2.5 rounded-lg hover:bg-[#2D6A4F] transition-colors">
+              <Link href="/contact" className="shrink-0 text-xs bg-[#134e4a] border border-[#5eada7] text-white px-5 py-2.5 rounded-lg hover:bg-[#0f766e] transition-colors">
                 加入社群
               </Link>
             </div>
@@ -442,18 +442,18 @@ export default function AudiencePage() {
         )}
 
         {/* AI Prompt */}
-        <div className="mt-16 border-t border-[#C8DDD2] pt-14">
+        <div className="mt-16 border-t border-[#b2d8d5] pt-14">
           <div className="mb-6">
-            <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">进阶方案</p>
-            <h2 className="text-xl font-bold text-[#1A2E22] mb-2">用 AI 深度分析你的粉丝画像</h2>
-            <p className="text-sm text-[#6B7A6E]">把下方提示词复制到 ChatGPT 或 Claude，结合你的真实平台数据，获得深度的受众分析报告。</p>
+            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">进阶方案</p>
+            <h2 className="text-xl font-bold text-[#0d2e2c] mb-2">用 AI 深度分析你的粉丝画像</h2>
+            <p className="text-sm text-[#5a7e7c]">把下方提示词复制到 ChatGPT 或 Claude，结合你的真实平台数据，获得深度的受众分析报告。</p>
           </div>
-          <div className="border border-[#C8DDD2] rounded-2xl overflow-hidden">
-            <div className="bg-[#F7FBF8] border-b border-[#C8DDD2] px-5 py-3 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#1A2E22]">AI 提示词模板</span>
+          <div className="border border-[#b2d8d5] rounded-2xl overflow-hidden">
+            <div className="bg-[#f0f9f8] border-b border-[#b2d8d5] px-5 py-3 flex items-center justify-between">
+              <span className="text-xs font-medium text-[#0d2e2c]">AI 提示词模板</span>
               <button
                 onClick={() => { navigator.clipboard.writeText(AI_PROMPT); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
-                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-1.5 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
+                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-1.5 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
               >
                 {copiedPrompt ? "✓ 已复制" : "复制提示词"}
               </button>

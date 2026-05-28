@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -105,7 +105,7 @@ function generatePlan(form: MonetizeForm) {
       income: "月入2000-3万，可规模化",
       difficulty: "中",
       priority: form.follower === "starter" || form.follower === "growing" ? "3个月内" : "立即启动",
-      color: "bg-[#E8F5EE] text-[#2D6A4F] border-[#C8DDD2]",
+      color: "bg-[#e6f4f3] text-[#0f766e] border-[#b2d8d5]",
     },
     {
       name: "品牌广告合作",
@@ -154,7 +154,7 @@ function generatePlan(form: MonetizeForm) {
       focus: "打地基",
       tasks: ["稳定更新频率，建立内容库（至少30篇）", "测试2-3种选题方向，找到爆款规律", "启动低门槛变现：咨询 / 小额知识付费"],
       milestone: "粉丝量翻倍，首笔变现收入",
-      color: "bg-[#E8F5EE] border-[#C8DDD2]",
+      color: "bg-[#e6f4f3] border-[#b2d8d5]",
     },
     {
       phase: "第二阶段（3-6个月）",
@@ -214,36 +214,36 @@ ${result.roadmap.map((r) => `${r.phase}
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="border-b border-[#C8DDD2] bg-[#F7FBF8]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6B7A6E]">
-          <Link href="/" className="hover:text-[#2D6A4F]">首页</Link>
+      <div className="border-b border-[#b2d8d5] bg-[#f0f9f8]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#5a7e7c]">
+          <Link href="/" className="hover:text-[#0f766e]">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#2D6A4F]">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#0f766e]">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1A2E22] font-medium">变现路径规划表</span>
+          <span className="text-[#0d2e2c] font-medium">变现路径规划表</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1A2E22] mb-3">变现路径规划表</h1>
-          <p className="text-sm text-[#6B7A6E]">告诉我你的账号现状，生成最适合你的变现方式组合和行动路线图</p>
+          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-[#0d2e2c] mb-3">变现路径规划表</h1>
+          <p className="text-sm text-[#5a7e7c]">告诉我你的账号现状，生成最适合你的变现方式组合和行动路线图</p>
         </div>
 
         {/* Form */}
-        <div className="bg-[#F7FBF8] border border-[#C8DDD2] rounded-2xl p-8 mb-10 space-y-7">
+        <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-2xl p-8 mb-10 space-y-7">
           {/* 粉丝量 */}
           <div>
-            <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
               当前粉丝量 <span className="text-rose-400">*</span>
             </label>
             <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
               {FOLLOWER_RANGES.map((r) => (
                 <button key={r.value} onClick={() => setForm(f => ({ ...f, follower: r.value }))}
-                  className={`border rounded-xl py-3 px-2 text-center transition-all ${form.follower === r.value ? "border-[#2D6A4F] bg-[#E8F5EE]" : "border-[#C8DDD2] hover:border-[#6BAF8A]"}`}>
-                  <div className={`text-xs font-bold ${form.follower === r.value ? "text-[#2D6A4F]" : "text-[#1A2E22]"}`}>{r.label}</div>
-                  <div className="text-[10px] text-[#6B7A6E] mt-0.5">{r.desc}</div>
+                  className={`border rounded-xl py-3 px-2 text-center transition-all ${form.follower === r.value ? "border-[#0f766e] bg-[#e6f4f3]" : "border-[#b2d8d5] hover:border-[#5eada7]"}`}>
+                  <div className={`text-xs font-bold ${form.follower === r.value ? "text-[#0f766e]" : "text-[#0d2e2c]"}`}>{r.label}</div>
+                  <div className="text-[10px] text-[#5a7e7c] mt-0.5">{r.desc}</div>
                 </button>
               ))}
             </div>
@@ -252,24 +252,24 @@ ${result.roadmap.map((r) => `${r.phase}
           {/* 账号方向 + 平台 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
                 账号方向 <span className="text-rose-400">*</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {NICHE_OPTIONS.map((n) => (
                   <button key={n} onClick={() => setForm(f => ({ ...f, niche: n }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.niche === n ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.niche === n ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {n}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">主要平台</label>
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">主要平台</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map((p) => (
                   <button key={p} onClick={() => setForm(f => ({ ...f, platform: p }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.platform === p ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.platform === p ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {p}
                   </button>
                 ))}
@@ -280,22 +280,22 @@ ${result.roadmap.map((r) => `${r.phase}
           {/* 收入目标 + 可投入时间 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">收入目标</label>
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">收入目标</label>
               <div className="grid grid-cols-2 gap-2">
                 {INCOME_GOALS.map((g) => (
                   <button key={g} onClick={() => setForm(f => ({ ...f, incomeGoal: g }))}
-                    className={`text-xs py-2 px-3 rounded-lg border transition-all text-center ${form.incomeGoal === g ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs py-2 px-3 rounded-lg border transition-all text-center ${form.incomeGoal === g ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {g}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-3">每日可投入时间</label>
+              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">每日可投入时间</label>
               <div className="flex flex-col gap-2">
                 {TIME_OPTIONS.map((t) => (
                   <button key={t} onClick={() => setForm(f => ({ ...f, timeInput: t }))}
-                    className={`text-xs py-2 px-3 rounded-lg border transition-all text-left ${form.timeInput === t ? "border-[#2D6A4F] bg-[#E8F5EE] text-[#2D6A4F] font-medium" : "border-[#C8DDD2] text-[#6B7A6E] hover:border-[#6BAF8A]"}`}>
+                    className={`text-xs py-2 px-3 rounded-lg border transition-all text-left ${form.timeInput === t ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                     {t}
                   </button>
                 ))}
@@ -305,13 +305,13 @@ ${result.roadmap.map((r) => `${r.phase}
 
           {/* 核心技能 */}
           <div>
-            <label className="block text-xs font-medium text-[#6BAF8A] tracking-widest uppercase mb-2">你的核心技能/资源（可选）</label>
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">你的核心技能/资源（可选）</label>
             <input
               type="text"
               value={form.skill}
               onChange={(e) => setForm(f => ({ ...f, skill: e.target.value }))}
               placeholder="例如：10年HR经验、擅长Excel、有设计资源"
-              className="w-full border border-[#C8DDD2] rounded-lg px-4 py-2.5 text-sm text-[#1A2E22] placeholder-[#6B7A6E]/40 focus:outline-none focus:border-[#2D6A4F] bg-white"
+              className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
             />
           </div>
 
@@ -319,7 +319,7 @@ ${result.roadmap.map((r) => `${r.phase}
             <button
               onClick={handleGenerate}
               disabled={!canGenerate}
-              className="bg-[#1A2E22] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#2D6A4F] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-[#0d2e2c] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               生成变现规划 →
             </button>
@@ -331,27 +331,27 @@ ${result.roadmap.map((r) => `${r.phase}
           <>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-bold text-[#1A2E22]">你的变现路径规划</h2>
-                <p className="text-xs text-[#6B7A6E] mt-1">{result.stage.stage} — {result.stage.label}</p>
+                <h2 className="text-lg font-bold text-[#0d2e2c]">你的变现路径规划</h2>
+                <p className="text-xs text-[#5a7e7c] mt-1">{result.stage.stage} — {result.stage.label}</p>
               </div>
               <button onClick={copyResult}
-                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-2 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors">
+                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors">
                 {copied ? "✓ 已复制" : "复制全部"}
               </button>
             </div>
 
             {/* 阶段定位 */}
-            <div className="bg-[#1A2E22] rounded-xl p-6 mb-4">
+            <div className="bg-[#0d2e2c] rounded-xl p-6 mb-4">
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-xs font-bold text-[#6BAF8A] bg-[#2D6A4F]/30 px-2.5 py-1 rounded-full">{result.stage.stage}</span>
+                <span className="text-xs font-bold text-[#5eada7] bg-[#0f766e]/30 px-2.5 py-1 rounded-full">{result.stage.stage}</span>
                 <span className="text-sm font-bold text-white">{result.stage.label}</span>
               </div>
-              <p className="text-xs text-[#A8D5BB] leading-relaxed">{result.stage.desc}</p>
+              <p className="text-xs text-[#99ceca] leading-relaxed">{result.stage.desc}</p>
             </div>
 
             {/* 变现方式矩阵 */}
             <div className="mb-4">
-              <h3 className="text-sm font-bold text-[#1A2E22] mb-3">推荐变现方式（按优先级）</h3>
+              <h3 className="text-sm font-bold text-[#0d2e2c] mb-3">推荐变现方式（按优先级）</h3>
               <div className="space-y-2.5">
                 {result.paths.map((p, i) => (
                   <div key={p.name} className={`border rounded-xl p-4 flex items-start gap-4 ${p.color}`}>
@@ -360,7 +360,7 @@ ${result.roadmap.map((r) => `${r.phase}
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xs font-bold">{p.name}</span>
                         <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                          p.priority === "立即启动" ? "bg-[#1A2E22] text-white" : "bg-white/60 text-current"
+                          p.priority === "立即启动" ? "bg-[#0d2e2c] text-white" : "bg-white/60 text-current"
                         }`}>{p.priority}</span>
                         <span className="text-[10px] opacity-60">难度：{p.difficulty}</span>
                       </div>
@@ -377,7 +377,7 @@ ${result.roadmap.map((r) => `${r.phase}
 
             {/* 路线图 */}
             <div>
-              <h3 className="text-sm font-bold text-[#1A2E22] mb-3">分阶段行动路线图</h3>
+              <h3 className="text-sm font-bold text-[#0d2e2c] mb-3">分阶段行动路线图</h3>
               <div className="space-y-3">
                 {result.roadmap.map((r) => (
                   <div key={r.phase} className={`border rounded-xl p-5 ${r.color}`}>
@@ -402,12 +402,12 @@ ${result.roadmap.map((r) => `${r.phase}
               </div>
             </div>
 
-            <div className="mt-8 bg-[#1A2E22] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="mt-8 bg-[#0d2e2c] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-white mb-1">想要更深度的变现策略？</p>
-                <p className="text-xs text-[#A8D5BB]">加入社群，获取各变现方式的SOP手册 + 定价模型模板</p>
+                <p className="text-xs text-[#99ceca]">加入社群，获取各变现方式的SOP手册 + 定价模型模板</p>
               </div>
-              <Link href="/contact" className="shrink-0 text-xs bg-[#1B4332] border border-[#6BAF8A] text-white px-5 py-2.5 rounded-lg hover:bg-[#2D6A4F] transition-colors">
+              <Link href="/contact" className="shrink-0 text-xs bg-[#134e4a] border border-[#5eada7] text-white px-5 py-2.5 rounded-lg hover:bg-[#0f766e] transition-colors">
                 加入社群
               </Link>
             </div>
@@ -415,18 +415,18 @@ ${result.roadmap.map((r) => `${r.phase}
         )}
 
         {/* AI Prompt */}
-        <div className="mt-16 border-t border-[#C8DDD2] pt-14">
+        <div className="mt-16 border-t border-[#b2d8d5] pt-14">
           <div className="mb-6">
-            <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">进阶方案</p>
-            <h2 className="text-xl font-bold text-[#1A2E22] mb-2">用 AI 制定更精细的变现规划</h2>
-            <p className="text-sm text-[#6B7A6E]">把下方提示词复制到 ChatGPT 或 Claude，填入你的真实情况，获得量身定制的完整变现路径规划。</p>
+            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">进阶方案</p>
+            <h2 className="text-xl font-bold text-[#0d2e2c] mb-2">用 AI 制定更精细的变现规划</h2>
+            <p className="text-sm text-[#5a7e7c]">把下方提示词复制到 ChatGPT 或 Claude，填入你的真实情况，获得量身定制的完整变现路径规划。</p>
           </div>
-          <div className="border border-[#C8DDD2] rounded-2xl overflow-hidden">
-            <div className="bg-[#F7FBF8] border-b border-[#C8DDD2] px-5 py-3 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#1A2E22]">AI 提示词模板</span>
+          <div className="border border-[#b2d8d5] rounded-2xl overflow-hidden">
+            <div className="bg-[#f0f9f8] border-b border-[#b2d8d5] px-5 py-3 flex items-center justify-between">
+              <span className="text-xs font-medium text-[#0d2e2c]">AI 提示词模板</span>
               <button
                 onClick={() => { navigator.clipboard.writeText(AI_PROMPT); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
-                className="text-xs border border-[#C8DDD2] text-[#6B7A6E] px-4 py-1.5 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
+                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-1.5 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
               >
                 {copiedPrompt ? "✓ 已复制" : "复制提示词"}
               </button>
