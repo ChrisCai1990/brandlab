@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,9 +10,10 @@ const templates = [
   {
     title: "30天内容排期模板",
     desc: "每天的选题方向、痛点钩子、内容角度、互动引导，一次规划，30天不焦虑。",
-    tags: ["Excel", "Notion"],
+    tags: ["在线工具"],
     type: "免费",
     icon: "📅",
+    href: "/tools/calendar",
   },
   {
     title: "账号定位Brief模板",
@@ -19,6 +21,7 @@ const templates = [
     tags: ["PDF", "Notion"],
     type: "免费",
     icon: "📋",
+    href: "/contact",
   },
   {
     title: "视觉系统设计模板",
@@ -26,6 +29,7 @@ const templates = [
     tags: ["Canva", "Figma"],
     type: "免费",
     icon: "🎨",
+    href: "/contact",
   },
   {
     title: "爆款选题生成器",
@@ -33,6 +37,7 @@ const templates = [
     tags: ["在线工具"],
     type: "即将上线",
     icon: "⚡",
+    href: "",
   },
   {
     title: "粉丝画像分析表",
@@ -40,6 +45,7 @@ const templates = [
     tags: ["Excel"],
     type: "免费",
     icon: "👥",
+    href: "/contact",
   },
   {
     title: "变现路径规划表",
@@ -47,6 +53,7 @@ const templates = [
     tags: ["PDF"],
     type: "免费",
     icon: "💰",
+    href: "/contact",
   },
 ];
 
@@ -99,10 +106,10 @@ export default function ToolsPage() {
                     </span>
                   ))}
                 </div>
-                {t.type === "免费" && (
-                  <button className="text-xs text-[#2D6A4F] font-medium hover:text-[#1B4332] transition-colors">
+                {t.type === "免费" && t.href && (
+                  <Link href={t.href} className="text-xs text-[#2D6A4F] font-medium hover:text-[#1B4332] transition-colors">
                     获取 →
-                  </button>
+                  </Link>
                 )}
               </div>
             </div>
