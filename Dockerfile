@@ -22,6 +22,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOSTNAME=0.0.0.0
+ENV PATH="/app/node_modules/.bin:$PATH"
 
 # Copy prisma schema before npm ci so postinstall can run prisma generate
 COPY prisma/schema.prisma ./prisma/schema.prisma
