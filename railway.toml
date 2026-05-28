@@ -2,7 +2,7 @@
 builder = "dockerfile"
 
 [deploy]
-startCommand = "prisma db push && node prisma/seed.js && npm run start"
+startCommand = "prisma db push && node prisma/seed.js && next start"
 healthcheckPath = "/"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3

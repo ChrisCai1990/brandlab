@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { articles } from "@/lib/articles";
+import { articles as staticArticles } from "@/lib/articles";
+import { prisma } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 
 const modules = [
   { category: "个人定位", icon: "◎", title: "个人定位", desc: "找准差异化定位，让别人一眼记住你" },
@@ -17,18 +20,46 @@ const resources = [
   { title: "视觉系统设计模板", desc: "封面×4套 + 配色方案 + 字体规范，告别视觉混乱", icon: "🎨" },
 ];
 
-// 取最新 6 篇，格式化日期为 MM-DD
-const latestPosts = articles.slice(0, 6).map((a) => ({
-  slug: a.slug,
-  tag: a.tag,
-  title: a.title,
-  desc: a.desc,
-  date: a.date.slice(5), // "2024-01-15" → "01-15"
-}));
+async function getLatestFromDb() {
+  try {
+    const rows = await prisma.article.findMany({
+      where: { published: true },
+      orderBy: { date: "desc" },
+      take: 6,
+      select: { slug: true, tag: true, title: true, desc: true, date: true },
+    });
+    return rows.map((r) => ({
+      slug: r.slug,
+      tag: r.tag,
+      title: r.title,
+      desc: r.desc,
+      date: new Date(r.date).toISOString().slice(5, 10), // "MM-DD"
+    }));
+  } catch {
+    return null;
+  }
+}
 
-const featured = articles[0];
+async function getTotalCount() {
+  try {
+    return await prisma.article.count({ where: { published: true } });
+  } catch {
+    return staticArticles.length;
+  }
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [dbPosts, totalCount] = await Promise.all([getLatestFromDb(), getTotalCount()]);
+
+  const latestPosts = dbPosts ?? staticArticles.slice(0, 6).map((a) => ({
+    slug: a.slug,
+    tag: a.tag,
+    title: a.title,
+    desc: a.desc,
+    date: a.date.slice(5),
+  }));
+
+  const featured = latestPosts[0];
   return (
     <>
       {/* ─── Hero ─── */}
@@ -77,7 +108,7 @@ export default function HomePage() {
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: `${articles.length}`, label: "条实用干货" },
+                  { value: `${totalCount}`, label: "条实用干货" },
                   { value: "5000+", label: "位创作者在用" },
                   { value: "每日", label: "持续更新" },
                 ].map((s) => (
@@ -89,16 +120,18 @@ export default function HomePage() {
               </div>
 
               {/* Featured article card — 动态取第一篇 */}
-              <Link href={`/library/${featured.slug}`} className="group block bg-[#1A2E22] rounded-xl p-5 hover:bg-[#2D6A4F] transition-colors">
-                <div className="text-xs text-[#6BAF8A] mb-2 font-medium">今日干货</div>
-                <h3 className="text-sm font-bold text-white mb-2 group-hover:text-[#A8D5BB] transition-colors leading-snug">
-                  {featured.title}
-                </h3>
-                <p className="text-xs text-[#A8D5BB] leading-relaxed line-clamp-2">
-                  {featured.desc}
-                </p>
-                <div className="mt-3 text-xs text-[#6BAF8A] group-hover:text-white transition-colors">阅读全文 →</div>
-              </Link>
+              {featured && (
+                <Link href={`/library/${featured.slug}`} className="group block bg-[#1A2E22] rounded-xl p-5 hover:bg-[#2D6A4F] transition-colors">
+                  <div className="text-xs text-[#6BAF8A] mb-2 font-medium">今日干货</div>
+                  <h3 className="text-sm font-bold text-white mb-2 group-hover:text-[#A8D5BB] transition-colors leading-snug">
+                    {featured.title}
+                  </h3>
+                  <p className="text-xs text-[#A8D5BB] leading-relaxed line-clamp-2">
+                    {featured.desc}
+                  </p>
+                  <div className="mt-3 text-xs text-[#6BAF8A] group-hover:text-white transition-colors">阅读全文 →</div>
+                </Link>
+              )}
 
               {/* Module pills — 用中文分类名 */}
               <div className="flex flex-wrap gap-2">
