@@ -55,7 +55,7 @@ const mdxComponents = {
     <div className="my-6 bg-[#1A2E22] rounded-xl px-6 py-5">
       <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">核心公式</p>
       <p className="text-base font-bold text-white leading-snug">
-        {(props.children as React.ReactElement)?.props?.children}
+        {(props.children as React.ReactElement<{ children: React.ReactNode }>)?.props?.children}
       </p>
     </div>
   ),
