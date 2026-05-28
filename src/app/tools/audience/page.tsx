@@ -3,189 +3,81 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const AI_PROMPT = `你是一位资深的用户研究专家，请帮我建立一份完整的粉丝画像分析报告。
+const AGE_GROUPS = ["18-24岁", "25-30岁", "31-35岁", "36-45岁", "45岁以上"];
+const GENDERS = ["女性为主", "男性为主", "男女均衡"];
+const PAIN_POINTS = ["时间不够用", "不知道方向", "缺乏技能", "经济压力", "社交焦虑", "职业迷茫", "育儿困扰", "健康问题"];
+const SCENES = ["上下班通勤", "睡前刷手机", "工作午休", "周末休闲", "学习时间"];
 
-【我的账号信息】
-- 账号方向：[请填写]
-- 目标平台：[请填写]
-- 现有粉丝量：[请填写]
+type Form = { age: string; gender: string; pains: string[]; scene: string; niche: string };
 
-【请从以下维度帮我分析和构建粉丝画像】
-
-## 一、人口统计特征
-- 年龄分布（主要区间）：
-- 性别比例：
-- 地域分布：
-- 职业构成：
-- 收入水平：
-
-## 二、心理特征
-- 核心诉求（3个）：
-- 主要焦虑（3个）：
-- 价值观偏好：
-- 消费决策习惯：
-
-## 三、行为特征
-- 活跃时间段：
-- 内容消费偏好（图文/视频/直播）：
-- 平均阅读时长：
-- 互动行为模式（点赞/评论/收藏/分享的优先级）：
-- 关注决策触发点：
-
-## 四、用户旅程地图
-- 从陌生到关注：
-- 从关注到互动：
-- 从互动到付费：
-
-## 五、内容策略建议
-- 最容易引发共鸣的内容角度：
-- 最容易引发互动的内容形式：
-- 最容易触发分享的内容类型：
-
-## 六、变现路径匹配
-- 最匹配的变现方式（按优先级排序）：
-- 预估付费转化率：
-- 关键信任建立节点：`;
-
-const AGE_OPTIONS = ["18-24岁", "25-30岁", "31-35岁", "36-40岁", "40岁以上", "跨年龄段"];
-const GENDER_OPTIONS = ["女性为主(>70%)", "男性为主(>70%)", "基本均衡", "不确定"];
-const REGION_OPTIONS = ["一线城市为主", "二三线城市为主", "全国均衡", "海外华人"];
-const ACTIVE_OPTIONS = ["早上7-9点", "午休12-14点", "下班后18-21点", "睡前21-24点", "全天均衡"];
-const PAIN_OPTIONS = [
-  "职场焦虑", "财务压力", "学习效率低", "时间管理差",
-  "社交困难", "情感困惑", "健康问题", "育儿困境",
-  "审美提升", "技能空缺", "职业迷茫", "生活方式升级",
-];
-const CONSUME_OPTIONS = ["点赞收藏型", "评论互动型", "主动分享型", "沉默阅读型"];
-
-type AudienceForm = {
-  age: string;
-  gender: string;
-  region: string;
-  activeTime: string;
-  pains: string[];
-  consume: string;
-  niche: string;
-};
-
-function generatePersona(form: AudienceForm) {
-  const ageMap: Record<string, { label: string; trait: string }> = {
-    "18-24岁": { label: "Z世代", trait: "追求个性表达，对新事物接受度高，品牌忠诚度较低" },
-    "25-30岁": { label: "职场新人", trait: "有上进心，对实用干货敏感，初步具备付费意愿" },
-    "31-35岁": { label: "职场中坚", trait: "有明确目标感，时间稀缺，付费决策理性且快速" },
-    "36-40岁": { label: "成熟消费者", trait: "追求品质与效率，付费能力强，口碑传播力高" },
-    "40岁以上": { label: "资深用户", trait: "经验丰富，偏好权威背书，转化周期较长但客单价高" },
-    "跨年龄段": { label: "广泛受众", trait: "内容普适性强，需要差异化触达不同子群体" },
+function generatePersona(form: Form) {
+  const ageMap: Record<string, string> = {
+    "18-24岁": "在校生或初入职场，对新鲜事物好奇，消费能力有限但种草意愿强",
+    "25-30岁": "职场上升期，有一定收入，追求效率和自我提升，决策相对理性",
+    "31-35岁": "家庭+职场双重压力，时间稀缺，偏好解决具体问题的内容",
+    "36-45岁": "有消费力和决策权，重视品质和口碑，内容信任门槛较高",
+    "45岁以上": "习惯熟悉的平台，内容偏好实用和养生，私域转化率高",
   };
-
   const genderMap: Record<string, string> = {
-    "女性为主(>70%)": "内容偏好感性表达与实用技巧，种草心智强，社交分享意愿高",
-    "男性为主(>70%)": "偏好数据与逻辑，直接性强，决策理性，转化路径更短",
-    "基本均衡": "内容需兼顾感性与理性，可用不同切入角度触达两类受众",
-    "不确定": "建议先发布3-5篇内容观察后台数据，根据实际受众调整方向",
+    女性为主: "情感化内容更易引发共鸣，视觉审美要求高，社群归属感强",
+    男性为主: "偏好数据和逻辑，理性消费，技术型或工具型内容接受度高",
+    男女均衡: "内容需兼顾实用性与情感共鸣，差异化定位空间更大",
   };
 
-  const consumeMap: Record<string, { strategy: string; priority: string }> = {
-    "点赞收藏型": { strategy: "提高内容的「收藏价值」——可反复使用的清单、模板、公式", priority: "收藏率 > 点赞率 > 评论率" },
-    "评论互动型": { strategy: "在内容末尾设置开放性问题，引导评论，打造「话题型」内容", priority: "评论率 > 点赞率 > 收藏率" },
-    "主动分享型": { strategy: "制造「看到就想分享」的共鸣感，让内容有「替我说出来了」的效果", priority: "分享率 > 互动率" },
-    "沉默阅读型": { strategy: "注重内容深度与完播率，用高质量换取算法推流，而非互动数", priority: "完播率 > 点赞率" },
-  };
+  const painDesc = form.pains.length > 0
+    ? form.pains.join("、")
+    : "核心痛点待明确";
 
-  const ageInfo = ageMap[form.age] || { label: "目标受众", trait: "有明确需求，对专业内容有较强接受度" };
-  const consumeInfo = consumeMap[form.consume] || consumeMap["点赞收藏型"];
+  const contentAngles = [
+    `痛点切入：围绕「${painDesc}」设计开篇钩子`,
+    `解决方案：提供可直接操作的${form.niche || "领域"}方法论`,
+    `案例佐证：用真实故事增强可信度`,
+    `结果展示：让受众看到改变后的状态`,
+  ];
+
+  const sceneMap: Record<string, string> = {
+    上下班通勤: "内容要简短有力，15秒视频或300字图文最佳",
+    睡前刷手机: "情绪价值为主，可以稍长但要有沉浸感",
+    工作午休: "干货密度高，能快速获取价值的清单类内容",
+    周末休闲: "可接受长内容，深度故事和完整教程效果好",
+    学习时间: "结构清晰，有框架有逻辑，配合收藏功能",
+  };
 
   return {
-    persona: {
-      name: `${ageInfo.label} · ${form.niche || "目标用户"}`,
-      age: form.age,
-      gender: form.gender,
-      region: form.region,
-      activeTime: form.activeTime,
-      trait: ageInfo.trait,
+    profile: {
+      age: ageMap[form.age] || "年龄特征待补充",
+      gender: genderMap[form.gender] || "性别特征待补充",
+      pain: painDesc,
+      scene: form.scene,
     },
-    psychology: {
-      gender: genderMap[form.gender] || "需进一步调研受众特征",
-      pains: form.pains.length > 0 ? form.pains : ["核心痛点待确认"],
-      motivation: `在${form.activeTime || "碎片化时间"}内寻找能快速解决「${form.pains[0] || "核心问题"}」的实用方法`,
-    },
-    behavior: {
-      consume: consumeInfo.strategy,
-      priority: consumeInfo.priority,
-      decision: "看到账号→浏览近期3-5条内容→判断「是否对我有用」→决定是否关注",
-    },
-    content: {
-      hook: `以「${form.pains[0] || "痛点"}」为切入口，${form.gender.includes("女") ? "配合真实案例与情绪共鸣" : "提供数据支撑与逻辑框架"}`,
-      format: form.activeTime?.includes("睡前") ? "短平快的干货清单，5分钟内能看完" : "结构清晰的深度内容，有可收藏的核心价值",
-      viral: "让粉丝感觉「你说出了我的心声」，触发主动分享",
+    strategy: {
+      angles: contentAngles,
+      format: sceneMap[form.scene] || "根据消费场景调整内容形式",
+      cta: form.pains.includes("不知道方向") || form.pains.includes("职业迷茫")
+        ? "提供清单+模板，让读者有立即行动的抓手"
+        : "在内容末尾提供进阶资源，引流至私域",
     },
     monetize: {
-      path: form.pains.some(p => ["职场焦虑", "职业迷茫", "技能空缺"].includes(p))
-        ? "知识付费课程 → 1对1咨询 → 社群订阅"
-        : form.pains.some(p => ["审美提升", "健康问题"].includes(p))
-        ? "好物种草带货 → 品牌合作 → 联名产品"
-        : "社群会员 → 知识付费 → 品牌合作",
-      rate: "内容型账号平均付费转化率 1-3%，优质垂直账号可达 5-8%",
-      trust: "持续输出3个月以上，建立「专业可信」人设后，转化成本大幅下降",
+      method: form.pains.includes("经济压力") || form.pains.includes("职业迷茫")
+        ? "知识付费 / 1对1咨询（受众有明确付费意愿）"
+        : "广告合作 / 好物推荐（受众消费决策活跃）",
+      trust: "先建立信任（免费干货），再引入付费产品，转化率更高",
     },
   };
 }
 
 export default function AudiencePage() {
-  const [form, setForm] = useState<AudienceForm>({
-    age: "", gender: "", region: "", activeTime: "", pains: [], consume: "", niche: "",
-  });
+  const [form, setForm] = useState<Form>({ age: "", gender: "", pains: [], scene: "", niche: "" });
   const [result, setResult] = useState<ReturnType<typeof generatePersona> | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [copiedPrompt, setCopiedPrompt] = useState(false);
 
-  const canGenerate = form.age && form.gender;
-
-  function togglePain(p: string) {
+  function togglePain(pain: string) {
     setForm(f => ({
       ...f,
-      pains: f.pains.includes(p) ? f.pains.filter(x => x !== p) : f.pains.length < 4 ? [...f.pains, p] : f.pains,
+      pains: f.pains.includes(pain) ? f.pains.filter(p => p !== pain) : [...f.pains, pain],
     }));
   }
 
-  function handleGenerate() {
-    setResult(generatePersona(form));
-  }
-
-  function copyResult() {
-    if (!result) return;
-    const text = `粉丝画像分析报告
-
-【核心画像】
-年龄层：${result.persona.age} (${result.persona.name})
-性别比例：${result.persona.gender}
-地域分布：${result.persona.region}
-活跃时间：${result.persona.activeTime}
-用户特征：${result.persona.trait}
-
-【心理特征】
-行为偏好：${result.psychology.gender}
-核心痛点：${result.psychology.pains.join("、")}
-行为动机：${result.psychology.motivation}
-
-【行为特征】
-消费模式：${result.behavior.consume}
-指标优先级：${result.behavior.priority}
-关注决策路径：${result.behavior.decision}
-
-【内容策略】
-钩子方向：${result.content.hook}
-内容形式：${result.content.format}
-传播引爆点：${result.content.viral}
-
-【变现匹配】
-推荐路径：${result.monetize.path}
-预估转化率：${result.monetize.rate}
-信任建立节点：${result.monetize.trust}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
+  const canGenerate = form.age && form.gender;
 
   return (
     <div className="bg-white min-h-screen">
@@ -203,266 +95,134 @@ export default function AudiencePage() {
         <div className="mb-10">
           <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">免费工具</p>
           <h1 className="text-3xl font-bold text-[#0d2e2c] mb-3">粉丝画像分析表</h1>
-          <p className="text-sm text-[#5a7e7c]">填写你对受众的了解，生成结构化的粉丝画像，让每条内容都有精准落点</p>
+          <p className="text-sm text-[#5a7e7c]">描述你的目标受众，生成结构化画像 + 内容策略 + 变现路径</p>
         </div>
 
-        {/* Form */}
-        <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-2xl p-8 mb-10 space-y-7">
-          {/* 账号方向 */}
+        <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-2xl p-8 mb-10 space-y-6">
           <div>
-            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">账号方向</label>
-            <input
-              type="text"
-              value={form.niche}
-              onChange={(e) => setForm(f => ({ ...f, niche: e.target.value }))}
-              placeholder="例如：职场干货、油皮护肤、副业变现"
-              className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
-            />
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">你的账号方向</label>
+            <input type="text" value={form.niche} onChange={(e) => setForm(f => ({ ...f, niche: e.target.value }))}
+              placeholder="例如：职场成长、亲子育儿、护肤美妆"
+              className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white" />
           </div>
 
-          {/* 年龄 + 性别 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
-                主要年龄层 <span className="text-rose-400">*</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {AGE_OPTIONS.map((a) => (
-                  <button key={a} onClick={() => setForm(f => ({ ...f, age: a }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.age === a ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
-                    {a}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
-                性别比例 <span className="text-rose-400">*</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {GENDER_OPTIONS.map((g) => (
-                  <button key={g} onClick={() => setForm(f => ({ ...f, gender: g }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.gender === g ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
-                    {g}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* 地域 + 活跃时间 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">地域分布</label>
-              <div className="flex flex-wrap gap-2">
-                {REGION_OPTIONS.map((r) => (
-                  <button key={r} onClick={() => setForm(f => ({ ...f, region: r }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.region === r ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">主要活跃时间</label>
-              <div className="flex flex-wrap gap-2">
-                {ACTIVE_OPTIONS.map((a) => (
-                  <button key={a} onClick={() => setForm(f => ({ ...f, activeTime: a }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.activeTime === a ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
-                    {a}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* 核心痛点 */}
           <div>
-            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-1">
-              核心痛点（最多选4个）
-            </label>
-            <p className="text-[10px] text-[#5a7e7c] mb-3">已选 {form.pains.length}/4</p>
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">受众年龄段 <span className="text-rose-400">*</span></label>
             <div className="flex flex-wrap gap-2">
-              {PAIN_OPTIONS.map((p) => (
+              {AGE_GROUPS.map((a) => (
+                <button key={a} onClick={() => setForm(f => ({ ...f, age: a }))}
+                  className={`text-xs px-4 py-2 rounded-full border transition-all ${form.age === a ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
+                  {a}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">性别比例 <span className="text-rose-400">*</span></label>
+            <div className="flex flex-wrap gap-2">
+              {GENDERS.map((g) => (
+                <button key={g} onClick={() => setForm(f => ({ ...f, gender: g }))}
+                  className={`text-xs px-4 py-2 rounded-full border transition-all ${form.gender === g ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">主要痛点（可多选）</label>
+            <div className="flex flex-wrap gap-2">
+              {PAIN_POINTS.map((p) => (
                 <button key={p} onClick={() => togglePain(p)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.pains.includes(p) ? "border-rose-400 bg-rose-50 text-rose-600 font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.pains.includes(p) ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
                   {p}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* 消费行为 */}
           <div>
-            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">粉丝消费行为偏好</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {CONSUME_OPTIONS.map((c) => (
-                <button key={c} onClick={() => setForm(f => ({ ...f, consume: c }))}
-                  className={`text-xs px-3 py-2 rounded-lg border transition-all text-center ${form.consume === c ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
-                  {c}
+            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">主要内容消费场景</label>
+            <div className="flex flex-wrap gap-2">
+              {SCENES.map((s) => (
+                <button key={s} onClick={() => setForm(f => ({ ...f, scene: f.scene === s ? "" : s }))}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.scene === s ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
+                  {s}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="flex justify-end">
-            <button
-              onClick={handleGenerate}
-              disabled={!canGenerate}
-              className="bg-[#0d2e2c] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
+            <button onClick={() => setResult(generatePersona(form))} disabled={!canGenerate}
+              className="bg-[#0d2e2c] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               生成画像 →
             </button>
           </div>
         </div>
 
-        {/* Result */}
         {result && (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-bold text-[#0d2e2c]">你的粉丝画像</h2>
-                <p className="text-xs text-[#5a7e7c] mt-1">{result.persona.name}</p>
-              </div>
-              <button onClick={copyResult}
-                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors">
-                {copied ? "✓ 已复制" : "复制全部"}
-              </button>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-[#0d2e2c]">粉丝画像分析结果</h2>
+
+            <div className="bg-[#0d2e2c] rounded-xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label: "年龄特征", value: form.age },
+                { label: "性别构成", value: form.gender },
+                { label: "核心痛点", value: result.profile.pain },
+                { label: "消费场景", value: form.scene || "未指定" },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <p className="text-[10px] text-[#5eada7] font-medium uppercase tracking-widest mb-1">{label}</p>
+                  <p className="text-xs text-white font-medium">{value}</p>
+                </div>
+              ))}
             </div>
 
-            <div className="space-y-4">
-              {/* 核心画像卡片 */}
-              <div className="bg-[#0d2e2c] rounded-xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: "年龄层", value: result.persona.age },
-                  { label: "性别偏向", value: result.persona.gender },
-                  { label: "地域", value: result.persona.region || "全国均衡" },
-                  { label: "活跃时段", value: result.persona.activeTime || "碎片化时间" },
-                ].map((item) => (
-                  <div key={item.label} className="text-center">
-                    <p className="text-[10px] text-[#5eada7] mb-1">{item.label}</p>
-                    <p className="text-xs font-bold text-white">{item.value}</p>
-                  </div>
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border border-[#b2d8d5] rounded-xl p-5">
+                <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-3">受众深度画像</p>
+                <div className="space-y-3">
+                  <div><p className="text-[10px] text-[#5eada7] mb-0.5">年龄洞察</p><p className="text-xs text-[#0d2e2c] leading-relaxed">{result.profile.age}</p></div>
+                  <div><p className="text-[10px] text-[#5eada7] mb-0.5">性别洞察</p><p className="text-xs text-[#0d2e2c] leading-relaxed">{result.profile.gender}</p></div>
+                </div>
               </div>
               <div className="border border-[#b2d8d5] rounded-xl p-5">
-                <p className="text-[10px] text-[#5eada7] font-medium mb-1">用户特征概述</p>
-                <p className="text-xs text-[#3D5048] leading-relaxed">{result.persona.trait}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 心理特征 */}
-                <div className="border border-[#b2d8d5] rounded-xl p-5">
-                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">心理特征</p>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">行为偏好</p>
-                      <p className="text-xs text-[#3D5048] leading-relaxed">{result.psychology.gender}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1.5">核心痛点</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {result.psychology.pains.map((p) => (
-                          <span key={p} className="text-[10px] bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full font-medium">{p}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">行为动机</p>
-                      <p className="text-xs text-[#3D5048] leading-relaxed">{result.psychology.motivation}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 行为特征 */}
-                <div className="border border-[#b2d8d5] rounded-xl p-5">
-                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">行为特征</p>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">内容消费策略</p>
-                      <p className="text-xs text-[#3D5048] leading-relaxed">{result.behavior.consume}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">指标优先级</p>
-                      <p className="text-xs font-medium text-[#0f766e]">{result.behavior.priority}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1">关注决策路径</p>
-                      <p className="text-xs text-[#3D5048] leading-relaxed">{result.behavior.decision}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 内容策略 + 变现匹配 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-[#b2d8d5] rounded-xl p-5">
-                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">内容策略建议</p>
-                  <div className="space-y-3">
-                    {[
-                      { label: "选题钩子", value: result.content.hook },
-                      { label: "内容形式", value: result.content.format },
-                      { label: "传播引爆点", value: result.content.viral },
-                    ].map((r) => (
-                      <div key={r.label}>
-                        <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">{r.label}</p>
-                        <p className="text-xs text-[#3D5048] leading-relaxed">{r.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="border border-[#b2d8d5] rounded-xl p-5">
-                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">变现路径匹配</p>
-                  <div className="space-y-3">
-                    {[
-                      { label: "推荐变现路径", value: result.monetize.path },
-                      { label: "预估付费转化率", value: result.monetize.rate },
-                      { label: "信任建立节点", value: result.monetize.trust },
-                    ].map((r) => (
-                      <div key={r.label}>
-                        <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">{r.label}</p>
-                        <p className="text-xs text-[#3D5048] leading-relaxed">{r.value}</p>
-                      </div>
-                    ))}
-                  </div>
+                <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-3">变现建议</p>
+                <div className="space-y-3">
+                  <div><p className="text-[10px] text-[#5eada7] mb-0.5">推荐变现方式</p><p className="text-xs text-[#0d2e2c] leading-relaxed">{result.monetize.method}</p></div>
+                  <div><p className="text-[10px] text-[#5eada7] mb-0.5">转化策略</p><p className="text-xs text-[#0d2e2c] leading-relaxed">{result.monetize.trust}</p></div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 bg-[#0d2e2c] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-white mb-1">想要更精准的受众分析？</p>
-                <p className="text-xs text-[#99ceca]">加入社群，获取完整粉丝画像Excel模板 + 平台数据解读指南</p>
+            <div className="border border-[#b2d8d5] rounded-xl p-5">
+              <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">内容策略建议</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-[10px] text-[#5eada7] font-medium mb-2">四个内容切入角度</p>
+                  <div className="space-y-1.5">
+                    {result.strategy.angles.map((a, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <span className="text-[10px] text-[#5eada7] font-bold w-3 shrink-0">{i + 1}</span>
+                        <p className="text-xs text-[#0d2e2c] leading-relaxed">{a}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] text-[#5eada7] font-medium mb-2">内容形式建议</p>
+                  <p className="text-xs text-[#0d2e2c] leading-relaxed">{result.strategy.format}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-[#5eada7] font-medium mb-2">行动号召（CTA）</p>
+                  <p className="text-xs text-[#0d2e2c] leading-relaxed">{result.strategy.cta}</p>
+                </div>
               </div>
-              <Link href="/contact" className="shrink-0 text-xs bg-[#134e4a] border border-[#5eada7] text-white px-5 py-2.5 rounded-lg hover:bg-[#0f766e] transition-colors">
-                加入社群
-              </Link>
             </div>
-          </>
+          </div>
         )}
-
-        {/* AI Prompt */}
-        <div className="mt-16 border-t border-[#b2d8d5] pt-14">
-          <div className="mb-6">
-            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">进阶方案</p>
-            <h2 className="text-xl font-bold text-[#0d2e2c] mb-2">用 AI 深度分析你的粉丝画像</h2>
-            <p className="text-sm text-[#5a7e7c]">把下方提示词复制到 ChatGPT 或 Claude，结合你的真实平台数据，获得深度的受众分析报告。</p>
-          </div>
-          <div className="border border-[#b2d8d5] rounded-2xl overflow-hidden">
-            <div className="bg-[#f0f9f8] border-b border-[#b2d8d5] px-5 py-3 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#0d2e2c]">AI 提示词模板</span>
-              <button
-                onClick={() => { navigator.clipboard.writeText(AI_PROMPT); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
-                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-1.5 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
-              >
-                {copiedPrompt ? "✓ 已复制" : "复制提示词"}
-              </button>
-            </div>
-            <div className="bg-white px-6 py-5">
-              <pre className="text-[11px] text-[#3D5048] leading-relaxed whitespace-pre-wrap font-mono">{AI_PROMPT}</pre>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

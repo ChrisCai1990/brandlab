@@ -1,51 +1,89 @@
 ﻿"use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
-type Article = { slug: string; tag: string };
+type Article = { slug: string; tag: string; title: string };
 
 export function LibraryFilter({
   active,
   articles,
   categories,
+  searchQuery,
 }: {
   active: string;
   articles: Article[];
   categories: string[];
+  searchQuery: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [q, setQ] = useState(searchQuery);
 
-  function setCategory(cat: string) {
+  useEffect(() => { setQ(searchQuery); }, [searchQuery]);
+
+  function push(updates: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
-    if (cat === "全部") {
-      params.delete("category");
-    } else {
-      params.set("category", cat);
-    }
+    Object.entries(updates).forEach(([k, v]) => {
+      if (v === null || v === "") params.delete(k);
+      else params.set(k, v);
+    });
+    params.delete("page");
     router.push(`/library?${params.toString()}`);
   }
 
+  function setCategory(cat: string) {
+    push({ category: cat === "全部" ? null : cat });
+  }
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    push({ q: q.trim() || null });
+  }
+
   return (
-    <div className="flex flex-wrap gap-2 mb-8">
-      {["全部", ...categories].map((cat) => (
-        <button
-          key={cat}
-          onClick={() => setCategory(cat)}
-          className={`text-xs font-medium px-4 py-2 rounded-full border transition-colors ${
-            active === cat
-              ? "bg-[#134e4a] text-white border-[#134e4a]"
-              : "bg-white text-[#5a7e7c] border-[#b2d8d5] hover:border-[#5eada7] hover:text-[#0f766e]"
-          }`}
-        >
-          {cat}
-          {cat !== "全部" && (
-            <span className="ml-1.5 opacity-60">
-              {articles.filter((a) => a.tag === cat).length}
-            </span>
-          )}
+    <div className="mb-8 space-y-4">
+      {/* Search */}
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="搜索文章标题或描述…"
+          className="flex-1 border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/50 focus:outline-none focus:border-[#0f766e] bg-white"
+        />
+        <button type="submit" className="bg-[#134e4a] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors">
+          搜索
         </button>
-      ))}
+        {q && (
+          <button type="button" onClick={() => { setQ(""); push({ q: null }); }}
+            className="text-xs text-[#5a7e7c] border border-[#b2d8d5] px-3 py-2 rounded-lg hover:border-[#5eada7] transition-colors">
+            清除
+          </button>
+        )}
+      </form>
+
+      {/* Categories */}
+      <div className="flex flex-wrap gap-2">
+        {["全部", ...categories].map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setCategory(cat)}
+            className={`text-xs font-medium px-4 py-2 rounded-full border transition-colors ${
+              active === cat
+                ? "bg-[#134e4a] text-white border-[#134e4a]"
+                : "bg-white text-[#5a7e7c] border-[#b2d8d5] hover:border-[#5eada7] hover:text-[#0f766e]"
+            }`}
+          >
+            {cat}
+            {cat !== "全部" && (
+              <span className="ml-1.5 opacity-60">
+                {articles.filter((a) => a.tag === cat).length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

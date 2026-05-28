@@ -4,6 +4,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { articles, getArticleBySlug } from "@/lib/articles";
 import { getMdxArticle, getAllMdxSlugs } from "@/lib/mdx";
 import { prisma } from "@/lib/db";
+import { ReadingProgress } from "@/components/ReadingProgress";
+import { ShareButtons } from "@/components/ShareButtons";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -139,8 +141,11 @@ export default async function ArticlePage({
     keywords: meta.tag,
   };
 
+  const pageUrl = `https://brandlab.cn/library/${slug}`;
+
   return (
     <div className="bg-white min-h-screen">
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -157,7 +162,7 @@ export default async function ArticlePage({
 
       <div className="max-w-7xl mx-auto px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <article className="lg:col-span-2">
+          <article className="lg:col-span-2" id="article-content">
             <div className="flex items-center gap-3 mb-5">
               <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#E8F5EE] text-[#2D6A4F]">
                 {meta.tag}
@@ -186,8 +191,10 @@ export default async function ArticlePage({
               </div>
             )}
 
-            <div className="mt-10 pt-8 border-t border-[#C8DDD2]">
-              <Link href="/library" className="text-sm text-[#2D6A4F] hover:text-[#1B4332] transition-colors">
+            <ShareButtons title={meta.title} url={pageUrl} />
+
+            <div className="mt-6">
+              <Link href="/library" className="text-sm text-[#5a7e7c] hover:text-[#0f766e] transition-colors">
                 ← 返回内容库
               </Link>
             </div>

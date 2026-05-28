@@ -1,6 +1,8 @@
-import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { notFound } from "next/navigation";
 import { ArticleForm } from "@/components/admin/ArticleForm";
+
+export const dynamic = "force-dynamic";
 
 export default async function EditArticlePage({
   params,

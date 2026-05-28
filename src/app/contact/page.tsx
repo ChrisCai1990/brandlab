@@ -1,32 +1,13 @@
-﻿import Image from "next/image";
-import type { Metadata } from "next";
+﻿"use client";
 
-export const metadata: Metadata = {
-  title: "联系合作",
-  description: "加入品牌拾研社创作者社群，或洽谈内容合作、课程合作、投稿等商务事宜。",
-};
+import Image from "next/image";
+import { useState } from "react";
 
 const cooperationTypes = [
-  {
-    title: "内容合作",
-    desc: "产品测评 / 联名内容 / 话题共创，欢迎有调性的品牌合作",
-    icon: "✍️",
-  },
-  {
-    title: "课程合作",
-    desc: "与个人品牌相关的课程联合推广或联合出品",
-    icon: "🎓",
-  },
-  {
-    title: "工具推荐",
-    desc: "专为创作者设计的工具或SaaS产品，可以聊聊",
-    icon: "🛠️",
-  },
-  {
-    title: "社群活动",
-    desc: "线上活动、直播连线、社群共创等形式均可探讨",
-    icon: "🌐",
-  },
+  { title: "内容合作", desc: "产品测评 / 联名内容 / 话题共创，欢迎有调性的品牌合作", icon: "✍️" },
+  { title: "课程合作", desc: "与个人品牌相关的课程联合推广或联合出品", icon: "🎓" },
+  { title: "工具推荐", desc: "专为创作者设计的工具或SaaS产品，可以聊聊", icon: "🛠️" },
+  { title: "社群活动", desc: "线上活动、直播连线、社群共创等形式均可探讨", icon: "🌐" },
 ];
 
 const platforms = [
@@ -35,63 +16,60 @@ const platforms = [
   { name: "抖音", handle: "@BrandLab", desc: "短视频，知识分享" },
 ];
 
+type FormStatus = "idle" | "loading" | "success" | "error";
+
 export default function ContactPage() {
+  const [form, setForm] = useState({ name: "", wechat: "", message: "" });
+  const [status, setStatus] = useState<FormStatus>("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    if (res.ok) {
+      setStatus("success");
+      setForm({ name: "", wechat: "", message: "" });
+    } else {
+      setStatus("error");
+    }
+  }
+
   return (
     <div className="bg-white min-h-screen">
-      {/* Header */}
       <div className="bg-[#0d2e2c] py-20 px-6">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">联系 / 合作</p>
-          <h1 className="text-4xl font-bold text-white mb-4">
-            一起做有意思的事
-          </h1>
-          <p className="text-base text-[#99ceca]">
-            欢迎投稿、商务合作、加入社群，或者只是来打个招呼。
-          </p>
+          <h1 className="text-4xl font-bold text-white mb-4">一起做有意思的事</h1>
+          <p className="text-base text-[#99ceca]">欢迎投稿、商务合作、加入社群，或者只是来打个招呼。</p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left: WeChat & Platforms */}
+          {/* Left */}
           <div className="space-y-8">
-            {/* WeChat */}
             <div>
               <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">加入社群</p>
               <div className="border border-[#b2d8d5] rounded-xl p-6">
                 <div className="flex items-start gap-5">
-                  <Image
-                    src="/qrcode.png"
-                    alt="微信二维码"
-                    width={112}
-                    height={112}
-                    className="rounded-xl shrink-0"
-                  />
+                  <Image src="/qrcode.png" alt="微信二维码" width={112} height={112} className="rounded-xl shrink-0" />
                   <div>
                     <h3 className="text-sm font-bold text-[#0d2e2c] mb-2">扫码加微信</h3>
-                    <p className="text-xs text-[#5a7e7c] leading-relaxed mb-3">
-                      加微信备注「社群」，即可加入品牌拾研社创作者社群，免费获取3套模板。
-                    </p>
-                    <div className="space-y-1">
-                      <p className="text-xs text-[#5a7e7c] flex items-center gap-1.5">
-                        <span className="w-1 h-1 rounded-full bg-[#5eada7]" />
-                        免费获取3套创作模板
+                    <p className="text-xs text-[#5a7e7c] leading-relaxed mb-3">加微信备注「社群」，即可加入品牌拾研社创作者社群，免费获取3套模板。</p>
+                    {["免费获取3套创作模板", "5000+ 创作者社群交流", "第一时间获取新内容"].map((t) => (
+                      <p key={t} className="text-xs text-[#5a7e7c] flex items-center gap-1.5 mb-1">
+                        <span className="w-1 h-1 rounded-full bg-[#5eada7]" />{t}
                       </p>
-                      <p className="text-xs text-[#5a7e7c] flex items-center gap-1.5">
-                        <span className="w-1 h-1 rounded-full bg-[#5eada7]" />
-                        5000+ 创作者社群交流
-                      </p>
-                      <p className="text-xs text-[#5a7e7c] flex items-center gap-1.5">
-                        <span className="w-1 h-1 rounded-full bg-[#5eada7]" />
-                        第一时间获取新内容
-                      </p>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Platforms */}
             <div>
               <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">找到我们</p>
               <div className="space-y-3">
@@ -108,9 +86,8 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Right: Cooperation */}
+          {/* Right */}
           <div className="space-y-8">
-            {/* Cooperation types */}
             <div>
               <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">商务合作</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -122,21 +99,44 @@ export default function ContactPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-[#5a7e7c]">
-                商务合作请加微信，备注「合作」，我们会在48小时内回复。
-              </p>
             </div>
 
-            {/* Submission */}
-            <div className="bg-[#e6f4f3] border border-[#b2d8d5] rounded-xl p-6">
-              <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-3">投稿</p>
-              <h3 className="text-sm font-bold text-[#0d2e2c] mb-2">你有干货，我们来传播</h3>
-              <p className="text-xs text-[#5a7e7c] leading-relaxed mb-4">
-                如果你在个人品牌、账号运营、IP变现方面有实战经验，欢迎投稿。我们接受：案例复盘 / 方法论分享 / 工具测评。
-              </p>
-              <div className="text-xs text-[#0f766e] font-medium">
-                投稿邮箱：submit@brandlab.cn
-              </div>
+            {/* Contact Form */}
+            <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-xl p-6">
+              <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">留言给我们</p>
+              {status === "success" ? (
+                <div className="text-center py-8">
+                  <div className="text-2xl mb-3">✓</div>
+                  <p className="text-sm font-medium text-[#0d2e2c] mb-1">收到了！</p>
+                  <p className="text-xs text-[#5a7e7c]">我们会在48小时内通过微信回复你。</p>
+                  <button onClick={() => setStatus("idle")} className="mt-4 text-xs text-[#0f766e] hover:text-[#134e4a]">再发一条 →</button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-medium text-[#5eada7] uppercase tracking-widest mb-1.5">姓名 *</label>
+                      <input type="text" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="你的名字"
+                        className="w-full border border-[#b2d8d5] rounded-lg px-3 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white" required />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-medium text-[#5eada7] uppercase tracking-widest mb-1.5">微信号</label>
+                      <input type="text" value={form.wechat} onChange={(e) => setForm(f => ({ ...f, wechat: e.target.value }))} placeholder="方便联系你"
+                        className="w-full border border-[#b2d8d5] rounded-lg px-3 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-[#5eada7] uppercase tracking-widest mb-1.5">留言 *</label>
+                    <textarea value={form.message} onChange={(e) => setForm(f => ({ ...f, message: e.target.value }))} placeholder="想说的事情…"
+                      rows={4} className="w-full border border-[#b2d8d5] rounded-lg px-3 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white resize-none" required />
+                  </div>
+                  {status === "error" && <p className="text-xs text-red-500">发送失败，请稍后重试</p>}
+                  <button type="submit" disabled={status === "loading"}
+                    className="w-full bg-[#0d2e2c] text-white py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40">
+                    {status === "loading" ? "发送中…" : "发送留言"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
