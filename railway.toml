@@ -1,9 +1,8 @@
 [build]
-builder = "nixpacks"
-buildCommand = "prisma generate && next build"
+builder = "dockerfile"
 
 [deploy]
-startCommand = "prisma db push && npm run db:seed && npm run start"
+startCommand = "prisma db push && node prisma/seed.js && node server.js"
 healthcheckPath = "/"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
