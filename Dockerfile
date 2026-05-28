@@ -6,7 +6,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+# Run prisma generate and next build directly (not npm run build) because
+# the build script includes prisma db push which needs DB access unavailable
+# during Docker build phase. prisma db push runs in startCommand at runtime.
+RUN npx prisma generate && npx next build
 
 # Pre-compile seed.ts → seed.js (no tsx needed at runtime)
 RUN npx esbuild prisma/seed.ts \
