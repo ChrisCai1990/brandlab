@@ -51,7 +51,7 @@ async function getTotalCount() {
 export default async function HomePage() {
   const [dbPosts, totalCount] = await Promise.all([getLatestFromDb(), getTotalCount()]);
 
-  const latestPosts = dbPosts ?? staticArticles.slice(0, 6).map((a) => ({
+  const latestPosts = (dbPosts && dbPosts.length > 0) ? dbPosts : staticArticles.slice(0, 6).map((a) => ({
     slug: a.slug,
     tag: a.tag,
     title: a.title,
