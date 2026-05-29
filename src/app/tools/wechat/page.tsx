@@ -90,7 +90,7 @@ function convertHtmlToWechat(html: string): string {
   for (const child of Array.from(doc.body.childNodes)) content += nodeToWechat(child);
 
   return (
-    `<section style="max-width:640px;margin:0 auto;padding:1.5rem 0;` +
+    `<section style="max-width:640px;margin:0 auto;` +
     `font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;` +
     `font-size:15px;line-height:1.85;color:rgb(51,51,51);word-break:break-all;">` +
     content +
@@ -253,7 +253,7 @@ export default function WechatConverterPage() {
             <div className="flex-1 overflow-auto bg-white">
               <div
                 ref={previewRef}
-                className="py-10 px-8 min-h-full"
+                className="min-h-full"
                 dangerouslySetInnerHTML={{ __html: output }}
               />
             </div>
