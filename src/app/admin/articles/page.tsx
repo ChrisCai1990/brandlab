@@ -30,6 +30,10 @@ export default async function AdminArticlesPage() {
             className="text-xs text-[#6b7280] border border-[#95d5b2] px-3 py-2 rounded-lg hover:border-[#52b788] transition-colors">
             查看网站 ↗
           </Link>
+          <Link href="/admin/users"
+            className="text-xs text-[#6b7280] border border-[#95d5b2] px-3 py-2 rounded-lg hover:border-[#52b788] transition-colors">
+            用户管理
+          </Link>
           <Link href="/admin/settings"
             className="text-xs text-[#6b7280] border border-[#95d5b2] px-3 py-2 rounded-lg hover:border-[#52b788] transition-colors">
             设置
