@@ -129,18 +129,24 @@ function applyStyleBlocks(doc: Document): void {
 
 type CoverScheme = "dark" | "brand" | "light";
 
-function buildCoverSVG(title: string, sub: string, scheme: CoverScheme): string {
+function buildCoverSVG(
+  kicker: string,
+  cat: string,
+  title: string,
+  sub: string,
+  scheme: CoverScheme
+): string {
   const pal = {
-    dark:  { bg: "#111111", title: "#ffffff", sub: "#666666", rule: "#2a2a2a", kicker: "#3a3a3a", foot: "#252525" },
-    brand: { bg: "#1b4332", title: "#ffffff", sub: "#6baf8a", rule: "#2d6a4f", kicker: "#4a9970", foot: "#2d6a4f" },
-    light: { bg: "#fafafa", title: "#111111", sub: "#888888", rule: "#dedede", kicker: "#cccccc", foot: "#dedede" },
+    dark:  { bg: "#111111", title: "#ffffff", sub: "#666666", rule: "#2a2a2a", kicker: "#3a3a3a", cat: "#a0a0a0", catBg: "rgba(255,255,255,0.08)", foot: "#252525" },
+    brand: { bg: "#1b4332", title: "#ffffff", sub: "#6baf8a", rule: "#2d6a4f", kicker: "#4a9970",  cat: "#a8d5bb", catBg: "rgba(255,255,255,0.1)",  foot: "#2d6a4f" },
+    light: { bg: "#fafafa", title: "#111111", sub: "#888888", rule: "#dedede", kicker: "#cccccc",  cat: "#777777", catBg: "rgba(0,0,0,0.05)",        foot: "#dedede" },
   }[scheme];
 
   const esc = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-  // Wrap title: split roughly at midpoint on a punctuation if possible
-  const MAX = 14;
+  // Title wrapping
+  const MAX = 13;
   const lines: string[] = [];
   if (title.length <= MAX) {
     lines.push(title);
@@ -155,24 +161,40 @@ function buildCoverSVG(title: string, sub: string, scheme: CoverScheme): string 
   }
 
   const W = 900, H = 383, cx = 450;
-  const LINE_H = 64;
+  const LINE_H = 58;
+  const FONT_SIZE = 44;
   const totalH = lines.length * LINE_H;
-  const ty0 = H / 2 - totalH / 2 + LINE_H / 2;
-  const r1 = ty0 - LINE_H / 2 - 18;
-  const r2 = ty0 + totalH - LINE_H / 2 + 18;
-  const sy = r2 + 34;
+
+  // Top zone ends after kicker + optional cat pill
+  const topEnd = cat ? 88 : (kicker ? 56 : 40);
+  const botStart = 350; // footer is at 364, subtitle needs space above
+  const zoneCenter = topEnd + (botStart - topEnd) / 2;
+
+  const ty0 = zoneCenter - totalH / 2 + LINE_H / 2;
+  const r1 = ty0 - LINE_H / 2 - 16;
+  const r2 = ty0 + totalH - LINE_H / 2 + 16;
+  const sy = r2 + 28;
 
   const titleRows = lines
     .map((l, i) =>
-      `<text x="${cx}" y="${ty0 + i * LINE_H}" font-family="-apple-system,'PingFang SC','Helvetica Neue',sans-serif" font-size="46" font-weight="600" fill="${pal.title}" text-anchor="middle" dominant-baseline="middle">${esc(l)}</text>`)
+      `<text x="${cx}" y="${ty0 + i * LINE_H}" font-family="-apple-system,'PingFang SC','Helvetica Neue',sans-serif" font-size="${FONT_SIZE}" font-weight="600" fill="${pal.title}" text-anchor="middle" dominant-baseline="middle">${esc(l)}</text>`)
     .join("\n  ");
+
+  // Category pill
+  const catPillH = 24;
+  const catPillY = 62;
+  const catPillW = Math.max(cat.length * 14 + 48, 80);
+  const catPillX = cx - catPillW / 2;
+  const catPill = cat ? `
+  <rect x="${catPillX}" y="${catPillY}" width="${catPillW}" height="${catPillH}" rx="${catPillH / 2}" fill="${pal.catBg}"/>
+  <text x="${cx}" y="${catPillY + catPillH / 2}" font-family="-apple-system,'PingFang SC',sans-serif" font-size="11" fill="${pal.cat}" text-anchor="middle" dominant-baseline="middle">${esc(cat)}</text>` : "";
 
   return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <rect width="${W}" height="${H}" fill="${pal.bg}"/>
-  <text x="${cx}" y="44" font-family="-apple-system,'PingFang SC',sans-serif" font-size="10" fill="${pal.kicker}" text-anchor="middle" letter-spacing="4">BRANDLAB · 品牌拾研社</text>
-  <line x1="240" y1="${r1}" x2="660" y2="${r1}" stroke="${pal.rule}" stroke-width="0.8"/>
+  ${kicker ? `<text x="${cx}" y="38" font-family="-apple-system,'PingFang SC',sans-serif" font-size="10" fill="${pal.kicker}" text-anchor="middle" letter-spacing="3">${esc(kicker)}</text>` : ""}${catPill}
+  <line x1="220" y1="${r1}" x2="680" y2="${r1}" stroke="${pal.rule}" stroke-width="0.8"/>
   ${titleRows}
-  <line x1="240" y1="${r2}" x2="660" y2="${r2}" stroke="${pal.rule}" stroke-width="0.8"/>
+  <line x1="220" y1="${r2}" x2="680" y2="${r2}" stroke="${pal.rule}" stroke-width="0.8"/>
   ${sub ? `<text x="${cx}" y="${sy}" font-family="-apple-system,'PingFang SC',sans-serif" font-size="15" fill="${pal.sub}" text-anchor="middle">${esc(sub)}</text>` : ""}
   <text x="${cx}" y="364" font-family="-apple-system,'PingFang SC',sans-serif" font-size="10" fill="${pal.foot}" text-anchor="middle" letter-spacing="5">BRANDLAB.INK</text>
 </svg>`;
@@ -180,6 +202,8 @@ function buildCoverSVG(title: string, sub: string, scheme: CoverScheme): string 
 
 function CoverGenerator({ source }: { source: string }) {
   const [open, setOpen] = useState(false);
+  const [kicker, setKicker] = useState("BRANDLAB · 品牌拾研社");
+  const [cat, setCat] = useState("");
   const [title, setTitle] = useState("");
   const [sub, setSub] = useState("");
   const [scheme, setScheme] = useState<CoverScheme>("dark");
@@ -188,15 +212,19 @@ function CoverGenerator({ source }: { source: string }) {
   const handleOpen = () => {
     if (source.trim()) {
       const doc = new DOMParser().parseFromString(source, "text/html");
-      const tEl = doc.querySelector("h1, .hero-title, .cover-title");
-      const sEl = doc.querySelector(".hero-desc, .cover-sub, .hero-sub");
-      setTitle(tEl?.textContent?.trim() ?? "");
-      setSub(sEl?.textContent?.trim() ?? "");
+      const kickerEl = doc.querySelector(".cover-en, .hero-kicker");
+      const catEl    = doc.querySelector(".cover-cat, .ctag");
+      const titleEl  = doc.querySelector("h1, .hero-title, .cover-title");
+      const subEl    = doc.querySelector(".hero-desc, .cover-sub, .hero-sub, .cover-desc");
+      if (kickerEl) setKicker(kickerEl.textContent?.trim() ?? "BRANDLAB · 品牌拾研社");
+      setCat(catEl?.textContent?.trim() ?? "");
+      setTitle(titleEl?.textContent?.trim() ?? "");
+      setSub(subEl?.textContent?.trim() ?? "");
     }
     setOpen(true);
   };
 
-  const svg = buildCoverSVG(title || "文章标题", sub, scheme);
+  const svg = buildCoverSVG(kicker, cat, title || "文章标题", sub, scheme);
   const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 
   const downloadPNG = async () => {
@@ -255,7 +283,7 @@ function CoverGenerator({ source }: { source: string }) {
 
             {/* Controls */}
             <div className="px-5 py-4 space-y-3">
-              {/* Scheme picker */}
+              {/* Scheme */}
               <div className="flex gap-2">
                 {SCHEMES.map(s => (
                   <button
@@ -270,6 +298,22 @@ function CoverGenerator({ source }: { source: string }) {
                     {s.label}
                   </button>
                 ))}
+              </div>
+
+              {/* Kicker + Cat in one row */}
+              <div className="flex gap-2">
+                <input
+                  value={kicker}
+                  onChange={e => setKicker(e.target.value)}
+                  placeholder="顶部小字（kicker）"
+                  className="flex-1 min-w-0 px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+                />
+                <input
+                  value={cat}
+                  onChange={e => setCat(e.target.value)}
+                  placeholder="分类标签"
+                  className="w-28 px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+                />
               </div>
 
               {/* Title */}
