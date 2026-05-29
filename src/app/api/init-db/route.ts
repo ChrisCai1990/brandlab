@@ -20,13 +20,16 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const existing = await prisma.article.count();
-    if (existing >= articles.length) {
-      return NextResponse.json({ message: `已跳过，数据库已有 ${existing} 篇文章` });
+    const existingRows = await prisma.article.findMany({ select: { slug: true } });
+    const existingSlugs = new Set(existingRows.map((r) => r.slug));
+    const toInsert = articles.filter((a) => !existingSlugs.has(a.slug));
+
+    if (toInsert.length === 0) {
+      return NextResponse.json({ message: `已跳过，数据库已有 ${existingRows.length} 篇文章` });
     }
 
     const result = await prisma.article.createMany({
-      data: articles.map((a) => ({
+      data: toInsert.map((a) => ({
         slug: a.slug,
         title: a.title,
         tag: a.tag,
@@ -36,7 +39,6 @@ export async function GET(req: NextRequest) {
         published: true,
         content: buildContent(a),
       })),
-      skipDuplicates: true,
     });
 
     return NextResponse.json({ message: `成功写入 ${result.count} 篇文章`, total: result.count });
