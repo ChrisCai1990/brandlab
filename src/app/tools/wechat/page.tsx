@@ -103,6 +103,7 @@ function convertHtmlToWechat(html: string): string {
 export default function WechatConverterPage() {
   const [file, setFile] = useState<File | null>(null);
   const [output, setOutput] = useState("");
+  const [rawBlobUrl, setRawBlobUrl] = useState("");
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -115,6 +116,10 @@ export default function WechatConverterPage() {
     setFile(f);
     try {
       const text = await f.text();
+      // Original HTML → left panel iframe
+      const blob = new Blob([text], { type: "text/html;charset=utf-8" });
+      setRawBlobUrl(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(blob); });
+      // Converted WeChat HTML → right panel
       setOutput(convertHtmlToWechat(text));
     } catch (err) {
       setError(err instanceof Error ? err.message : "处理失败");
@@ -185,8 +190,8 @@ export default function WechatConverterPage() {
         <div className="ml-auto flex items-center gap-3">
           {output && (
             <>
-              <button
-                onClick={() => { setOutput(""); setFile(null); setError(""); }}
+                      <button
+                onClick={() => { setOutput(""); setRawBlobUrl(prev => { if (prev) URL.revokeObjectURL(prev); return ""; }); setFile(null); setError(""); }}
                 className="text-xs text-[#6b7280] hover:text-[#40916c] transition-colors"
               >
                 清除
@@ -221,30 +226,55 @@ export default function WechatConverterPage() {
         </div>
       </div>
 
-      {/* Preview area */}
-      <div className="flex-1 overflow-auto">
-        {output ? (
-          <div
-            ref={previewRef}
-            className="min-h-full py-10 px-8"
-            dangerouslySetInnerHTML={{ __html: output }}
-          />
-        ) : (
-          <div
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`flex flex-col items-center justify-center h-full min-h-[480px] cursor-pointer transition-colors ${
-              isDragging ? "bg-[#f0faf4]" : "bg-white hover:bg-[#f0faf4]/40"
-            }`}
-          >
-            <div className="text-5xl mb-5 opacity-30">📄</div>
-            <p className="text-sm font-medium text-[#6b7280] mb-2">点击「导入文件」或拖拽 HTML 文件到这里</p>
-            <p className="text-xs text-[#9ca3af]">转换后内容显示在这里，点击「复制全部」粘贴到公众号</p>
+      {/* Panels */}
+      {output ? (
+        <div className="flex-1 flex overflow-hidden">
+
+          {/* Left: original */}
+          <div className="flex-1 flex flex-col border-r border-gray-200">
+            <div className="shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+              <span className="text-xs font-medium text-[#6b7280] uppercase tracking-widest">原始 HTML</span>
+              <span className="text-xs text-[#9ca3af]">上传文件完整渲染</span>
+            </div>
+            <div className="flex-1 overflow-auto bg-white">
+              {rawBlobUrl && (
+                <iframe src={rawBlobUrl} className="w-full h-full border-none min-h-[600px]"
+                  title="原始模板" sandbox="allow-same-origin allow-scripts" />
+              )}
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* Right: WeChat output */}
+          <div className="flex-1 flex flex-col">
+            <div className="shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+              <span className="text-xs font-medium text-[#52b788] uppercase tracking-widest">WeChat 格式</span>
+              <span className="text-xs text-[#9ca3af]">点击「复制全部」粘贴到公众号</span>
+            </div>
+            <div className="flex-1 overflow-auto bg-white">
+              <div
+                ref={previewRef}
+                className="py-10 px-8 min-h-full"
+                dangerouslySetInnerHTML={{ __html: output }}
+              />
+            </div>
+          </div>
+
+        </div>
+      ) : (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className={`flex-1 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+            isDragging ? "bg-[#f0faf4]" : "bg-white hover:bg-[#f0faf4]/40"
+          }`}
+        >
+          <div className="text-5xl mb-5 opacity-30">📄</div>
+          <p className="text-sm font-medium text-[#6b7280] mb-2">点击「导入文件」或拖拽 HTML 文件到这里</p>
+          <p className="text-xs text-[#9ca3af]">左侧显示原始效果，右侧显示 WeChat 格式，点击「复制全部」粘贴到公众号</p>
+        </div>
+      )}
 
       {/* Footer tip */}
       {output && (
@@ -252,7 +282,7 @@ export default function WechatConverterPage() {
           <p className="text-xs text-[#6b7280]">
             点击「复制全部」→ 打开微信公众号编辑器 → <kbd className="bg-gray-200 rounded px-1.5 py-0.5 text-[11px]">Ctrl+V</kbd> 粘贴
           </p>
-          <span className="text-xs text-[#9ca3af] ml-auto">section 原生格式 · 背景色、圆角、flex 布局完整保留</span>
+          <span className="text-xs text-[#9ca3af] ml-auto">section 原生格式 · 背景色、圆角、flex 完整保留</span>
         </div>
       )}
     </div>
