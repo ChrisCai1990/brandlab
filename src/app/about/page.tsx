@@ -35,27 +35,27 @@ export default function AboutPage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <div className="bg-[#0d2e2c] py-20 px-6">
+      <div className="bg-[#1b4332] py-20 px-6">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">关于我们</p>
+          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">关于我们</p>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
             认真做内容的人，<br />
-            <span className="text-[#5eada7]">在这里相遇</span>
+            <span className="text-[#52b788]">在这里相遇</span>
           </h1>
-          <p className="text-base text-[#99ceca] max-w-xl leading-relaxed">
+          <p className="text-base text-[#74c69d] max-w-xl leading-relaxed">
             品牌拾研社是一个专注于个人品牌打造的内容社区。我们相信，每一个认真做内容的人，都值得拥有属于自己的影响力。
           </p>
         </div>
       </div>
 
       {/* Brand story */}
-      <div className="py-20 px-6 border-b border-[#b2d8d5]">
+      <div className="py-20 px-6 border-b border-[#95d5b2]">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">品牌故事</p>
-              <h2 className="text-2xl font-bold text-[#0d2e2c] mb-5">从「想清楚」到「做出来」</h2>
-              <div className="space-y-4 text-sm text-[#5a7e7c] leading-relaxed">
+              <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">品牌故事</p>
+              <h2 className="text-2xl font-bold text-[#1b4332] mb-5">从「想清楚」到「做出来」</h2>
+              <div className="space-y-4 text-sm text-[#6b7280] leading-relaxed">
                 <p>
                   2023年初，我们发现一个现象：很多人知道个人品牌很重要，但不知道从哪里开始，也不知道具体怎么做。市面上的内容要么太虚，要么太碎，缺乏真正能执行的系统方法。
                 </p>
@@ -73,12 +73,12 @@ export default function AboutPage() {
               {timeline.map((item, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="flex flex-col items-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#0f766e] mt-1 shrink-0" />
-                    {i < timeline.length - 1 && <div className="w-px flex-1 bg-[#b2d8d5] mt-1" />}
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#40916c] mt-1 shrink-0" />
+                    {i < timeline.length - 1 && <div className="w-px flex-1 bg-[#95d5b2] mt-1" />}
                   </div>
                   <div className="pb-5">
-                    <div className="text-xs font-medium text-[#5eada7] mb-1">{item.year}</div>
-                    <div className="text-sm text-[#0d2e2c]">{item.event}</div>
+                    <div className="text-xs font-medium text-[#52b788] mb-1">{item.year}</div>
+                    <div className="text-sm text-[#1b4332]">{item.event}</div>
                   </div>
                 </div>
               ))}
@@ -88,19 +88,19 @@ export default function AboutPage() {
       </div>
 
       {/* Beliefs */}
-      <div className="bg-[#e6f4f3] py-20 px-6">
+      <div className="bg-[#f0faf4] py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-3">我们相信什么</p>
-            <h2 className="text-3xl font-bold text-[#0d2e2c]">这是我们做内容的底层逻辑</h2>
+            <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-3">我们相信什么</p>
+            <h2 className="text-3xl font-bold text-[#1b4332]">这是我们做内容的底层逻辑</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {beliefs.map((b, i) => (
-              <div key={i} className="bg-white border border-[#b2d8d5] rounded-xl p-7">
-                <div className="w-6 h-0.5 bg-[#0f766e] mb-4" />
-                <h3 className="text-base font-bold text-[#0d2e2c] mb-3">{b.title}</h3>
-                <p className="text-sm text-[#5a7e7c] leading-relaxed">{b.desc}</p>
+              <div key={i} className="bg-white border border-[#95d5b2] rounded-xl p-7">
+                <div className="w-6 h-0.5 bg-[#40916c] mb-4" />
+                <h3 className="text-base font-bold text-[#1b4332] mb-3">{b.title}</h3>
+                <p className="text-sm text-[#6b7280] leading-relaxed">{b.desc}</p>
               </div>
             ))}
           </div>
@@ -111,18 +111,18 @@ export default function AboutPage() {
       <div className="py-20 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-3">创始人IP</p>
-            <h2 className="text-3xl font-bold text-[#0d2e2c]">认识我们的创始人</h2>
+            <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-3">创始人IP</p>
+            <h2 className="text-3xl font-bold text-[#1b4332]">认识我们的创始人</h2>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-10 bg-[#e6f4f3] border border-[#b2d8d5] rounded-2xl p-8">
-            <div className="w-24 h-24 rounded-full bg-[#134e4a] flex items-center justify-center shrink-0">
+          <div className="flex flex-col md:flex-row items-center gap-10 bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8">
+            <div className="w-24 h-24 rounded-full bg-[#2d6a4f] flex items-center justify-center shrink-0">
               <span className="text-white text-2xl font-bold">拾</span>
             </div>
             <div>
-              <div className="text-base font-bold text-[#0d2e2c] mb-1">品牌拾研社 · 创始人</div>
-              <div className="text-xs text-[#5eada7] mb-4">个人品牌策略师 · 内容创作者</div>
-              <p className="text-sm text-[#5a7e7c] leading-relaxed">
+              <div className="text-base font-bold text-[#1b4332] mb-1">品牌拾研社 · 创始人</div>
+              <div className="text-xs text-[#52b788] mb-4">个人品牌策略师 · 内容创作者</div>
+              <p className="text-sm text-[#6b7280] leading-relaxed">
                 深耕个人品牌领域5年，服务过100+ 创作者和超级个体的账号搭建。相信好的内容应该兼具实用性和审美，专注帮创作者找到属于自己的差异化定位和变现路径。
               </p>
             </div>

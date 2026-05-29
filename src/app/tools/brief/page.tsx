@@ -160,28 +160,28 @@ ${result.oneliner}
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="border-b border-[#b2d8d5] bg-[#f0f9f8]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#5a7e7c]">
-          <Link href="/" className="hover:text-[#0f766e] transition-colors">首页</Link>
+      <div className="border-b border-[#95d5b2] bg-[#f0faf4]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6b7280]">
+          <Link href="/" className="hover:text-[#40916c] transition-colors">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#0f766e] transition-colors">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#40916c] transition-colors">工具资源</Link>
           <span>/</span>
-          <span className="text-[#0d2e2c] font-medium">账号定位Brief生成器</span>
+          <span className="text-[#1b4332] font-medium">账号定位Brief生成器</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#0d2e2c] mb-3">账号定位Brief生成器</h1>
-          <p className="text-sm text-[#5a7e7c]">填写基本信息，生成一份完整的账号定位文档，清晰再出发</p>
+          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">账号定位Brief生成器</h1>
+          <p className="text-sm text-[#6b7280]">填写基本信息，生成一份完整的账号定位文档，清晰再出发</p>
         </div>
 
         {/* Input Form */}
-        <div className="bg-[#f0f9f8] border border-[#b2d8d5] rounded-2xl p-8 mb-10 space-y-7">
+        <div className="bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8 mb-10 space-y-7">
           {/* 账号方向 */}
           <div>
-            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
+            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">
               账号方向 <span className="text-rose-400">*</span>
             </label>
             <div className="flex flex-wrap gap-2 mb-3">
@@ -191,8 +191,8 @@ ${result.oneliner}
                   onClick={() => setForm(f => ({ ...f, niche: n }))}
                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
                     form.niche === n
-                      ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium"
-                      : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"
+                      ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium"
+                      : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"
                   }`}
                 >
                   {n}
@@ -204,13 +204,13 @@ ${result.oneliner}
               value={NICHE_OPTIONS.includes(form.niche) ? "" : form.niche}
               onChange={(e) => setForm(f => ({ ...f, niche: e.target.value }))}
               placeholder="或自定义输入，例如：智能硬件测评"
-              className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
+              className="w-full border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white"
             />
           </div>
 
           {/* 目标平台 */}
           <div>
-            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
+            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">
               目标平台 <span className="text-rose-400">*</span>
             </label>
             <div className="flex flex-wrap gap-2">
@@ -220,8 +220,8 @@ ${result.oneliner}
                   onClick={() => setForm(f => ({ ...f, platform: p }))}
                   className={`text-xs px-4 py-2 rounded-full border transition-all ${
                     form.platform === p
-                      ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium"
-                      : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"
+                      ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium"
+                      : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"
                   }`}
                 >
                   {p}
@@ -233,7 +233,7 @@ ${result.oneliner}
           {/* 两列：背景 + 受众 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">
+              <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-2">
                 你的职业/背景
               </label>
               <input
@@ -241,11 +241,11 @@ ${result.oneliner}
                 value={form.background}
                 onChange={(e) => setForm(f => ({ ...f, background: e.target.value }))}
                 placeholder="例如：5年产品经理、自由设计师"
-                className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
+                className="w-full border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-2">
+              <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-2">
                 目标受众
               </label>
               <input
@@ -253,14 +253,14 @@ ${result.oneliner}
                 value={form.audience}
                 onChange={(e) => setForm(f => ({ ...f, audience: e.target.value }))}
                 placeholder="例如：25-35岁想晋升的职场人"
-                className="w-full border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/40 focus:outline-none focus:border-[#0f766e] bg-white"
+                className="w-full border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white"
               />
             </div>
           </div>
 
           {/* 变现目标 */}
           <div>
-            <label className="block text-xs font-medium text-[#5eada7] tracking-widest uppercase mb-3">
+            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">
               变现目标
             </label>
             <div className="flex flex-wrap gap-2">
@@ -270,8 +270,8 @@ ${result.oneliner}
                   onClick={() => setForm(f => ({ ...f, monetize: m }))}
                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
                     form.monetize === m
-                      ? "border-[#0f766e] bg-[#e6f4f3] text-[#0f766e] font-medium"
-                      : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"
+                      ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium"
+                      : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"
                   }`}
                 >
                   {m}
@@ -284,7 +284,7 @@ ${result.oneliner}
             <button
               onClick={handleGenerate}
               disabled={!canGenerate}
-              className="bg-[#0d2e2c] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-[#1b4332] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               生成Brief →
             </button>
@@ -296,12 +296,12 @@ ${result.oneliner}
           <>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-bold text-[#0d2e2c]">你的账号定位Brief</h2>
-                <p className="text-xs text-[#5a7e7c] mt-1">基于「{form.niche}」方向 · {form.platform}平台</p>
+                <h2 className="text-lg font-bold text-[#1b4332]">你的账号定位Brief</h2>
+                <p className="text-xs text-[#6b7280] mt-1">基于「{form.niche}」方向 · {form.platform}平台</p>
               </div>
               <button
                 onClick={copyBrief}
-                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
+                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors"
               >
                 {copied ? "✓ 已复制" : "复制全部"}
               </button>
@@ -309,15 +309,15 @@ ${result.oneliner}
 
             <div className="space-y-4">
               {/* 一句话定位 */}
-              <div className="bg-[#0d2e2c] rounded-xl p-6">
-                <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">一句话定位</p>
+              <div className="bg-[#1b4332] rounded-xl p-6">
+                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">一句话定位</p>
                 <p className="text-sm text-white leading-relaxed font-medium">{result.oneliner}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 目标受众 */}
-                <div className="border border-[#b2d8d5] rounded-xl p-5">
-                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">目标受众画像</p>
+                <div className="border border-[#95d5b2] rounded-xl p-5">
+                  <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">目标受众画像</p>
                   <div className="space-y-3">
                     {[
                       { label: "核心受众", value: result.audience.core },
@@ -325,71 +325,71 @@ ${result.oneliner}
                       { label: "触发场景", value: result.audience.trigger },
                     ].map((row) => (
                       <div key={row.label}>
-                        <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">{row.label}</p>
-                        <p className="text-xs text-[#3D5048] leading-relaxed">{row.value}</p>
+                        <p className="text-[10px] text-[#52b788] font-medium mb-0.5">{row.label}</p>
+                        <p className="text-xs text-[#4b5563] leading-relaxed">{row.value}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* 差异化标签 */}
-                <div className="border border-[#b2d8d5] rounded-xl p-5">
-                  <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">差异化标签</p>
+                <div className="border border-[#95d5b2] rounded-xl p-5">
+                  <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">差异化标签</p>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-1.5">人设标签</p>
+                      <p className="text-[10px] text-[#52b788] font-medium mb-1.5">人设标签</p>
                       <div className="flex flex-wrap gap-1.5">
                         {result.tags.persona.map((tag) => (
-                          <span key={tag} className="text-[10px] bg-[#e6f4f3] text-[#0f766e] px-2.5 py-1 rounded-full font-medium">
+                          <span key={tag} className="text-[10px] bg-[#f0faf4] text-[#40916c] px-2.5 py-1 rounded-full font-medium">
                             {tag}
                           </span>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">内容调性</p>
-                      <p className="text-xs text-[#3D5048]">{result.tags.tone}</p>
+                      <p className="text-[10px] text-[#52b788] font-medium mb-0.5">内容调性</p>
+                      <p className="text-xs text-[#4b5563]">{result.tags.tone}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#5eada7] font-medium mb-0.5">风格定位</p>
-                      <p className="text-xs text-[#3D5048]">{result.tags.style}</p>
+                      <p className="text-[10px] text-[#52b788] font-medium mb-0.5">风格定位</p>
+                      <p className="text-xs text-[#4b5563]">{result.tags.style}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 内容方向 */}
-              <div className="border border-[#b2d8d5] rounded-xl p-5">
-                <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">内容方向与策略</p>
+              <div className="border border-[#95d5b2] rounded-xl p-5">
+                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">内容方向与策略</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <p className="text-[10px] text-[#5eada7] font-medium mb-2">核心主题</p>
+                    <p className="text-[10px] text-[#52b788] font-medium mb-2">核心主题</p>
                     <div className="flex flex-col gap-1.5">
                       {result.content.themes.map((t, i) => (
                         <div key={t} className="flex items-center gap-2">
-                          <span className="text-[10px] text-[#5eada7] font-bold w-3">{i + 1}</span>
-                          <span className="text-xs text-[#3D5048]">{t}</span>
+                          <span className="text-[10px] text-[#52b788] font-bold w-3">{i + 1}</span>
+                          <span className="text-xs text-[#4b5563]">{t}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#5eada7] font-medium mb-2">内容比例建议</p>
-                    <p className="text-xs text-[#3D5048] leading-relaxed">{result.content.ratio}</p>
+                    <p className="text-[10px] text-[#52b788] font-medium mb-2">内容比例建议</p>
+                    <p className="text-xs text-[#4b5563] leading-relaxed">{result.content.ratio}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#5eada7] font-medium mb-2">{form.platform}平台策略</p>
-                    <p className="text-xs text-[#3D5048] leading-relaxed">{result.content.platformTip}</p>
+                    <p className="text-[10px] text-[#52b788] font-medium mb-2">{form.platform}平台策略</p>
+                    <p className="text-xs text-[#4b5563] leading-relaxed">{result.content.platformTip}</p>
                   </div>
                 </div>
               </div>
 
               {/* 变现路径 */}
-              <div className="border border-[#b2d8d5] rounded-xl p-5">
-                <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-4">变现路径规划</p>
+              <div className="border border-[#95d5b2] rounded-xl p-5">
+                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">变现路径规划</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[
-                    { phase: "短期 0-3个月", value: result.monetize.short, color: "text-[#0f766e] bg-[#e6f4f3]" },
+                    { phase: "短期 0-3个月", value: result.monetize.short, color: "text-[#40916c] bg-[#f0faf4]" },
                     { phase: "中期 3-12个月", value: result.monetize.mid, color: "text-blue-600 bg-blue-50" },
                     { phase: "长期品牌价值", value: result.monetize.long, color: "text-violet-600 bg-violet-50" },
                   ].map((p) => (
@@ -397,19 +397,19 @@ ${result.oneliner}
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${p.color} inline-block mb-2`}>
                         {p.phase}
                       </span>
-                      <p className="text-xs text-[#3D5048] leading-relaxed">{p.value}</p>
+                      <p className="text-xs text-[#4b5563] leading-relaxed">{p.value}</p>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 bg-[#0d2e2c] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="mt-8 bg-[#1b4332] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-white mb-1">想要更深度的定位诊断？</p>
-                <p className="text-xs text-[#99ceca]">加入社群，获取完整版Notion模板 + 1对1定位梳理机会</p>
+                <p className="text-xs text-[#74c69d]">加入社群，获取完整版Notion模板 + 1对1定位梳理机会</p>
               </div>
-              <Link href="/contact" className="shrink-0 text-xs bg-[#134e4a] border border-[#5eada7] text-white px-5 py-2.5 rounded-lg hover:bg-[#0f766e] transition-colors">
+              <Link href="/contact" className="shrink-0 text-xs bg-[#2d6a4f] border border-[#52b788] text-white px-5 py-2.5 rounded-lg hover:bg-[#40916c] transition-colors">
                 加入社群
               </Link>
             </div>
@@ -417,27 +417,27 @@ ${result.oneliner}
         )}
 
         {/* AI Prompt */}
-        <div className="mt-16 border-t border-[#b2d8d5] pt-14">
+        <div className="mt-16 border-t border-[#95d5b2] pt-14">
           <div className="mb-6">
-            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">进阶方案</p>
-            <h2 className="text-xl font-bold text-[#0d2e2c] mb-2">用 AI 生成更完整的Brief</h2>
-            <p className="text-sm text-[#5a7e7c]">把下方提示词复制到 ChatGPT 或 Claude，填入你的真实情况，获得深度定制的完整账号Brief。</p>
+            <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">进阶方案</p>
+            <h2 className="text-xl font-bold text-[#1b4332] mb-2">用 AI 生成更完整的Brief</h2>
+            <p className="text-sm text-[#6b7280]">把下方提示词复制到 ChatGPT 或 Claude，填入你的真实情况，获得深度定制的完整账号Brief。</p>
           </div>
-          <div className="border border-[#b2d8d5] rounded-2xl overflow-hidden">
-            <div className="bg-[#f0f9f8] border-b border-[#b2d8d5] px-5 py-3 flex items-center justify-between">
+          <div className="border border-[#95d5b2] rounded-2xl overflow-hidden">
+            <div className="bg-[#f0faf4] border-b border-[#95d5b2] px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-[#0d2e2c]">AI 提示词模板</span>
-                <span className="text-[10px] text-[#5eada7] bg-[#e6f4f3] px-2 py-0.5 rounded-full">可直接使用</span>
+                <span className="text-xs font-medium text-[#1b4332]">AI 提示词模板</span>
+                <span className="text-[10px] text-[#52b788] bg-[#f0faf4] px-2 py-0.5 rounded-full">可直接使用</span>
               </div>
               <button
                 onClick={() => { navigator.clipboard.writeText(AI_PROMPT); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
-                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-1.5 rounded-lg hover:border-[#0f766e] hover:text-[#0f766e] transition-colors"
+                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-1.5 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors"
               >
                 {copiedPrompt ? "✓ 已复制" : "复制提示词"}
               </button>
             </div>
             <div className="bg-white px-6 py-5">
-              <pre className="text-[11px] text-[#3D5048] leading-relaxed whitespace-pre-wrap font-mono">{AI_PROMPT}</pre>
+              <pre className="text-[11px] text-[#4b5563] leading-relaxed whitespace-pre-wrap font-mono">{AI_PROMPT}</pre>
             </div>
           </div>
         </div>

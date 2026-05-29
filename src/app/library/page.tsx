@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import Link from "next/link";
 import { connectDB } from "@/lib/db";
 import { Article } from "@/lib/models";
@@ -54,11 +54,11 @@ export default async function LibraryPage({
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="bg-[#e6f4f3] border-b border-[#b2d8d5] py-14 px-8">
+      <div className="bg-[#f0faf4] border-b border-[#95d5b2] py-14 px-8">
         <div className="max-w-7xl mx-auto">
-          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">内容库</p>
-          <h1 className="text-4xl font-bold text-[#0d2e2c] mb-2">每天一条干货</h1>
-          <p className="text-sm text-[#5a7e7c]">{merged.length} 篇精选文章 · 7大模块 · 持续更新</p>
+          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">内容库</p>
+          <h1 className="text-4xl font-bold text-[#1b4332] mb-2">每天一条干货</h1>
+          <p className="text-sm text-[#6b7280]">{merged.length} 篇精选文章 · 7大模块 · 持续更新</p>
         </div>
       </div>
 
@@ -72,31 +72,31 @@ export default async function LibraryPage({
           />
         </Suspense>
 
-        <p className="text-xs text-[#5a7e7c] mb-5">
+        <p className="text-xs text-[#6b7280] mb-5">
           共 {filtered.length} 篇
-          {category && category !== "全部" && <span className="ml-1 text-[#0f766e] font-medium">· {category}</span>}
-          {q?.trim() && <span className="ml-1 text-[#0f766e] font-medium">· 搜索"{q}"</span>}
+          {category && category !== "全部" && <span className="ml-1 text-[#40916c] font-medium">· {category}</span>}
+          {q?.trim() && <span className="ml-1 text-[#40916c] font-medium">· 搜索"{q}"</span>}
         </p>
 
         {paginated.length === 0 ? (
-          <div className="text-center py-20 text-[#5a7e7c]">
+          <div className="text-center py-20 text-[#6b7280]">
             <p className="text-sm mb-2">没有找到相关文章</p>
-            <Link href="/library" className="text-xs text-[#0f766e] hover:text-[#134e4a]">清除筛选 →</Link>
+            <Link href="/library" className="text-xs text-[#40916c] hover:text-[#2d6a4f]">清除筛选 →</Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginated.map((article) => (
               <Link key={article.slug} href={`/library/${article.slug}`}
-                className="group border border-[#b2d8d5] rounded-xl p-6 hover:border-[#5eada7] hover:shadow-sm transition-all">
+                className="group border border-[#95d5b2] rounded-xl p-6 hover:border-[#52b788] hover:shadow-sm transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#e6f4f3] text-[#0f766e]">{article.tag}</span>
-                  <span className="text-[10px] text-[#5a7e7c]">{article.readTime} 分钟</span>
+                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#f0faf4] text-[#40916c]">{article.tag}</span>
+                  <span className="text-[10px] text-[#6b7280]">{article.readTime} 分钟</span>
                 </div>
-                <h3 className="text-sm font-bold text-[#0d2e2c] mb-2 group-hover:text-[#134e4a] transition-colors leading-snug">{article.title}</h3>
-                <p className="text-xs text-[#5a7e7c] leading-relaxed line-clamp-2 mb-4">{article.desc}</p>
+                <h3 className="text-sm font-bold text-[#1b4332] mb-2 group-hover:text-[#2d6a4f] transition-colors leading-snug">{article.title}</h3>
+                <p className="text-xs text-[#6b7280] leading-relaxed line-clamp-2 mb-4">{article.desc}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-[#b2d8d5]">{article.date}</span>
-                  <span className="text-xs text-[#5eada7] group-hover:text-[#0f766e] transition-colors">阅读全文 →</span>
+                  <span className="text-[10px] text-[#95d5b2]">{article.date}</span>
+                  <span className="text-xs text-[#52b788] group-hover:text-[#40916c] transition-colors">阅读全文 →</span>
                 </div>
               </Link>
             ))}
@@ -107,21 +107,21 @@ export default async function LibraryPage({
           <div className="flex items-center justify-center gap-2 mt-12">
             {currentPage > 1 && (
               <Link href={`/library?${new URLSearchParams({ ...(category ? { category } : {}), ...(q ? { q } : {}), page: String(currentPage - 1) })}`}
-                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#5eada7] transition-colors">
+                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#52b788] transition-colors">
                 ← 上一页
               </Link>
             )}
             <div className="flex gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <Link key={p} href={`/library?${new URLSearchParams({ ...(category ? { category } : {}), ...(q ? { q } : {}), page: String(p) })}`}
-                  className={`text-xs w-8 h-8 flex items-center justify-center rounded-lg border transition-colors ${p === currentPage ? "bg-[#134e4a] text-white border-[#134e4a]" : "border-[#b2d8d5] text-[#5a7e7c] hover:border-[#5eada7]"}`}>
+                  className={`text-xs w-8 h-8 flex items-center justify-center rounded-lg border transition-colors ${p === currentPage ? "bg-[#2d6a4f] text-white border-[#2d6a4f]" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
                   {p}
                 </Link>
               ))}
             </div>
             {currentPage < totalPages && (
               <Link href={`/library?${new URLSearchParams({ ...(category ? { category } : {}), ...(q ? { q } : {}), page: String(currentPage + 1) })}`}
-                className="text-xs border border-[#b2d8d5] text-[#5a7e7c] px-4 py-2 rounded-lg hover:border-[#5eada7] transition-colors">
+                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#52b788] transition-colors">
                 下一页 →
               </Link>
             )}

@@ -50,14 +50,14 @@ export function LibraryFilter({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="搜索文章标题或描述…"
-          className="flex-1 border border-[#b2d8d5] rounded-lg px-4 py-2.5 text-sm text-[#0d2e2c] placeholder-[#5a7e7c]/50 focus:outline-none focus:border-[#0f766e] bg-white"
+          className="flex-1 border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/50 focus:outline-none focus:border-[#40916c] bg-white"
         />
-        <button type="submit" className="bg-[#134e4a] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#0f766e] transition-colors">
+        <button type="submit" className="bg-[#2d6a4f] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors">
           搜索
         </button>
         {q && (
           <button type="button" onClick={() => { setQ(""); push({ q: null }); }}
-            className="text-xs text-[#5a7e7c] border border-[#b2d8d5] px-3 py-2 rounded-lg hover:border-[#5eada7] transition-colors">
+            className="text-xs text-[#6b7280] border border-[#95d5b2] px-3 py-2 rounded-lg hover:border-[#52b788] transition-colors">
             清除
           </button>
         )}
@@ -71,8 +71,8 @@ export function LibraryFilter({
             onClick={() => setCategory(cat)}
             className={`text-xs font-medium px-4 py-2 rounded-full border transition-colors ${
               active === cat
-                ? "bg-[#134e4a] text-white border-[#134e4a]"
-                : "bg-white text-[#5a7e7c] border-[#b2d8d5] hover:border-[#5eada7] hover:text-[#0f766e]"
+                ? "bg-[#2d6a4f] text-white border-[#2d6a4f]"
+                : "bg-white text-[#6b7280] border-[#95d5b2] hover:border-[#52b788] hover:text-[#40916c]"
             }`}
           >
             {cat}

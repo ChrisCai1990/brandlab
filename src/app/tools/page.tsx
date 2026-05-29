@@ -68,46 +68,46 @@ export default function ToolsPage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <div className="bg-[#e6f4f3] border-b border-[#b2d8d5] py-14 px-6">
+      <div className="bg-[#f0faf4] border-b border-[#95d5b2] py-14 px-6">
         <div className="max-w-6xl mx-auto">
-          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">工具资源</p>
-          <h1 className="text-4xl font-bold text-[#0d2e2c] mb-3">模板 + 工具，让创作更省力</h1>
-          <p className="text-sm text-[#5a7e7c]">精选实用工具与可直接使用的模板，拿走就用</p>
+          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">工具资源</p>
+          <h1 className="text-4xl font-bold text-[#1b4332] mb-3">模板 + 工具，让创作更省力</h1>
+          <p className="text-sm text-[#6b7280]">精选实用工具与可直接使用的模板，拿走就用</p>
         </div>
       </div>
 
       {/* Templates */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">免费模板</p>
-          <h2 className="text-2xl font-bold text-[#0d2e2c]">直接用，不用谢</h2>
+          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">免费模板</p>
+          <h2 className="text-2xl font-bold text-[#1b4332]">直接用，不用谢</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
           {templates.map((t, i) => (
-            <div key={i} className="border border-[#b2d8d5] rounded-xl p-6 hover:border-[#5eada7] hover:shadow-sm transition-all group">
+            <div key={i} className="border border-[#95d5b2] rounded-xl p-6 hover:border-[#52b788] hover:shadow-sm transition-all group">
               <div className="flex items-start justify-between mb-3">
                 <div className="text-2xl">{t.icon}</div>
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                   t.type === "免费"
-                    ? "bg-[#e6f4f3] text-[#0f766e]"
+                    ? "bg-[#f0faf4] text-[#40916c]"
                     : "bg-gray-100 text-gray-500"
                 }`}>
                   {t.type}
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-[#0d2e2c] mb-2 group-hover:text-[#134e4a] transition-colors">{t.title}</h3>
-              <p className="text-xs text-[#5a7e7c] leading-relaxed mb-4">{t.desc}</p>
+              <h3 className="text-sm font-bold text-[#1b4332] mb-2 group-hover:text-[#2d6a4f] transition-colors">{t.title}</h3>
+              <p className="text-xs text-[#6b7280] leading-relaxed mb-4">{t.desc}</p>
               <div className="flex items-center justify-between">
                 <div className="flex gap-1.5">
                   {t.tags.map((tag) => (
-                    <span key={tag} className="text-[10px] text-[#5a7e7c] bg-gray-50 border border-[#b2d8d5] px-2 py-0.5 rounded">
+                    <span key={tag} className="text-[10px] text-[#6b7280] bg-gray-50 border border-[#95d5b2] px-2 py-0.5 rounded">
                       {tag}
                     </span>
                   ))}
                 </div>
                 {t.type === "免费" && t.href && (
-                  <Link href={t.href} className="text-xs text-[#0f766e] font-medium hover:text-[#134e4a] transition-colors">
+                  <Link href={t.href} className="text-xs text-[#40916c] font-medium hover:text-[#2d6a4f] transition-colors">
                     {t.tags.includes("在线工具") ? "使用 →" : "获取 →"}
                   </Link>
                 )}
@@ -117,23 +117,23 @@ export default function ToolsPage() {
         </div>
 
         {/* Tool List */}
-        <div className="border-t border-[#b2d8d5] pt-16">
+        <div className="border-t border-[#95d5b2] pt-16">
           <div className="mb-10">
-            <p className="text-xs text-[#5eada7] font-medium tracking-widest uppercase mb-2">工具清单</p>
-            <h2 className="text-2xl font-bold text-[#0d2e2c]">我们在用的工具</h2>
+            <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">工具清单</p>
+            <h2 className="text-2xl font-bold text-[#1b4332]">我们在用的工具</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {toolList.map((section) => (
-              <div key={section.category} className="bg-[#e6f4f3] border border-[#b2d8d5] rounded-xl p-6">
-                <h3 className="text-sm font-bold text-[#0d2e2c] mb-4 flex items-center gap-2">
-                  <span className="w-1 h-4 bg-[#0f766e] rounded-full inline-block" />
+              <div key={section.category} className="bg-[#f0faf4] border border-[#95d5b2] rounded-xl p-6">
+                <h3 className="text-sm font-bold text-[#1b4332] mb-4 flex items-center gap-2">
+                  <span className="w-1 h-4 bg-[#40916c] rounded-full inline-block" />
                   {section.category}
                 </h3>
                 <ul className="space-y-2.5">
                   {section.tools.map((tool) => (
-                    <li key={tool} className="text-xs text-[#5a7e7c] flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-[#5eada7] shrink-0" />
+                    <li key={tool} className="text-xs text-[#6b7280] flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-[#52b788] shrink-0" />
                       {tool}
                     </li>
                   ))}
@@ -144,12 +144,12 @@ export default function ToolsPage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-16 bg-[#0d2e2c] rounded-2xl p-10 text-center">
+        <div className="mt-16 bg-[#1b4332] rounded-2xl p-10 text-center">
           <h3 className="text-xl font-bold text-white mb-3">想第一时间获取新模板？</h3>
-          <p className="text-sm text-[#99ceca] mb-6">加入社群，模板持续更新，第一时间通知</p>
+          <p className="text-sm text-[#74c69d] mb-6">加入社群，模板持续更新，第一时间通知</p>
           <a
             href="/contact"
-            className="inline-flex items-center gap-2 bg-[#134e4a] border border-[#5eada7] text-white px-7 py-3.5 rounded-lg font-medium text-sm hover:bg-[#0f766e] transition-colors"
+            className="inline-flex items-center gap-2 bg-[#2d6a4f] border border-[#52b788] text-white px-7 py-3.5 rounded-lg font-medium text-sm hover:bg-[#40916c] transition-colors"
           >
             加入社群
           </a>
