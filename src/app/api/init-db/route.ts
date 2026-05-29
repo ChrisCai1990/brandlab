@@ -28,20 +28,25 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: `已跳过，数据库已有 ${existingRows.length} 篇文章` });
     }
 
-    const result = await prisma.article.createMany({
-      data: toInsert.map((a) => ({
-        slug: a.slug,
-        title: a.title,
-        tag: a.tag,
-        desc: a.desc,
-        date: new Date(a.date),
-        readTime: a.readTime,
-        published: true,
-        content: buildContent(a),
-      })),
-    });
+    // createMany requires replica set on MongoDB — use individual creates instead
+    let count = 0;
+    for (const a of toInsert) {
+      await prisma.article.create({
+        data: {
+          slug: a.slug,
+          title: a.title,
+          tag: a.tag,
+          desc: a.desc,
+          date: new Date(a.date),
+          readTime: a.readTime,
+          published: true,
+          content: buildContent(a),
+        },
+      });
+      count++;
+    }
 
-    return NextResponse.json({ message: `成功写入 ${result.count} 篇文章`, total: result.count });
+    return NextResponse.json({ message: `成功写入 ${count} 篇文章`, total: count });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
