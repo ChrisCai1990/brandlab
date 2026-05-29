@@ -55,6 +55,14 @@ const templates = [
     icon: "💰",
     href: "/tools/monetize",
   },
+  {
+    title: "公众号排版转换器",
+    desc: "上传 Claude Code 生成的 HTML 模板，自动提取样式转为内联，一键复制粘贴到微信公众号编辑器。",
+    tags: ["在线工具"],
+    type: "免费",
+    icon: "📰",
+    href: "/tools/wechat",
+  },
 ];
 
 const toolList = [
