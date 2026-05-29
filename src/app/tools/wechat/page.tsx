@@ -148,28 +148,15 @@ function convertToWechat(html: string): Promise<string> {
   });
 }
 
-async function copyAsRichText(html: string): Promise<void> {
-  // Render into a hidden contenteditable div and use execCommand('copy').
-  // This produces a "browser page selection" copy that WeChat editor accepts,
-  // unlike ClipboardItem which writes raw HTML and gets stripped on paste.
-  const container = document.createElement("div");
-  container.contentEditable = "true";
-  container.style.cssText =
-    "position:fixed;top:-9999px;left:-9999px;width:750px;opacity:0;pointer-events:none;";
-  container.innerHTML = html;
-  document.body.appendChild(container);
-
-  try {
-    const range = document.createRange();
-    range.selectNodeContents(container);
-    const sel = window.getSelection();
-    sel?.removeAllRanges();
-    sel?.addRange(range);
-    document.execCommand("copy");
-    sel?.removeAllRanges();
-  } finally {
-    document.body.removeChild(container);
-  }
+function selectAndCopy(el: HTMLElement): boolean {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+  const ok = document.execCommand("copy");
+  sel?.removeAllRanges();
+  return ok;
 }
 
 export default function WechatConverterPage() {
@@ -180,6 +167,7 @@ export default function WechatConverterPage() {
   const [copied, setCopied] = useState<"rich" | "html" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const handleFile = useCallback(async (f: File) => {
     if (!f.name.match(/\.(html|htm)$/i)) {
@@ -215,14 +203,19 @@ export default function WechatConverterPage() {
     if (!output) return;
     try {
       if (type === "rich") {
-        await copyAsRichText(output);
+        // Copy from the visible rendered preview — browsers include full CSS
+        // rendering (backgrounds, colors, etc.) only from visible elements.
+        const el = previewRef.current;
+        if (!el) throw new Error("预览区域未就绪");
+        const ok = selectAndCopy(el);
+        if (!ok) throw new Error("execCommand 不可用");
       } else {
         await navigator.clipboard.writeText(output);
       }
       setCopied(type);
       setTimeout(() => setCopied(null), 2500);
     } catch {
-      setError("复制失败，请手动从下方源码区域复制");
+      setError("复制失败，请在预览区域手动 Ctrl+A 全选后 Ctrl+C 复制");
     }
   };
 
@@ -368,6 +361,7 @@ export default function WechatConverterPage() {
               </div>
               <div className="overflow-auto max-h-[640px] p-8 bg-white">
                 <div
+                  ref={previewRef}
                   style={{ maxWidth: "600px", margin: "0 auto" }}
                   dangerouslySetInnerHTML={{ __html: output }}
                 />
