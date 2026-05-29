@@ -202,13 +202,18 @@ function nodeToWechat(node: Node): string {
   }
 
   const style = el.getAttribute("style") || "";
-  const sa = style ? ` style="${style}"` : "";
   const ea = Array.from(el.attributes)
     .filter(a => KEEP_ATTRS.has(a.name))
     .map(a => `${a.name}="${a.value}"`).join(" ");
   const extra = ea ? " " + ea : "";
 
-  if (BLOCK_TAGS.has(tag)) return `<section${sa}${extra}>${inner}</section>`;
+  if (BLOCK_TAGS.has(tag)) {
+    // Append WeChat compatibility baseline; existing style values take precedence
+    const wxBase = "overflow-wrap:break-word;max-width:100%";
+    const merged = style ? `${style.replace(/;+$/, "")};${wxBase}` : wxBase;
+    return `<section style="${merged}"${extra}>${inner}</section>`;
+  }
+  const sa = style ? ` style="${style}"` : "";
   return `<${tag}${sa}${extra}>${inner}</${tag}>`;
 }
 
