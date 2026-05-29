@@ -29,15 +29,6 @@ async function getRelatedArticles(tag: string, slug: string) {
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const rows = await prisma.article.findMany({ where: { published: true }, select: { slug: true } });
-    return rows.map((r) => ({ slug: r.slug }));
-  } catch {
-    return [];
-  }
-}
-
 export async function generateMetadata({
   params,
 }: {
