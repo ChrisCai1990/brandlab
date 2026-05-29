@@ -138,19 +138,19 @@ function buildCoverSVG(
 ): string {
   const pal = {
     dark: {
-      bg1: "#0d0d0d", bg2: "#1a1a1a",
+      bg: "#111111",
       title: "#ffffff", sub: "#666666", rule: "#2a2a2a",
       kicker: "#3a3a3a", cat: "#a0a0a0", catBg: "rgba(255,255,255,0.08)", foot: "#252525",
       shape: "rgba(255,255,255,0.032)", dot: "rgba(255,255,255,0.055)",
     },
     brand: {
-      bg1: "#102820", bg2: "#1e4d33",
+      bg: "#1b4332",
       title: "#ffffff", sub: "#6baf8a", rule: "#2d6a4f",
       kicker: "#4a9970", cat: "#a8d5bb", catBg: "rgba(255,255,255,0.1)", foot: "#2d6a4f",
       shape: "rgba(107,175,138,0.07)", dot: "rgba(107,175,138,0.1)",
     },
     light: {
-      bg1: "#f0f0f0", bg2: "#fafafa",
+      bg: "#fafafa",
       title: "#111111", sub: "#888888", rule: "#dedede",
       kicker: "#cccccc", cat: "#777777", catBg: "rgba(0,0,0,0.05)", foot: "#dedede",
       shape: "rgba(0,0,0,0.03)", dot: "rgba(0,0,0,0.055)",
@@ -198,15 +198,7 @@ function buildCoverSVG(
   <text x="${cx}" y="${catPillY + catPillH / 2}" font-family="-apple-system,'PingFang SC',sans-serif" font-size="11" fill="${pal.cat}" text-anchor="middle" dominant-baseline="middle">${esc(cat)}</text>` : "";
 
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${pal.bg1}"/>
-      <stop offset="100%" stop-color="${pal.bg2}"/>
-    </linearGradient>
-  </defs>
-
-  <!-- Background gradient -->
-  <rect width="${W}" height="${H}" fill="url(#bgG)"/>
+  <rect width="${W}" height="${H}" fill="${pal.bg}"/>
 
   <!-- Geometric accents: concentric arcs top-right -->
   <circle cx="830" cy="-28" r="250" fill="none" stroke="${pal.shape}" stroke-width="1"/>
