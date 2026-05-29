@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -7,60 +7,15 @@ const NICHES = ["职场成长", "副业变现", "亲子育儿", "护肤美妆", 
 const PLATFORMS = ["小红书", "抖音", "公众号", "视频号", "B站"];
 const STYLES = ["干货实操", "真实故事", "数据对比", "趣味科普", "情绪共鸣"];
 
-const HOOKS = [
-  { type: "痛点型", icon: "😤", desc: "直击读者最深的困扰" },
-  { type: "数字型", icon: "📊", desc: "具体数字增强可信度" },
-  { type: "故事型", icon: "📖", desc: "真实经历引发共鸣" },
-  { type: "对比型", icon: "⚖️", desc: "制造认知落差" },
-  { type: "方法型", icon: "🛠️", desc: "提供可操作的解法" },
-];
-
 type Topic = { title: string; tip: string };
 type HookResult = { type: string; icon: string; desc: string; topics: Topic[] };
-
-function generateTopics(niche: string, platform: string): HookResult[] {
-  const platformTip: Record<string, string> = {
-    小红书: "标题加表情，15字内，突出情绪",
-    抖音: "前3秒必须有钩子，口播开场",
-    公众号: "标题引发好奇，副标题补充说明",
-    视频号: "封面文字简洁，联动微信生态",
-    B站: "标题可稍长，加UP主人设标签",
-  };
-  const tip = platformTip[platform] || "标题突出核心价值";
-
-  const templates: Record<string, string[]> = {
-    痛点型: [
-      `你是不是也在为「${niche}」焦虑？90%的人都踩过这个坑`,
-      `做${niche}3个月，我终于搞清楚了这件事`,
-    ],
-    数字型: [
-      `${niche}7个关键动作，帮我在30天内实现突破`,
-      `我用这5个方法，把${niche}效率提升了3倍`,
-    ],
-    故事型: [
-      `从一无所知到小有成就，我在${niche}这条路上犯的最贵错误`,
-      `一年前我还在为${niche}发愁，现在已经…（附完整复盘）`,
-    ],
-    对比型: [
-      `同样做${niche}，为什么有人越做越好，有人原地踏步？`,
-      `${niche}新手 vs 高手，差距究竟在哪里（直接说结论）`,
-    ],
-    方法型: [
-      `${niche}入门指南：从0到1的完整路径（建议收藏）`,
-      `${niche}实操手册：我整理了最近半年最有用的方法`,
-    ],
-  };
-
-  return HOOKS.map((hook) => ({
-    ...hook,
-    topics: (templates[hook.type] || []).map((title) => ({ title, tip })),
-  }));
-}
 
 export default function TopicsPage() {
   const [form, setForm] = useState({ niche: "", platform: "", style: "" });
   const [result, setResult] = useState<HookResult[] | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const canGenerate = form.niche && form.platform;
 
@@ -68,6 +23,30 @@ export default function TopicsPage() {
     navigator.clipboard.writeText(text);
     setCopied(key);
     setTimeout(() => setCopied(null), 2000);
+  }
+
+  async function handleGenerate() {
+    if (!canGenerate) return;
+    setLoading(true);
+    setError("");
+    setResult(null);
+    try {
+      const res = await fetch("/api/tools/topics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ niche: form.niche, platform: form.platform, style: form.style }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "生成失败");
+      } else {
+        setResult(data.hooks);
+      }
+    } catch {
+      setError("网络错误，请稍后重试");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -84,9 +63,9 @@ export default function TopicsPage() {
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">爆款选题生成器</h1>
-          <p className="text-sm text-[#6b7280]">输入账号方向，一键生成覆盖5种钩子类型的10个爆款选题</p>
+          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">AI 工具</p>
+          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">AI 爆款选题生成器</h1>
+          <p className="text-sm text-[#6b7280]">输入账号方向，Claude AI 为你生成覆盖5种钩子类型的10个爆款选题</p>
         </div>
 
         <div className="bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8 mb-10 space-y-6">
@@ -130,10 +109,12 @@ export default function TopicsPage() {
             </div>
           </div>
 
+          {error && <p className="text-xs text-red-500">{error}</p>}
+
           <div className="flex justify-end">
-            <button onClick={() => setResult(generateTopics(form.niche, form.platform))} disabled={!canGenerate}
+            <button onClick={handleGenerate} disabled={!canGenerate || loading}
               className="bg-[#1b4332] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              生成选题 ⚡
+              {loading ? "AI 生成中..." : "AI 生成选题 ⚡"}
             </button>
           </div>
         </div>
@@ -175,7 +156,13 @@ export default function TopicsPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-8 bg-[#1b4332] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="mt-6 flex justify-end">
+              <button onClick={() => { setResult(null); setForm({ niche: "", platform: "", style: "" }); }}
+                className="text-sm border border-[#95d5b2] text-[#6b7280] px-6 py-2.5 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors">
+                重新生成
+              </button>
+            </div>
+            <div className="mt-4 bg-[#1b4332] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-white mb-1">想要更多定制选题？</p>
                 <p className="text-xs text-[#74c69d]">加入社群，获取完整版选题库 + 爆款拆解模板</p>
@@ -183,6 +170,16 @@ export default function TopicsPage() {
               <Link href="/contact" className="shrink-0 text-xs bg-[#2d6a4f] border border-[#52b788] text-white px-5 py-2.5 rounded-lg hover:bg-[#40916c] transition-colors">加入社群</Link>
             </div>
           </>
+        )}
+
+        {!result && !loading && (
+          <div className="mt-8 bg-[#1b4332] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-white mb-1">想要更多定制选题？</p>
+              <p className="text-xs text-[#74c69d]">加入社群，获取完整版选题库 + 爆款拆解模板</p>
+            </div>
+            <Link href="/contact" className="shrink-0 text-xs bg-[#2d6a4f] border border-[#52b788] text-white px-5 py-2.5 rounded-lg hover:bg-[#40916c] transition-colors">加入社群</Link>
+          </div>
         )}
       </div>
     </div>
