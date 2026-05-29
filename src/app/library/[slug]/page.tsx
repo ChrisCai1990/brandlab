@@ -6,6 +6,8 @@ import { Article } from "@/lib/models";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
 import { ViewTracker } from "@/components/ViewTracker";
+import { BookmarkButton } from "@/components/BookmarkButton";
+import { ReadingTracker } from "@/components/ReadingTracker";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -141,6 +143,7 @@ export default async function ArticlePage({
     <div className="bg-white min-h-screen">
       <ReadingProgress />
       <ViewTracker slug={slug} />
+      <ReadingTracker slug={slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -158,12 +161,13 @@ export default async function ArticlePage({
       <div className="max-w-7xl mx-auto px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <article className="lg:col-span-2" id="article-content">
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-3 mb-5 flex-wrap">
               <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#f0faf4] text-[#2d6a4f]">
                 {meta.tag}
               </span>
               <span className="text-xs text-[#6b7280]">{meta.date}</span>
               <span className="text-xs text-[#6b7280]">{meta.readTime} 分钟阅读</span>
+              <BookmarkButton slug={slug} title={meta.title} />
             </div>
 
             <h1 className="text-3xl font-bold text-[#1b4332] leading-tight mb-4">{meta.title}</h1>

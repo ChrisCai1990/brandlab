@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { connectDB } from "@/lib/db";
 import { Article } from "@/lib/models";
+import { SubscribeForm } from "@/components/SubscribeForm";
 
 export const dynamic = "force-dynamic";
 
@@ -263,19 +264,25 @@ export default async function HomePage() {
                 5000+ 创作者正在用这套方法论，每天一条干货，每天进步一点点。
               </p>
             </div>
-            <div className="flex flex-wrap gap-3 shrink-0">
-              <Link
-                href="/library"
-                className="bg-white text-[#2d6a4f] px-6 py-3 rounded-lg font-medium text-sm hover:bg-[#f0faf4] transition-colors"
-              >
-                开始阅读干货
-              </Link>
-              <Link
-                href="/tools"
-                className="border border-[#40916c] text-[#74c69d] px-6 py-3 rounded-lg font-medium text-sm hover:border-[#52b788] hover:text-white transition-colors"
-              >
-                查看工具资源
-              </Link>
+            <div className="flex flex-col gap-4 shrink-0">
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/library"
+                  className="bg-white text-[#2d6a4f] px-6 py-3 rounded-lg font-medium text-sm hover:bg-[#f0faf4] transition-colors"
+                >
+                  开始阅读干货
+                </Link>
+                <Link
+                  href="/tools"
+                  className="border border-[#40916c] text-[#74c69d] px-6 py-3 rounded-lg font-medium text-sm hover:border-[#52b788] hover:text-white transition-colors"
+                >
+                  查看工具资源
+                </Link>
+              </div>
+              <div>
+                <p className="text-xs text-[#74c69d] mb-2">订阅周报，获取每周选题灵感</p>
+                <SubscribeForm />
+              </div>
             </div>
           </div>
         </div>

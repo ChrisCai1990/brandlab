@@ -5,6 +5,7 @@ import { Article } from "@/lib/models";
 import { categories } from "@/lib/articles";
 import { LibraryFilter } from "@/components/LibraryFilter";
 import { Highlight } from "@/components/Highlight";
+import { ReadingStatsWrapper } from "@/components/ReadingStatsWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -90,7 +91,10 @@ export default async function LibraryPage({
         <div className="max-w-7xl mx-auto">
           <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">内容库</p>
           <h1 className="text-4xl font-bold text-[#1b4332] mb-2">每天一条干货</h1>
-          <p className="text-sm text-[#6b7280]">{merged.length} 篇精选文章 · 7大模块 · 持续更新</p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <p className="text-sm text-[#6b7280]">{merged.length} 篇精选文章 · 7大模块 · 持续更新</p>
+            <ReadingStatsWrapper total={merged.length} />
+          </div>
         </div>
       </div>
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { BookmarkCount } from "@/components/BookmarkCount";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -21,9 +22,11 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {[
             { href: "/library", label: "内容库" },
+            { href: "/quiz", label: "测评" },
+            { href: "/templates", label: "模板库" },
             { href: "/tools", label: "工具资源" },
             { href: "/about", label: "关于我们" },
           ].map((item) => (
@@ -35,6 +38,7 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
+          <BookmarkCount />
           <Link
             href="/contact"
             className="text-sm bg-[#2d6a4f] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#40916c] transition-colors"
@@ -60,6 +64,8 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t border-[#95d5b2] px-6 py-4 flex flex-col gap-4">
           {[
             { href: "/library", label: "内容库" },
+            { href: "/quiz", label: "测评" },
+            { href: "/templates", label: "模板库" },
             { href: "/tools", label: "工具资源" },
             { href: "/about", label: "关于我们" },
           ].map((item) => (
@@ -72,6 +78,7 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
+          <BookmarkCount />
           <Link
             href="/contact"
             className="text-sm bg-[#2d6a4f] text-white px-4 py-2 rounded-lg font-medium text-center"

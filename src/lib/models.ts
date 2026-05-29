@@ -53,3 +53,19 @@ const SettingSchema = new mongoose.Schema<ISetting>(
 
 export const Setting: mongoose.Model<ISetting> =
   mongoose.models.Setting ?? mongoose.model<ISetting>("Setting", SettingSchema);
+
+// ── Subscriber ────────────────────────────────────────────────────────────────
+
+export interface ISubscriber {
+  _id: mongoose.Types.ObjectId;
+  email: string;
+  createdAt: Date;
+}
+
+const SubscriberSchema = new mongoose.Schema<ISubscriber>(
+  { email: { type: String, required: true, unique: true } },
+  { timestamps: true }
+);
+
+export const Subscriber: mongoose.Model<ISubscriber> =
+  mongoose.models.Subscriber ?? mongoose.model<ISubscriber>("Subscriber", SubscriberSchema);
