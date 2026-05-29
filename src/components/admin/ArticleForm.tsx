@@ -32,6 +32,7 @@ type ArticleFormProps = {
     date?: string;
     readTime?: string;
     content?: string;
+    wechatHtml?: string;
     published?: boolean;
   };
 };
@@ -62,6 +63,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
       : new Date().toISOString().split("T")[0],
     readTime: initialData?.readTime ?? "5",
     content: initialData?.content ?? "",
+    wechatHtml: initialData?.wechatHtml ?? "",
     published: initialData?.published ?? false,
   });
 
@@ -89,7 +91,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, published }),
+      body: JSON.stringify({ ...form, published, wechatHtml: form.wechatHtml }),
     });
 
     if (res.ok) {
@@ -223,6 +225,21 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
             placeholder="一两句话描述文章核心价值"
             rows={2}
             className="w-full text-sm text-[#6b7280] border-none outline-none resize-none placeholder-[#95d5b2] leading-relaxed"
+          />
+        </div>
+
+        {/* WeChat HTML */}
+        <div className="bg-white border border-[#95d5b2] rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-3">
+            <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase">公众号 HTML（内联样式）</label>
+            <span className="text-[10px] text-[#6b7280]">{form.wechatHtml.length > 0 ? "✓ 已填写" : "未填写"}</span>
+          </div>
+          <textarea
+            value={form.wechatHtml}
+            onChange={(e) => setForm((f) => ({ ...f, wechatHtml: e.target.value }))}
+            placeholder="粘贴内联样式版 HTML（可直接复制进公众号编辑器）"
+            rows={6}
+            className="w-full text-xs text-[#4b5563] font-mono border border-[#e5e7eb] rounded-lg px-3 py-2.5 outline-none resize-y placeholder-[#95d5b2] leading-relaxed focus:border-[#40916c]"
           />
         </div>
 

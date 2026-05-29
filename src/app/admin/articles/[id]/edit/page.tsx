@@ -26,6 +26,7 @@ export default async function EditArticlePage({
         date: article.date.toISOString(),
         readTime: article.readTime,
         content: article.content,
+        wechatHtml: article.wechatHtml ?? "",
         published: article.published,
       }}
     />

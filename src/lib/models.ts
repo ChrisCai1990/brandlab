@@ -11,6 +11,7 @@ export interface IArticle {
   date: Date;
   readTime: string;
   content: string;
+  wechatHtml: string;
   published: boolean;
   views: number;
   createdAt: Date;
@@ -26,6 +27,7 @@ const ArticleSchema = new mongoose.Schema<IArticle>(
     date:      { type: Date,   required: true },
     readTime:  { type: String, default: "5" },
     content:   { type: String, default: "" },
+    wechatHtml: { type: String, default: "" },
     published: { type: Boolean, default: false },
     views:     { type: Number, default: 0 },
   },
