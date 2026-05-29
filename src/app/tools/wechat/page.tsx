@@ -71,7 +71,7 @@ const REMOVE_TAGS = new Set([
 const BLOCK_TAGS = new Set([
   "div", "section", "article", "main", "header", "footer",
   "aside", "nav", "figure", "figcaption", "blockquote",
-  "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li",
+  "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "p",
 ]);
 const KEEP_ATTRS = new Set(["src", "alt", "href", "width", "height", "colspan", "rowspan"]);
 
@@ -119,13 +119,7 @@ function convertHtmlToWechat(html: string): string {
   let content = "";
   for (const child of Array.from(doc.body.childNodes)) content += nodeToWechat(child);
 
-  return (
-    `<section style="max-width:640px;margin:0 auto;` +
-    `font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;` +
-    `font-size:15px;line-height:1.85;color:rgb(51,51,51);word-break:break-all;">` +
-    content +
-    `</section>`
-  );
+  return `<section style="max-width:640px;margin:0 auto;">${content}</section>`;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
