@@ -52,25 +52,28 @@ export default function OGImage() {
           </div>
         </div>
 
-        {/* Headline */}
+        {/* Headline — use flex column instead of <br /> */}
         <div
           style={{
-            fontSize: "60px",
-            fontWeight: "bold",
-            color: "white",
-            lineHeight: 1.2,
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
             marginBottom: "24px",
-            maxWidth: "800px",
           }}
         >
-          每天一条干货，
-          <br />
-          帮你做出个人品牌
+          <span style={{ fontSize: "60px", fontWeight: "bold", color: "white", lineHeight: 1.2 }}>
+            每天一条干货，
+          </span>
+          <span style={{ fontSize: "60px", fontWeight: "bold", color: "white", lineHeight: 1.2 }}>
+            帮你做出个人品牌
+          </span>
         </div>
 
         {/* Subtitle */}
-        <div style={{ fontSize: "24px", color: "#74c69d", maxWidth: "700px" }}>
-          专为创作者、超级个体、想靠账号变现的创业者
+        <div style={{ display: "flex" }}>
+          <span style={{ fontSize: "24px", color: "#74c69d" }}>
+            专为创作者、超级个体、想靠账号变现的创业者
+          </span>
         </div>
 
         {/* Tags */}
@@ -84,6 +87,7 @@ export default function OGImage() {
                 fontSize: "16px",
                 padding: "8px 18px",
                 borderRadius: "999px",
+                display: "flex",
               }}
             >
               {tag}
