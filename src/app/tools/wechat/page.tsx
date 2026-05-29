@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 
 // ─── CSS → Inline (壹伴 approach) ────────────────────────────────────────────
@@ -10,24 +10,54 @@ function applyStyleBlocks(doc: Document): void {
   if (styleEls.length === 0) return;
 
   const cssText = styleEls.map(s => s.textContent || "").join("\n");
-  const ruleRe = /([^@{}/][^{}]*?)\{([^{}]+)\}/g;
-  const rules: Array<[string, string]> = [];
-  let m;
-  while ((m = ruleRe.exec(cssText)) !== null) {
-    const decls = m[2].trim().replace(/\s*:\s*/g, ":").replace(/\s*;\s*/g, ";");
-    m[1].split(",").forEach(sel => {
-      const s = sel.trim();
-      if (s && decls) rules.push([s, decls]);
-    });
+
+  // Use the browser's native CSS parser (CSSOM) for reliable rule extraction.
+  // Regex-based parsing breaks on comments, multi-line values, and complex selectors.
+  const tmpStyle = document.createElement("style");
+  tmpStyle.textContent = cssText;
+  document.head.appendChild(tmpStyle);
+
+  try {
+    const sheet = tmpStyle.sheet;
+    if (!sheet) return;
+
+    for (const rule of Array.from(sheet.cssRules)) {
+      if (!(rule instanceof CSSStyleRule)) continue;
+
+      // Split compound selectors; skip pseudo-class/element ones
+      // (they can't be meaningfully inlined and WeChat ignores them anyway)
+      const selectors = rule.selectorText
+        .split(",")
+        .map(s => s.trim())
+        .filter(s => s && !/:[\w-]/.test(s));
+
+      if (selectors.length === 0) continue;
+
+      const ruleStyle = rule.style;
+      const decls: string[] = [];
+      for (let i = 0; i < ruleStyle.length; i++) {
+        const prop = ruleStyle[i];
+        const val = ruleStyle.getPropertyValue(prop);
+        const prio = ruleStyle.getPropertyPriority(prop);
+        if (val) decls.push(prio ? `${prop}:${val} !important` : `${prop}:${val}`);
+      }
+      if (decls.length === 0) continue;
+      const declStr = decls.join(";");
+
+      for (const sel of selectors) {
+        try {
+          doc.querySelectorAll(sel).forEach(el => {
+            const existing = el.getAttribute("style") || "";
+            // Class styles go first; existing inline styles override them (higher specificity)
+            el.setAttribute("style", existing ? `${declStr};${existing}` : declStr);
+          });
+        } catch { /* unsupported selector in DOMParser context */ }
+      }
+    }
+  } finally {
+    document.head.removeChild(tmpStyle);
   }
-  for (const [sel, decls] of rules) {
-    try {
-      doc.querySelectorAll(sel).forEach(el => {
-        const existing = el.getAttribute("style") || "";
-        el.setAttribute("style", existing ? `${existing};${decls}` : decls);
-      });
-    } catch { /* unsupported selector */ }
-  }
+
   styleEls.forEach(s => s.remove());
   doc.querySelectorAll("[class]").forEach(el => el.removeAttribute("class"));
 }
@@ -101,26 +131,47 @@ function convertHtmlToWechat(html: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function WechatConverterPage() {
-  const [file, setFile] = useState<File | null>(null);
+  const [source, setSource] = useState("");
+  const [fileName, setFileName] = useState("");
   const [output, setOutput] = useState("");
-  const [rawBlobUrl, setRawBlobUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [leftTab, setLeftTab] = useState<"code" | "preview">("code");
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced auto-conversion on source change
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!source.trim()) {
+      setOutput("");
+      setPreviewUrl(prev => { if (prev) URL.revokeObjectURL(prev); return ""; });
+      setError("");
+      return;
+    }
+    timerRef.current = setTimeout(() => {
+      try {
+        const blob = new Blob([source], { type: "text/html;charset=utf-8" });
+        setPreviewUrl(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(blob); });
+        setOutput(convertHtmlToWechat(source));
+        setError("");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "处理失败");
+      }
+    }, 400);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [source]);
 
   const handleFile = useCallback(async (f: File) => {
     if (!f.name.match(/\.(html|htm)$/i)) { setError("请上传 .html 文件"); return; }
     setError("");
-    setFile(f);
     try {
       const text = await f.text();
-      // Original HTML → left panel iframe
-      const blob = new Blob([text], { type: "text/html;charset=utf-8" });
-      setRawBlobUrl(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(blob); });
-      // Converted WeChat HTML → right panel
-      setOutput(convertHtmlToWechat(text));
+      setSource(text);
+      setFileName(f.name);
     } catch (err) {
       setError(err instanceof Error ? err.message : "处理失败");
     }
@@ -130,6 +181,14 @@ export default function WechatConverterPage() {
     e.preventDefault(); setIsDragging(false);
     const f = e.dataTransfer.files[0]; if (f) handleFile(f);
   }, [handleFile]);
+
+  const handleClear = () => {
+    setSource("");
+    setFileName("");
+    setOutput("");
+    setPreviewUrl(prev => { if (prev) URL.revokeObjectURL(prev); return ""; });
+    setError("");
+  };
 
   const handleCopy = () => {
     const el = previewRef.current;
@@ -146,7 +205,8 @@ export default function WechatConverterPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="h-[calc(100vh-4rem)] flex flex-col bg-white overflow-hidden">
+
       {/* Breadcrumb */}
       <div className="border-b border-[#95d5b2] bg-[#f0faf4] shrink-0">
         <div className="max-w-6xl mx-auto px-6 py-2.5 flex items-center gap-2 text-xs text-[#6b7280]">
@@ -165,7 +225,7 @@ export default function WechatConverterPage() {
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm font-medium transition-all shrink-0 ${
             isDragging
               ? "border-[#40916c] bg-[#f0faf4] text-[#1b4332]"
               : "border-[#95d5b2] text-[#2d6a4f] hover:border-[#40916c] hover:bg-[#f0faf4]"
@@ -179,112 +239,162 @@ export default function WechatConverterPage() {
         <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
 
-        {file ? (
-          <span className="text-sm text-[#6b7280] truncate max-w-xs">{file.name}</span>
+        {fileName ? (
+          <span className="text-sm text-[#6b7280] truncate max-w-xs">{fileName}</span>
         ) : (
           <span className="text-sm text-[#9ca3af]">支持 CSS class 写法 · 内联样式 · 拖拽上传</span>
         )}
 
-        {error && <span className="text-sm text-red-500">{error}</span>}
+        {error && <span className="text-sm text-red-500 shrink-0">{error}</span>}
 
         <div className="ml-auto flex items-center gap-3">
-          {output && (
-            <>
-                      <button
-                onClick={() => { setOutput(""); setRawBlobUrl(prev => { if (prev) URL.revokeObjectURL(prev); return ""; }); setFile(null); setError(""); }}
-                className="text-xs text-[#6b7280] hover:text-[#40916c] transition-colors"
-              >
-                清除
-              </button>
-              <button
-                onClick={handleCopy}
-                className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
-                  copied
-                    ? "bg-[#40916c] text-white"
-                    : "bg-[#1b4332] text-white hover:bg-[#2d6a4f]"
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M2 7l3.5 3.5L12 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    已复制，去公众号粘贴
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="white" strokeWidth="1.4"/>
-                      <path d="M2 10V2h8" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-                    </svg>
-                    复制全部
-                  </>
-                )}
-              </button>
-            </>
+          {source && (
+            <button
+              onClick={handleClear}
+              className="text-xs text-[#6b7280] hover:text-[#40916c] transition-colors"
+            >
+              清除
+            </button>
           )}
+          <button
+            onClick={handleCopy}
+            disabled={!output}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+              !output
+                ? "bg-gray-100 text-[#ccc] cursor-not-allowed"
+                : copied
+                ? "bg-[#40916c] text-white"
+                : "bg-[#1b4332] text-white hover:bg-[#2d6a4f]"
+            }`}
+          >
+            {copied ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 7l3.5 3.5L12 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                已复制，去公众号粘贴
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="white" strokeWidth="1.4"/>
+                  <path d="M2 10V2h8" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+                复制全部
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Panels */}
-      {output ? (
-        <div className="flex-1 flex overflow-hidden">
+      {/* Split panels — always visible */}
+      <div className="flex-1 flex overflow-hidden">
 
-          {/* Left: original */}
-          <div className="flex-1 flex flex-col border-r border-gray-200">
-            <div className="shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#6b7280] uppercase tracking-widest">原始 HTML</span>
-              <span className="text-xs text-[#9ca3af]">上传文件完整渲染</span>
+        {/* ── Left: source input ── */}
+        <div className="flex-1 flex flex-col border-r border-gray-200 min-w-0">
+
+          {/* Left panel header: tabs only */}
+          <div className="shrink-0 px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+            <div className="flex rounded overflow-hidden border border-gray-200">
+              <button
+                onClick={() => setLeftTab("code")}
+                className={`px-3 py-1 text-xs font-medium transition-colors ${
+                  leftTab === "code"
+                    ? "bg-[#1b4332] text-white"
+                    : "bg-white text-[#6b7280] hover:bg-gray-100"
+                }`}
+              >
+                源码
+              </button>
+              <button
+                onClick={() => setLeftTab("preview")}
+                className={`px-3 py-1 text-xs font-medium transition-colors border-l border-gray-200 ${
+                  leftTab === "preview"
+                    ? "bg-[#1b4332] text-white"
+                    : "bg-white text-[#6b7280] hover:bg-gray-100"
+                }`}
+              >
+                预览
+              </button>
             </div>
-            <div className="flex-1 overflow-auto bg-white">
-              {rawBlobUrl && (
-                <iframe src={rawBlobUrl} className="w-full h-full border-none min-h-[600px]"
-                  title="原始模板" sandbox="allow-same-origin allow-scripts" />
-              )}
-            </div>
+            <span className="text-xs text-[#9ca3af]">原始 HTML</span>
           </div>
 
-          {/* Right: WeChat output */}
-          <div className="flex-1 flex flex-col">
-            <div className="shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#52b788] uppercase tracking-widest">WeChat 格式</span>
-              <span className="text-xs text-[#9ca3af]">点击「复制全部」粘贴到公众号</span>
-            </div>
-            <div className="flex-1 overflow-auto bg-white">
+          {/* Left content area */}
+          <div className="flex-1 relative overflow-hidden">
+
+            {/* Code editor */}
+            <textarea
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              placeholder={"粘贴 HTML 源码，或点击「导入文件」上传 .html 文件…\n\n支持内联样式和 CSS class 两种写法，自动实时转换。"}
+              spellCheck={false}
+              className={`absolute inset-0 w-full h-full resize-none font-mono text-[12px] leading-relaxed p-4 outline-none text-[#333] placeholder:text-[#c0c0c0] transition-colors ${
+                isDragging ? "bg-[#f0faf4]" : "bg-[#fafafa]"
+              } ${leftTab === "code" ? "block" : "hidden"}`}
+            />
+
+            {/* Preview iframe */}
+            {leftTab === "preview" && (
+              <div className="absolute inset-0 overflow-auto bg-white">
+                {previewUrl ? (
+                  <iframe
+                    src={previewUrl}
+                    className="w-full h-full border-none"
+                    style={{ minHeight: "100%" }}
+                    title="原始预览"
+                    sandbox="allow-same-origin allow-scripts"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-sm text-[#9ca3af]">
+                    输入源码后在此预览原始渲染效果
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Right: WeChat output ── */}
+        <div className="flex-1 flex flex-col min-w-0">
+
+          {/* Right panel header */}
+          <div className="shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+            <span className="text-xs font-medium text-[#52b788] tracking-widest uppercase">WeChat 格式</span>
+            <span className="text-xs text-[#9ca3af]">点击「复制全部」粘贴到公众号</span>
+          </div>
+
+          {/* Right content */}
+          <div className="flex-1 overflow-auto bg-white">
+            {output ? (
               <div
                 ref={previewRef}
                 className="min-h-full"
                 dangerouslySetInnerHTML={{ __html: output }}
               />
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center px-10 gap-2">
+                <div className="text-3xl opacity-10">✦</div>
+                <p className="text-sm text-[#9ca3af]">左侧输入 HTML 源码</p>
+                <p className="text-xs text-[#bbb]">转换结果实时显示在这里，点「复制全部」粘贴到公众号</p>
+              </div>
+            )}
           </div>
+        </div>
 
-        </div>
-      ) : (
-        <div
-          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`flex-1 flex flex-col items-center justify-center cursor-pointer transition-colors ${
-            isDragging ? "bg-[#f0faf4]" : "bg-white hover:bg-[#f0faf4]/40"
-          }`}
-        >
-          <div className="text-5xl mb-5 opacity-30">📄</div>
-          <p className="text-sm font-medium text-[#6b7280] mb-2">点击「导入文件」或拖拽 HTML 文件到这里</p>
-          <p className="text-xs text-[#9ca3af]">左侧显示原始效果，右侧显示 WeChat 格式，点击「复制全部」粘贴到公众号</p>
-        </div>
-      )}
+      </div>
 
-      {/* Footer tip */}
-      {output && (
-        <div className="shrink-0 border-t border-gray-100 bg-gray-50 px-6 py-2.5 flex items-center gap-6">
-          <p className="text-xs text-[#6b7280]">
-            点击「复制全部」→ 打开微信公众号编辑器 → <kbd className="bg-gray-200 rounded px-1.5 py-0.5 text-[11px]">Ctrl+V</kbd> 粘贴
-          </p>
-          <span className="text-xs text-[#9ca3af] ml-auto">section 原生格式 · 背景色、圆角、flex 完整保留</span>
-        </div>
-      )}
+      {/* Footer */}
+      <div className="shrink-0 border-t border-gray-100 bg-gray-50 px-6 py-2 flex items-center">
+        <p className="text-xs text-[#9ca3af]">
+          复制全部 → 公众号编辑器 → <kbd className="bg-gray-200 rounded px-1 py-0.5 text-[11px] text-[#555]">Ctrl+V</kbd> 粘贴
+        </p>
+        <span className="text-xs text-[#c0c0c0] ml-auto">section 原生格式 · 背景色 · 圆角 · flex 完整保留</span>
+      </div>
+
     </div>
   );
 }
