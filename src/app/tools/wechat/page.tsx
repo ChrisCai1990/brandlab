@@ -85,6 +85,20 @@ function processNode(node: Node, win: Window): string {
   const styleAttr = styleStr ? ` style="${styleStr}"` : "";
   const otherAttrs = attrParts.length > 0 ? " " + attrParts.join(" ") : "";
 
+  // WeChat paste handler strips background-color from div/section/p but
+  // preserves it on <td>. Wrap block elements that have a background in a
+  // single-cell table — same technique used by 135editor and Xiumi.
+  const BG_BLOCK_TAGS = new Set(["div", "section", "article", "main", "header", "footer", "blockquote", "p"]);
+  if (BG_BLOCK_TAGS.has(tag) && styleStr.includes("background-color:")) {
+    // Remove display:flex/grid from td style — td is already block-like
+    const tdStyle = styleStr.replace(/display:[^;]+;?/g, "");
+    return (
+      `<table style="width:100%;border-collapse:collapse;border-spacing:0;">` +
+      `<tbody><tr><td style="${tdStyle}">${inner}</td></tr></tbody>` +
+      `</table>`
+    );
+  }
+
   return `<${outputTag}${styleAttr}${otherAttrs}>${inner}</${outputTag}>`;
 }
 
