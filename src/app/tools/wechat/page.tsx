@@ -167,7 +167,7 @@ function ShareButton() {
 const REMOVE_TAGS = new Set([
   "script", "style", "link", "meta", "title", "noscript",
   "head", "svg", "canvas", "video", "audio", "form",
-  "button", "input", "select", "textarea", "iframe",
+  "input", "select", "textarea", "iframe",
 ]);
 const BLOCK_TAGS = new Set([
   "div", "section", "article", "main", "header", "footer",
@@ -196,7 +196,7 @@ function nodeToWechat(node: Node): string {
     const s = el.getAttribute("style") || "";
     return `<img src="${src}" alt="${alt}" style="max-width:100%;height:auto;display:block;margin:8px auto${s ? ";" + s : ""}">`;
   }
-  if (tag === "a") {
+  if (tag === "a" || tag === "button") {
     const s = el.getAttribute("style") || "";
     return `<span${s ? ` style="${s}"` : ""}>${inner}</span>`;
   }
