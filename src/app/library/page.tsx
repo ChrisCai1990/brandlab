@@ -1,6 +1,7 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 import { categories } from "@/lib/articles";
 import { LibraryFilter } from "@/components/LibraryFilter";
 
@@ -8,15 +9,24 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 12;
 
-type DbArticle = { slug: string; title: string; tag: string; desc: string; date: Date; readTime: string };
+type ArticleRow = { id: string; slug: string; title: string; tag: string; desc: string; date: string; readTime: string };
 
-async function getDbArticles(): Promise<DbArticle[]> {
+async function getDbArticles(): Promise<ArticleRow[]> {
   try {
-    return await prisma.article.findMany({
-      where: { published: true },
-      orderBy: { date: "desc" },
-      select: { slug: true, title: true, tag: true, desc: true, date: true, readTime: true },
-    });
+    await connectDB();
+    const rows = await Article.find({ published: true })
+      .sort({ date: -1 })
+      .select("slug title tag desc date readTime")
+      .lean();
+    return rows.map((a) => ({
+      id: String(a._id),
+      slug: a.slug,
+      title: a.title,
+      tag: a.tag,
+      desc: a.desc,
+      date: new Date(a.date).toISOString().split("T")[0],
+      readTime: a.readTime,
+    }));
   } catch {
     return [];
   }
@@ -30,11 +40,7 @@ export default async function LibraryPage({
   const { category, q, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10));
 
-  const dbArticles = await getDbArticles();
-  const merged = dbArticles.map((a) => ({
-    slug: a.slug, title: a.title, tag: a.tag, desc: a.desc,
-    date: new Date(a.date).toISOString().split("T")[0], readTime: a.readTime,
-  }));
+  const merged = await getDbArticles();
 
   let filtered = merged;
   if (category && category !== "全部") filtered = filtered.filter((a) => a.tag === category);
@@ -97,7 +103,6 @@ export default async function LibraryPage({
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-12">
             {currentPage > 1 && (

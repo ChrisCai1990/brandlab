@@ -1,8 +1,9 @@
 import { MetadataRoute } from "next";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = "https://brandlab.cn";
+  const base = "https://brandlab.ink";
   const staticPages = [
     { url: base, lastModified: new Date(), changeFrequency: "daily" as const, priority: 1 },
     { url: `${base}/library`, lastModified: new Date(), changeFrequency: "daily" as const, priority: 0.9 },
@@ -19,10 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let articlePages: MetadataRoute.Sitemap = [];
   try {
-    const articles = await prisma.article.findMany({
-      where: { published: true },
-      select: { slug: true, date: true },
-    });
+    await connectDB();
+    const articles = await Article.find({ published: true }).select("slug date").lean();
     articlePages = articles.map((a) => ({
       url: `${base}/library/${a.slug}`,
       lastModified: new Date(a.date),

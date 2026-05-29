@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "db:push": "prisma db push",
+    "build": "next build",
     "db:seed": "tsx prisma/seed.ts",
     "start": "next start",
     "lint": "eslint"
@@ -14,6 +13,7 @@
     "@prisma/client": "^6.19.3",
     "gray-matter": "^4.0.3",
     "jose": "^6.2.3",
+    "mongoose": "^9.6.3",
     "next": "16.2.6",
     "next-mdx-remote": "^6.0.0",
     "prisma": "^6.19.3",

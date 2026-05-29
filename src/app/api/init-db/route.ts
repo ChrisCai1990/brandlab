@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 import { articles } from "../../../../prisma/articles-data";
 
 function buildContent(a: (typeof articles)[0]) {
@@ -20,7 +21,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const existingRows = await prisma.article.findMany({ select: { slug: true } });
+    await connectDB();
+    const existingRows = await Article.find().select("slug").lean();
     const existingSlugs = new Set(existingRows.map((r) => r.slug));
     const toInsert = articles.filter((a) => !existingSlugs.has(a.slug));
 
@@ -28,20 +30,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: `已跳过，数据库已有 ${existingRows.length} 篇文章` });
     }
 
-    // createMany requires replica set on MongoDB — use individual creates instead
     let count = 0;
     for (const a of toInsert) {
-      await prisma.article.create({
-        data: {
-          slug: a.slug,
-          title: a.title,
-          tag: a.tag,
-          desc: a.desc,
-          date: new Date(a.date),
-          readTime: a.readTime,
-          published: true,
-          content: buildContent(a),
-        },
+      await Article.create({
+        slug: a.slug,
+        title: a.title,
+        tag: a.tag,
+        desc: a.desc,
+        date: new Date(a.date),
+        readTime: a.readTime,
+        published: true,
+        content: buildContent(a),
       });
       count++;
     }

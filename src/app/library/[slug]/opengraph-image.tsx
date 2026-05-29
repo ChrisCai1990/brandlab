@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
@@ -17,10 +18,10 @@ export default async function OGImage({
   let desc = "每天一条干货，帮你做出个人品牌";
 
   try {
-    const article = await prisma.article.findUnique({
-      where: { slug, published: true },
-      select: { title: true, tag: true, desc: true },
-    });
+    await connectDB();
+    const article = await Article.findOne({ slug, published: true })
+      .select("title tag desc")
+      .lean();
     if (article) {
       title = article.title;
       tag = article.tag;
@@ -88,7 +89,7 @@ export default async function OGImage({
             </div>
             <span style={{ fontSize: "18px", color: "#6BAF8A" }}>品牌拾研社 · BrandLab</span>
           </div>
-          <span style={{ fontSize: "16px", color: "#3D5048" }}>brandlab.cn</span>
+          <span style={{ fontSize: "16px", color: "#3D5048" }}>brandlab.ink</span>
         </div>
       </div>
     ),

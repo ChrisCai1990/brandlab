@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 
 export const dynamic = "force-dynamic";
 
@@ -21,12 +22,12 @@ const resources = [
 
 async function getLatestFromDb() {
   try {
-    const rows = await prisma.article.findMany({
-      where: { published: true },
-      orderBy: { date: "desc" },
-      take: 6,
-      select: { slug: true, tag: true, title: true, desc: true, date: true },
-    });
+    await connectDB();
+    const rows = await Article.find({ published: true })
+      .sort({ date: -1 })
+      .select("slug tag title desc date")
+      .limit(6)
+      .lean();
     return rows.map((r) => ({
       slug: r.slug,
       tag: r.tag,
@@ -41,7 +42,8 @@ async function getLatestFromDb() {
 
 async function getTotalCount() {
   try {
-    return await prisma.article.count({ where: { published: true } });
+    await connectDB();
+    return await Article.countDocuments({ published: true });
   } catch {
     return 0;
   }

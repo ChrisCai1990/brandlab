@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 import { notFound } from "next/navigation";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 
@@ -10,13 +11,14 @@ export default async function EditArticlePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const article = await prisma.article.findUnique({ where: { id } });
+  await connectDB();
+  const article = await Article.findById(id).lean();
   if (!article) notFound();
 
   return (
     <ArticleForm
       initialData={{
-        id: article.id,
+        id: String(article._id),
         title: article.title,
         slug: article.slug,
         tag: article.tag,

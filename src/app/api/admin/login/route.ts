@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { signToken, verifyPassword, COOKIE_NAME } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Setting } from "@/lib/models";
 
 export async function POST(req: Request) {
   const { password } = await req.json();
@@ -8,7 +9,8 @@ export async function POST(req: Request) {
 
   let valid = false;
   try {
-    const setting = await prisma.setting.findUnique({ where: { key: "admin_password_hash" } });
+    await connectDB();
+    const setting = await Setting.findOne({ key: "admin_password_hash" }).lean();
     if (setting?.value) valid = await verifyPassword(password, setting.value);
   } catch {}
 

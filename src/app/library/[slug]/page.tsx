@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-async function getDbArticle(slug: string) {
+async function getArticle(slug: string) {
   try {
-    return await prisma.article.findUnique({ where: { slug, published: true } });
+    await connectDB();
+    return await Article.findOne({ slug, published: true }).lean();
   } catch {
     return null;
   }
@@ -18,12 +20,18 @@ async function getDbArticle(slug: string) {
 
 async function getRelatedArticles(tag: string, slug: string) {
   try {
-    return await prisma.article.findMany({
-      where: { tag, slug: { not: slug }, published: true },
-      select: { slug: true, title: true, readTime: true, date: true },
-      orderBy: { date: "desc" },
-      take: 3,
-    });
+    await connectDB();
+    const rows = await Article.find({ tag, slug: { $ne: slug }, published: true })
+      .sort({ date: -1 })
+      .select("slug title readTime date")
+      .limit(3)
+      .lean();
+    return rows.map((r) => ({
+      slug: r.slug,
+      title: r.title,
+      readTime: r.readTime,
+      date: new Date(r.date).toISOString().split("T")[0],
+    }));
   } catch {
     return [];
   }
@@ -35,9 +43,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const db = await getDbArticle(slug);
-  if (!db) return {};
-  return { title: db.title, description: db.desc };
+  const article = await getArticle(slug);
+  if (!article) return {};
+  return { title: article.title, description: article.desc };
 }
 
 const mdxComponents = {
@@ -83,7 +91,7 @@ export default async function ArticlePage({
 }) {
   const { slug } = await params;
 
-  const dbArticle = await getDbArticle(slug);
+  const dbArticle = await getArticle(slug);
   if (!dbArticle) notFound();
 
   const meta = {
@@ -96,19 +104,19 @@ export default async function ArticlePage({
 
   const related = await getRelatedArticles(meta.tag, slug);
 
+  const pageUrl = `https://brandlab.ink/library/${slug}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: meta.title,
     description: meta.desc,
     datePublished: meta.date,
-    author: { "@type": "Organization", name: "品牌拾研社", url: "https://brandlab.cn" },
-    publisher: { "@type": "Organization", name: "品牌拾研社", url: "https://brandlab.cn" },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `https://brandlab.cn/library/${slug}` },
+    author: { "@type": "Organization", name: "品牌拾研社", url: "https://brandlab.ink" },
+    publisher: { "@type": "Organization", name: "品牌拾研社", url: "https://brandlab.ink" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     keywords: meta.tag,
   };
-
-  const pageUrl = `https://brandlab.cn/library/${slug}`;
 
   return (
     <div className="bg-white min-h-screen">
@@ -169,7 +177,7 @@ export default async function ArticlePage({
                         {r.title}
                       </p>
                       <p className="text-[10px] text-[#6B7A6E]">
-                        {r.readTime} 分钟 · {new Date(r.date).toISOString().split("T")[0]}
+                        {r.readTime} 分钟 · {r.date}
                       </p>
                     </Link>
                   ))}

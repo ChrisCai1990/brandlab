@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Setting } from "@/lib/models";
 import { getSession, hashPassword, verifyPassword } from "@/lib/auth";
 
 async function guard() {
@@ -15,10 +16,10 @@ export async function POST(req: Request) {
     if (!newPassword || newPassword.length < 6)
       return NextResponse.json({ error: "新密码至少6位" }, { status: 400 });
 
-    // Verify current password
+    await connectDB();
     let valid = false;
     try {
-      const setting = await prisma.setting.findUnique({ where: { key: "admin_password_hash" } });
+      const setting = await Setting.findOne({ key: "admin_password_hash" }).lean();
       if (setting?.value) valid = await verifyPassword(currentPassword, setting.value);
     } catch {}
     if (!valid) {
@@ -28,11 +29,11 @@ export async function POST(req: Request) {
     if (!valid) return NextResponse.json({ error: "当前密码错误" }, { status: 400 });
 
     const hash = await hashPassword(newPassword);
-    await prisma.setting.upsert({
-      where: { key: "admin_password_hash" },
-      update: { value: hash },
-      create: { key: "admin_password_hash", value: hash },
-    });
+    await Setting.findOneAndUpdate(
+      { key: "admin_password_hash" },
+      { value: hash },
+      { upsert: true }
+    );
     return NextResponse.json({ ok: true });
   }
 

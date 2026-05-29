@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { connectDB } from "@/lib/db";
+import { Article } from "@/lib/models";
 import { getSession } from "@/lib/auth";
 
 async function guard() {
@@ -12,24 +13,29 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function GET(_req: Request, { params }: Ctx) {
   const err = await guard(); if (err) return err;
   const { id } = await params;
-  const article = await prisma.article.findUnique({ where: { id } });
+  await connectDB();
+  const article = await Article.findById(id).lean();
   if (!article) return NextResponse.json({ error: "文章不存在" }, { status: 404 });
-  return NextResponse.json(article);
+  return NextResponse.json({ ...article, id: String(article._id) });
 }
 
 export async function PUT(req: Request, { params }: Ctx) {
   const err = await guard(); if (err) return err;
   const { id } = await params;
   const { title, slug, tag, desc, date, readTime, content, published } = await req.json();
+
+  await connectDB();
   try {
-    const article = await prisma.article.update({
-      where: { id },
-      data: { title, slug, tag, desc, date: new Date(date), readTime: readTime || "5", content: content || "", published: !!published },
-    });
-    return NextResponse.json(article);
+    const article = await Article.findByIdAndUpdate(
+      id,
+      { title, slug, tag, desc, date: new Date(date), readTime: readTime || "5", content: content || "", published: !!published },
+      { new: true }
+    ).lean();
+    if (!article) return NextResponse.json({ error: "文章不存在" }, { status: 404 });
+    return NextResponse.json({ ...article, id: String(article._id) });
   } catch (e: unknown) {
-    const code = (e as { code?: string })?.code;
-    if (code === "P2002") return NextResponse.json({ error: "Slug 已存在" }, { status: 400 });
+    const code = (e as { code?: number })?.code;
+    if (code === 11000) return NextResponse.json({ error: "Slug 已存在" }, { status: 400 });
     return NextResponse.json({ error: "更新失败" }, { status: 500 });
   }
 }
@@ -37,6 +43,7 @@ export async function PUT(req: Request, { params }: Ctx) {
 export async function DELETE(_req: Request, { params }: Ctx) {
   const err = await guard(); if (err) return err;
   const { id } = await params;
-  await prisma.article.delete({ where: { id } });
+  await connectDB();
+  await Article.findByIdAndDelete(id);
   return NextResponse.json({ ok: true });
 }
