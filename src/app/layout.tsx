@@ -20,14 +20,14 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://brandlab.ink/opengraph-image",
-        width: 1200,
-        height: 630,
+        width: 300,
+        height: 300,
         alt: "品牌拾研社 · BrandLab",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     images: ["https://brandlab.ink/opengraph-image"],
   },
   alternates: {
