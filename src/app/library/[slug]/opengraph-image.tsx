@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
-import { getArticleBySlug } from "@/lib/articles";
+import { prisma } from "@/lib/db";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -11,11 +11,24 @@ export default async function OGImage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
 
-  const title = article?.title ?? "品牌拾研社";
-  const tag = article?.tag ?? "";
-  const desc = article?.desc ?? "每天一条干货，帮你做出个人品牌";
+  let title = "品牌拾研社";
+  let tag = "";
+  let desc = "每天一条干货，帮你做出个人品牌";
+
+  try {
+    const article = await prisma.article.findUnique({
+      where: { slug, published: true },
+      select: { title: true, tag: true, desc: true },
+    });
+    if (article) {
+      title = article.title;
+      tag = article.tag;
+      desc = article.desc;
+    }
+  } catch {
+    // fall through to defaults
+  }
 
   return new ImageResponse(
     (
@@ -31,28 +44,13 @@ export default async function OGImage({
           fontFamily: "sans-serif",
         }}
       >
-        {/* Top: tag */}
         {tag && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <div
-              style={{
-                width: "8px",
-                height: "8px",
-                borderRadius: "50%",
-                background: "#6BAF8A",
-              }}
-            />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#6BAF8A" }} />
             <span style={{ fontSize: "18px", color: "#6BAF8A", fontWeight: "600" }}>{tag}</span>
           </div>
         )}
 
-        {/* Middle: title + desc */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <div
             style={{
@@ -65,19 +63,11 @@ export default async function OGImage({
           >
             {title}
           </div>
-          <div
-            style={{
-              fontSize: "22px",
-              color: "#A8D5BB",
-              lineHeight: 1.5,
-              maxWidth: "800px",
-            }}
-          >
+          <div style={{ fontSize: "22px", color: "#A8D5BB", lineHeight: 1.5, maxWidth: "800px" }}>
             {desc}
           </div>
         </div>
 
-        {/* Bottom: branding */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div

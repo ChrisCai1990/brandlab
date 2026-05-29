@@ -1,7 +1,7 @@
-﻿import { MetadataRoute } from "next";
-import { articles } from "@/lib/articles";
+import { MetadataRoute } from "next";
+import { prisma } from "@/lib/db";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://brandlab.cn";
   const staticPages = [
     { url: base, lastModified: new Date(), changeFrequency: "daily" as const, priority: 1 },
@@ -17,12 +17,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/tools/calendar`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.7 },
   ];
 
-  const articlePages = articles.map((a) => ({
-    url: `${base}/library/${a.slug}`,
-    lastModified: new Date(a.date),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  let articlePages: MetadataRoute.Sitemap = [];
+  try {
+    const articles = await prisma.article.findMany({
+      where: { published: true },
+      select: { slug: true, date: true },
+    });
+    articlePages = articles.map((a) => ({
+      url: `${base}/library/${a.slug}`,
+      lastModified: new Date(a.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch {
+    // DB unavailable — return static pages only
+  }
 
   return [...staticPages, ...articlePages];
 }

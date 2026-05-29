@@ -1,5 +1,4 @@
 ﻿import Link from "next/link";
-import { articles as staticArticles } from "@/lib/articles";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -44,20 +43,14 @@ async function getTotalCount() {
   try {
     return await prisma.article.count({ where: { published: true } });
   } catch {
-    return staticArticles.length;
+    return 0;
   }
 }
 
 export default async function HomePage() {
   const [dbPosts, totalCount] = await Promise.all([getLatestFromDb(), getTotalCount()]);
 
-  const latestPosts = (dbPosts && dbPosts.length > 0) ? dbPosts : staticArticles.slice(0, 6).map((a) => ({
-    slug: a.slug,
-    tag: a.tag,
-    title: a.title,
-    desc: a.desc,
-    date: a.date.slice(5),
-  }));
+  const latestPosts = dbPosts ?? [];
 
   const featured = latestPosts[0];
   return (

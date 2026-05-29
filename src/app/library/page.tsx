@@ -1,7 +1,7 @@
 ﻿import { Suspense } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { articles as staticArticles, categories } from "@/lib/articles";
+import { categories } from "@/lib/articles";
 import { LibraryFilter } from "@/components/LibraryFilter";
 
 export const dynamic = "force-dynamic";
@@ -31,16 +31,10 @@ export default async function LibraryPage({
   const currentPage = Math.max(1, parseInt(page || "1", 10));
 
   const dbArticles = await getDbArticles();
-  const dbSlugs = new Set(dbArticles.map((a) => a.slug));
-  const merged = [
-    ...dbArticles.map((a) => ({
-      slug: a.slug, title: a.title, tag: a.tag, desc: a.desc,
-      date: new Date(a.date).toISOString().split("T")[0], readTime: a.readTime,
-    })),
-    ...staticArticles.filter((a) => !dbSlugs.has(a.slug)).map((a) => ({
-      slug: a.slug, title: a.title, tag: a.tag, desc: a.desc, date: a.date, readTime: a.readTime,
-    })),
-  ];
+  const merged = dbArticles.map((a) => ({
+    slug: a.slug, title: a.title, tag: a.tag, desc: a.desc,
+    date: new Date(a.date).toISOString().split("T")[0], readTime: a.readTime,
+  }));
 
   let filtered = merged;
   if (category && category !== "全部") filtered = filtered.filter((a) => a.tag === category);

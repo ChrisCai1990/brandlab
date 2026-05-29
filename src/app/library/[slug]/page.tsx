@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { articles, getArticleBySlug } from "@/lib/articles";
-import { getMdxArticle, getAllMdxSlugs } from "@/lib/mdx";
 import { prisma } from "@/lib/db";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -18,21 +16,26 @@ async function getDbArticle(slug: string) {
   }
 }
 
-async function getAllDbSlugs() {
+async function getRelatedArticles(tag: string, slug: string) {
   try {
-    const rows: { slug: string }[] = await prisma.article.findMany({ where: { published: true }, select: { slug: true } });
-    return rows.map((r) => r.slug);
+    return await prisma.article.findMany({
+      where: { tag, slug: { not: slug }, published: true },
+      select: { slug: true, title: true, readTime: true, date: true },
+      orderBy: { date: "desc" },
+      take: 3,
+    });
   } catch {
     return [];
   }
 }
 
 export async function generateStaticParams() {
-  const mdxSlugs = getAllMdxSlugs();
-  const tsSlugs = articles.map((a) => a.slug);
-  const dbSlugs = await getAllDbSlugs();
-  const all = Array.from(new Set([...mdxSlugs, ...tsSlugs, ...dbSlugs]));
-  return all.map((slug) => ({ slug }));
+  try {
+    const rows = await prisma.article.findMany({ where: { published: true }, select: { slug: true } });
+    return rows.map((r) => ({ slug: r.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({
@@ -42,10 +45,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const db = await getDbArticle(slug);
-  if (db) return { title: db.title, description: db.desc };
-  const article = getArticleBySlug(slug);
-  if (!article) return {};
-  return { title: article.title, description: article.desc };
+  if (!db) return {};
+  return { title: db.title, description: db.desc };
 }
 
 const mdxComponents = {
@@ -92,31 +93,17 @@ export default async function ArticlePage({
   const { slug } = await params;
 
   const dbArticle = await getDbArticle(slug);
-  const staticArticle = getArticleBySlug(slug);
-  const mdx = getMdxArticle(slug);
+  if (!dbArticle) notFound();
 
-  if (!dbArticle && !staticArticle) notFound();
+  const meta = {
+    title: dbArticle.title,
+    tag: dbArticle.tag,
+    desc: dbArticle.desc,
+    date: new Date(dbArticle.date).toISOString().split("T")[0],
+    readTime: dbArticle.readTime,
+  };
 
-  const meta = dbArticle
-    ? {
-        title: dbArticle.title,
-        tag: dbArticle.tag,
-        desc: dbArticle.desc,
-        date: new Date(dbArticle.date).toISOString().split("T")[0],
-        readTime: dbArticle.readTime,
-      }
-    : {
-        title: staticArticle!.title,
-        tag: staticArticle!.tag,
-        desc: staticArticle!.desc,
-        date: staticArticle!.date,
-        readTime: staticArticle!.readTime,
-      };
-
-  const content = dbArticle?.content ?? mdx?.content ?? null;
-  const related = staticArticle
-    ? articles.filter((a) => a.tag === meta.tag && a.slug !== slug).slice(0, 3)
-    : [];
+  const related = await getRelatedArticles(meta.tag, slug);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -124,20 +111,9 @@ export default async function ArticlePage({
     headline: meta.title,
     description: meta.desc,
     datePublished: meta.date,
-    author: {
-      "@type": "Organization",
-      name: "品牌拾研社",
-      url: "https://brandlab.cn",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "品牌拾研社",
-      url: "https://brandlab.cn",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://brandlab.cn/library/${slug}`,
-    },
+    author: { "@type": "Organization", name: "品牌拾研社", url: "https://brandlab.cn" },
+    publisher: { "@type": "Organization", name: "品牌拾研社", url: "https://brandlab.cn" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://brandlab.cn/library/${slug}` },
     keywords: meta.tag,
   };
 
@@ -176,20 +152,9 @@ export default async function ArticlePage({
               {meta.desc}
             </p>
 
-            {content ? (
-              <div className="prose-brandlab">
-                <MDXRemote source={content} components={mdxComponents} />
-              </div>
-            ) : staticArticle ? (
-              <FallbackContent article={staticArticle} />
-            ) : null}
-
-            {staticArticle && !dbArticle && (
-              <div className="mt-10 border border-[#2D6A4F] rounded-xl p-6 bg-[#E8F5EE]">
-                <p className="text-xs text-[#2D6A4F] font-medium tracking-widest uppercase mb-3">今天就行动</p>
-                <p className="text-sm text-[#1A2E22] leading-relaxed">{staticArticle.sections.action}</p>
-              </div>
-            )}
+            <div className="prose-brandlab">
+              <MDXRemote source={dbArticle.content} components={mdxComponents} />
+            </div>
 
             <ShareButtons title={meta.title} url={pageUrl} />
 
@@ -212,7 +177,9 @@ export default async function ArticlePage({
                       <p className="text-xs font-bold text-[#1A2E22] group-hover:text-[#1B4332] transition-colors leading-snug mb-1">
                         {r.title}
                       </p>
-                      <p className="text-[10px] text-[#6B7A6E]">{r.readTime} 分钟 · {r.date}</p>
+                      <p className="text-[10px] text-[#6B7A6E]">
+                        {r.readTime} 分钟 · {new Date(r.date).toISOString().split("T")[0]}
+                      </p>
                     </Link>
                   ))}
                 </div>
@@ -256,64 +223,6 @@ export default async function ArticlePage({
           </aside>
         </div>
       </div>
-    </div>
-  );
-}
-
-function FallbackContent({ article }: { article: ReturnType<typeof getArticleBySlug> }) {
-  if (!article) return null;
-  const { sections } = article;
-  return (
-    <div className="space-y-2">
-      <Section label="痛点切入" bg>
-        <p className="text-sm text-[#1A2E22] leading-relaxed">{sections.pain}</p>
-      </Section>
-      <div className="my-6 bg-[#1A2E22] rounded-xl px-6 py-5">
-        <p className="text-xs text-[#6BAF8A] font-medium tracking-widest uppercase mb-2">核心公式</p>
-        <p className="text-base font-bold text-white leading-snug">{sections.formula}</p>
-      </div>
-      <Section label="三步拆解">
-        <div className="space-y-5">
-          {sections.steps.map((step, i) => (
-            <div key={i} className="flex gap-4">
-              <div className="shrink-0 w-7 h-7 rounded-full bg-[#E8F5EE] border border-[#C8DDD2] flex items-center justify-center text-xs font-bold text-[#2D6A4F]">
-                {i + 1}
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-[#1A2E22] mb-1.5">{step.title}</h3>
-                <p className="text-sm text-[#6B7A6E] leading-relaxed">{step.body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-      <Section label="真实案例">
-        <div className="bg-[#F7FBF8] border border-[#C8DDD2] rounded-lg p-4">
-          <p className="text-sm text-[#1A2E22] leading-relaxed">{sections.caseStudy}</p>
-        </div>
-      </Section>
-      <Section label="常见避坑">
-        <ul className="space-y-2">
-          {sections.pitfalls.map((p, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-sm text-[#6B7A6E]">
-              <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[#6BAF8A] shrink-0" />
-              {p}
-            </li>
-          ))}
-        </ul>
-      </Section>
-    </div>
-  );
-}
-
-function Section({ label, bg, children }: { label: string; bg?: boolean; children: React.ReactNode }) {
-  return (
-    <div className="mt-8">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="w-1 h-4 bg-[#2D6A4F] rounded-full" />
-        <h2 className="text-sm font-bold text-[#1A2E22]">{label}</h2>
-      </div>
-      {bg ? <div className="bg-[#E8F5EE] rounded-xl p-4">{children}</div> : children}
     </div>
   );
 }
