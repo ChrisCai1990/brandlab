@@ -34,6 +34,7 @@ type ArticleFormProps = {
     content?: string;
     wechatHtml?: string;
     published?: boolean;
+    isPremium?: boolean;
   };
 };
 
@@ -65,6 +66,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
     content: initialData?.content ?? "",
     wechatHtml: initialData?.wechatHtml ?? "",
     published: initialData?.published ?? false,
+    isPremium: initialData?.isPremium ?? false,
   });
 
   function handleTitleChange(title: string) {
@@ -91,7 +93,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, published, wechatHtml: form.wechatHtml }),
+      body: JSON.stringify({ ...form, published }),
     });
 
     if (res.ok) {
@@ -174,7 +176,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
         </div>
 
         {/* Meta row */}
-        <div className="bg-white border border-[#95d5b2] rounded-2xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white border border-[#95d5b2] rounded-2xl p-6 grid grid-cols-2 md:grid-cols-5 gap-4">
           <div>
             <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase mb-1.5">Slug (URL)</label>
             <input
@@ -213,6 +215,22 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
               readOnly
               className="w-full text-xs text-[#6b7280] border border-[#95d5b2] rounded-lg px-3 py-2 bg-[#f0faf4] cursor-default"
             />
+          </div>
+          <div className="flex flex-col justify-end">
+            <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase mb-1.5">会员专享</label>
+            <button
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, isPremium: !f.isPremium }))}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                form.isPremium ? "bg-[#2d6a4f]" : "bg-[#e5e7eb]"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  form.isPremium ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
           </div>
         </div>
 

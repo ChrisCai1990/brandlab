@@ -28,6 +28,7 @@ export default async function EditArticlePage({
         content: article.content,
         wechatHtml: article.wechatHtml ?? "",
         published: article.published,
+        isPremium: article.isPremium ?? false,
       }}
     />
   );

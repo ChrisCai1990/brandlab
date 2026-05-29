@@ -1,11 +1,18 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookmarkCount } from "@/components/BookmarkCount";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => setIsLoggedIn(r.ok))
+      .catch(() => setIsLoggedIn(false));
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-[#95d5b2]">
@@ -25,8 +32,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-6">
           {[
             { href: "/library", label: "内容库" },
-            { href: "/quiz", label: "测评" },
-            { href: "/templates", label: "模板库" },
+            { href: "/member", label: "会员" },
             { href: "/tools", label: "工具资源" },
             { href: "/about", label: "关于我们" },
           ].map((item) => (
@@ -39,6 +45,12 @@ export default function Navbar() {
             </Link>
           ))}
           <BookmarkCount />
+          <Link
+            href={isLoggedIn ? "/account" : "/login"}
+            className="text-sm text-[#6b7280] hover:text-[#2d6a4f] transition-colors font-medium"
+          >
+            {isLoggedIn ? "账户" : "登录"}
+          </Link>
           <Link
             href="/contact"
             className="text-sm bg-[#2d6a4f] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#40916c] transition-colors"
@@ -64,8 +76,7 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t border-[#95d5b2] px-6 py-4 flex flex-col gap-4">
           {[
             { href: "/library", label: "内容库" },
-            { href: "/quiz", label: "测评" },
-            { href: "/templates", label: "模板库" },
+            { href: "/member", label: "会员" },
             { href: "/tools", label: "工具资源" },
             { href: "/about", label: "关于我们" },
           ].map((item) => (
@@ -79,6 +90,13 @@ export default function Navbar() {
             </Link>
           ))}
           <BookmarkCount />
+          <Link
+            href={isLoggedIn ? "/account" : "/login"}
+            className="text-sm text-[#6b7280] hover:text-[#2d6a4f] font-medium"
+            onClick={() => setOpen(false)}
+          >
+            {isLoggedIn ? "账户" : "登录"}
+          </Link>
           <Link
             href="/contact"
             className="text-sm bg-[#2d6a4f] text-white px-4 py-2 rounded-lg font-medium text-center"

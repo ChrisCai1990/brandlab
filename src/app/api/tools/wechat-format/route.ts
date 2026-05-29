@@ -48,11 +48,14 @@ meta信息行：
 </div>
 
 步骤列表：
-<div style="display:flex;flex-direction:column;gap:12px;margin:16px 0">
-  <div style="display:flex;gap:12px;align-items:flex-start">
-    <div style="width:26px;height:26px;border-radius:50%;background:#E8F5EE;color:#1B4332;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div>
-    <div style="flex:1;font-size:14px;color:#555;line-height:1.7"><b style="color:#333;font-weight:500">{步骤标题}</b><br>{说明}</div>
+<div style="margin:20px 0">
+  <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #f5f5f5">
+    <div style="margin-bottom:6px;line-height:1.6">
+      <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#E8F5EE;color:#1B4332;font-size:11px;font-weight:500;text-align:center;line-height:22px;margin-right:8px;vertical-align:middle">1</span><span style="font-size:14px;font-weight:500;color:#333;vertical-align:middle">{步骤标题}</span>
+    </div>
+    <div style="font-size:14px;color:#555;line-height:1.75;padding-left:30px">{说明}</div>
   </div>
+  <!-- 最后一个 step-item 去掉 border-bottom，margin-bottom:0 -->
 </div>
 
 行动框：

@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const err = await guard(); if (err) return err;
-  const { title, slug, tag, desc, date, readTime, content, published } = await req.json();
+  const { title, slug, tag, desc, date, readTime, content, published, isPremium } = await req.json();
   if (!title?.trim() || !slug?.trim())
     return NextResponse.json({ error: "标题和 Slug 不能为空" }, { status: 400 });
 
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
       readTime: readTime || "5",
       content: content || "",
       published: !!published,
+      isPremium: !!isPremium,
     });
     return NextResponse.json({ ...article.toObject(), id: String(article._id) });
   } catch (e: unknown) {

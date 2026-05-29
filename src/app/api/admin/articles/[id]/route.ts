@@ -22,13 +22,13 @@ export async function GET(_req: Request, { params }: Ctx) {
 export async function PUT(req: Request, { params }: Ctx) {
   const err = await guard(); if (err) return err;
   const { id } = await params;
-  const { title, slug, tag, desc, date, readTime, content, wechatHtml, published } = await req.json();
+  const { title, slug, tag, desc, date, readTime, content, wechatHtml, published, isPremium } = await req.json();
 
   await connectDB();
   try {
     const article = await Article.findByIdAndUpdate(
       id,
-      { title, slug, tag, desc, date: new Date(date), readTime: readTime || "5", content: content || "", wechatHtml: wechatHtml || "", published: !!published },
+      { title, slug, tag, desc, date: new Date(date), readTime: readTime || "5", content: content || "", wechatHtml: wechatHtml || "", published: !!published, isPremium: !!isPremium },
       { new: true }
     ).lean();
     if (!article) return NextResponse.json({ error: "文章不存在" }, { status: 404 });

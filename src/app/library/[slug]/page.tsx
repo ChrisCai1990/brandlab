@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { connectDB } from "@/lib/db";
-import { Article } from "@/lib/models";
+import { Article, User } from "@/lib/models";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
 import { ViewTracker } from "@/components/ViewTracker";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { ReadingTracker } from "@/components/ReadingTracker";
+import { getUserSession, isSubscriptionActive } from "@/lib/userAuth";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -105,6 +106,19 @@ const mdxComponents = {
   hr: () => <hr className="my-8 border-[#95d5b2]" />,
 };
 
+async function checkUserSubscribed(): Promise<boolean> {
+  try {
+    const session = await getUserSession();
+    if (!session) return false;
+    await connectDB();
+    const user = await User.findById(session.userId).lean();
+    if (!user) return false;
+    return isSubscriptionActive(user.subscriptionPlan, user.subscriptionExpiry ?? null);
+  } catch {
+    return false;
+  }
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -114,6 +128,10 @@ export default async function ArticlePage({
 
   const dbArticle = await getArticle(slug);
   if (!dbArticle) notFound();
+
+  const isPremium = dbArticle.isPremium ?? false;
+  const isSubscribed = isPremium ? await checkUserSubscribed() : true;
+  const isGated = isPremium && !isSubscribed;
 
   const meta = {
     title: dbArticle.title,
@@ -175,9 +193,44 @@ export default async function ArticlePage({
               {meta.desc}
             </p>
 
-            <div className="prose-brandlab">
-              <MDXRemote source={dbArticle.content} components={mdxComponents} />
-            </div>
+            {isGated ? (
+              <div>
+                <div className="prose-brandlab relative max-h-40 overflow-hidden">
+                  <MDXRemote
+                    source={dbArticle.content.split("\n\n").slice(0, 3).join("\n\n")}
+                    components={mdxComponents}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
+                </div>
+                <div className="mt-8 border border-[#95d5b2] rounded-2xl p-8 text-center bg-[#f0faf4]">
+                  <div className="w-12 h-12 rounded-xl bg-[#2d6a4f] flex items-center justify-center mx-auto mb-4">
+                    <span className="text-white text-lg">🔒</span>
+                  </div>
+                  <h3 className="text-base font-bold text-[#1b4332] mb-2">本文为会员专享内容</h3>
+                  <p className="text-xs text-[#6b7280] mb-6 leading-relaxed">
+                    订阅会员，解锁全部品牌干货，月付仅需 ¥29
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <Link
+                      href="/member"
+                      className="text-sm bg-[#1b4332] text-white px-6 py-2.5 rounded-xl font-medium hover:bg-[#40916c] transition-colors"
+                    >
+                      查看会员方案
+                    </Link>
+                    <Link
+                      href="/login"
+                      className="text-sm border border-[#95d5b2] text-[#6b7280] px-6 py-2.5 rounded-xl hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors"
+                    >
+                      已有账户，登录
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="prose-brandlab">
+                <MDXRemote source={dbArticle.content} components={mdxComponents} />
+              </div>
+            )}
 
             <ShareButtons title={meta.title} url={pageUrl} />
 
