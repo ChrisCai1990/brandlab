@@ -149,9 +149,27 @@ function convertToWechat(html: string): Promise<string> {
 }
 
 async function copyAsRichText(html: string): Promise<void> {
-  const blob = new Blob([html], { type: "text/html" });
-  const item = new ClipboardItem({ "text/html": blob });
-  await navigator.clipboard.write([item]);
+  // Render into a hidden contenteditable div and use execCommand('copy').
+  // This produces a "browser page selection" copy that WeChat editor accepts,
+  // unlike ClipboardItem which writes raw HTML and gets stripped on paste.
+  const container = document.createElement("div");
+  container.contentEditable = "true";
+  container.style.cssText =
+    "position:fixed;top:-9999px;left:-9999px;width:750px;opacity:0;pointer-events:none;";
+  container.innerHTML = html;
+  document.body.appendChild(container);
+
+  try {
+    const range = document.createRange();
+    range.selectNodeContents(container);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+    document.execCommand("copy");
+    sel?.removeAllRanges();
+  } finally {
+    document.body.removeChild(container);
+  }
 }
 
 export default function WechatConverterPage() {
