@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminArticlesPage() {
   await connectDB();
-  const raw = await Article.find().sort({ createdAt: -1 }).select("title tag published date slug").lean();
+  const raw = await Article.find().sort({ createdAt: -1 }).select("title tag published date slug views").lean();
   const articles = raw.map((a) => ({
     id: String(a._id),
     title: a.title,
@@ -15,6 +15,7 @@ export default async function AdminArticlesPage() {
     published: a.published,
     date: a.date,
     slug: a.slug,
+    views: a.views ?? 0,
   }));
 
   return (
@@ -57,6 +58,7 @@ export default async function AdminArticlesPage() {
                 <th className="text-left text-[10px] text-[#6b7280] font-medium tracking-widest uppercase px-4 py-3 hidden md:table-cell">分类</th>
                 <th className="text-left text-[10px] text-[#6b7280] font-medium tracking-widest uppercase px-4 py-3 hidden md:table-cell">状态</th>
                 <th className="text-left text-[10px] text-[#6b7280] font-medium tracking-widest uppercase px-4 py-3 hidden lg:table-cell">日期</th>
+                <th className="text-left text-[10px] text-[#6b7280] font-medium tracking-widest uppercase px-4 py-3 hidden lg:table-cell">阅读量</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -82,6 +84,7 @@ export default async function AdminArticlesPage() {
                   <td className="px-4 py-4 text-xs text-[#6b7280] hidden lg:table-cell">
                     {new Date(a.date).toLocaleDateString("zh-CN")}
                   </td>
+                  <td className="px-4 py-4 text-xs text-[#6b7280] hidden lg:table-cell">{a.views ?? 0}</td>
                   <td className="px-4 py-4">
                     <Link href={`/admin/articles/${a.id}/edit`}
                       className="text-xs text-[#40916c] hover:text-[#2d6a4f] font-medium">

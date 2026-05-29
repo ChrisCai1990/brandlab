@@ -4,19 +4,21 @@ import { connectDB } from "@/lib/db";
 import { Article } from "@/lib/models";
 import { categories } from "@/lib/articles";
 import { LibraryFilter } from "@/components/LibraryFilter";
+import { Highlight } from "@/components/Highlight";
 
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 12;
 
-type ArticleRow = { id: string; slug: string; title: string; tag: string; desc: string; date: string; readTime: string };
+type ArticleRow = { id: string; slug: string; title: string; tag: string; desc: string; date: string; readTime: string; views: number };
 
-async function getAllArticles(): Promise<ArticleRow[]> {
+async function getAllArticles(sort?: string): Promise<ArticleRow[]> {
   try {
     await connectDB();
+    const sortOrder: Record<string, 1 | -1> = sort === "views" ? { views: -1 } : { date: -1 };
     const rows = await Article.find({ published: true })
-      .sort({ date: -1 })
-      .select("slug title tag desc date readTime")
+      .sort(sortOrder)
+      .select("slug title tag desc date readTime views")
       .lean();
     return rows.map((a) => ({
       id: String(a._id),
@@ -26,13 +28,14 @@ async function getAllArticles(): Promise<ArticleRow[]> {
       desc: a.desc ?? "",
       date: new Date(a.date).toISOString().split("T")[0],
       readTime: a.readTime ?? "5",
+      views: a.views ?? 0,
     }));
   } catch {
     return [];
   }
 }
 
-async function searchArticles(q: string, category?: string): Promise<ArticleRow[]> {
+async function searchArticles(q: string, category?: string, sort?: string): Promise<ArticleRow[]> {
   try {
     await connectDB();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,9 +45,10 @@ async function searchArticles(q: string, category?: string): Promise<ArticleRow[
       const regex = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
       query.$or = [{ title: regex }, { desc: regex }, { content: regex }];
     }
+    const sortOrder: Record<string, 1 | -1> = sort === "views" ? { views: -1 } : { date: -1 };
     const rows = await Article.find(query)
-      .sort({ date: -1 })
-      .select("slug title tag desc date readTime")
+      .sort(sortOrder)
+      .select("slug title tag desc date readTime views")
       .lean();
     return rows.map((a) => ({
       id: String(a._id),
@@ -54,6 +58,7 @@ async function searchArticles(q: string, category?: string): Promise<ArticleRow[
       desc: a.desc ?? "",
       date: new Date(a.date).toISOString().split("T")[0],
       readTime: a.readTime ?? "5",
+      views: a.views ?? 0,
     }));
   } catch {
     return [];
@@ -63,17 +68,17 @@ async function searchArticles(q: string, category?: string): Promise<ArticleRow[
 export default async function LibraryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; q?: string; page?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; page?: string; sort?: string }>;
 }) {
-  const { category, q, page } = await searchParams;
+  const { category, q, page, sort } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10));
 
-  // Always fetch all articles for category counts in the filter bar
-  const merged = await getAllArticles();
+  // Always fetch all articles for category counts in the filter bar (use default date sort for counts)
+  const merged = await getAllArticles(sort);
   // If there's a search query or category filter, query DB directly; otherwise reuse merged
   const filtered =
     q?.trim() || (category && category !== "全部")
-      ? await searchArticles(q ?? "", category)
+      ? await searchArticles(q ?? "", category, sort)
       : merged;
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -96,6 +101,7 @@ export default async function LibraryPage({
             articles={merged}
             categories={categories as unknown as string[]}
             searchQuery={q ?? ""}
+            activeSort={sort}
           />
         </Suspense>
 
@@ -119,8 +125,8 @@ export default async function LibraryPage({
                   <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#f0faf4] text-[#40916c]">{article.tag}</span>
                   <span className="text-[10px] text-[#6b7280]">{article.readTime} 分钟</span>
                 </div>
-                <h3 className="text-sm font-bold text-[#1b4332] mb-2 group-hover:text-[#2d6a4f] transition-colors leading-snug">{article.title}</h3>
-                <p className="text-xs text-[#6b7280] leading-relaxed line-clamp-2 mb-4">{article.desc}</p>
+                <h3 className="text-sm font-bold text-[#1b4332] mb-2 group-hover:text-[#2d6a4f] transition-colors leading-snug"><Highlight text={article.title} query={q ?? ""} /></h3>
+                <p className="text-xs text-[#6b7280] leading-relaxed line-clamp-2 mb-4"><Highlight text={article.desc} query={q ?? ""} /></p>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-[#95d5b2]">{article.date}</span>
                   <span className="text-xs text-[#52b788] group-hover:text-[#40916c] transition-colors">阅读全文 →</span>

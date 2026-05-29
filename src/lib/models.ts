@@ -12,6 +12,7 @@ export interface IArticle {
   readTime: string;
   content: string;
   published: boolean;
+  views: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,6 +27,7 @@ const ArticleSchema = new mongoose.Schema<IArticle>(
     readTime:  { type: String, default: "5" },
     content:   { type: String, default: "" },
     published: { type: Boolean, default: false },
+    views:     { type: Number, default: 0 },
   },
   { timestamps: true }
 );

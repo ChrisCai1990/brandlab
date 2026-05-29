@@ -10,11 +10,13 @@ export function LibraryFilter({
   articles,
   categories,
   searchQuery,
+  activeSort,
 }: {
   active: string;
   articles: Article[];
   categories: string[];
   searchQuery: string;
+  activeSort?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -62,6 +64,24 @@ export function LibraryFilter({
           </button>
         )}
       </form>
+
+      {/* Sort */}
+      <div className="flex gap-2 items-center">
+        <span className="text-[10px] text-[#6b7280]">排序：</span>
+        {[{ value: "date", label: "最新" }, { value: "views", label: "最热" }].map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => push({ sort: opt.value === "date" ? null : opt.value })}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              activeSort === opt.value || (opt.value === "date" && !activeSort)
+                ? "bg-[#2d6a4f] text-white border-[#2d6a4f]"
+                : "bg-white text-[#6b7280] border-[#95d5b2] hover:border-[#52b788]"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
 
       {/* Categories */}
       <div className="flex flex-wrap gap-2">

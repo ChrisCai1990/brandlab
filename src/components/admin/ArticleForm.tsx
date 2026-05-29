@@ -3,6 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+function SimplePreview({ content }: { content: string }) {
+  const lines = content.split("\n");
+  return (
+    <div className="prose-brandlab text-sm leading-relaxed space-y-3">
+      {lines.map((line, i) => {
+        if (line.startsWith("## ")) return <h2 key={i} className="text-sm font-bold text-[#1b4332] mt-6 mb-2 flex items-center gap-2"><span className="w-1 h-4 bg-[#2d6a4f] rounded-full shrink-0" />{line.slice(3)}</h2>;
+        if (line.startsWith("### ")) return <h3 key={i} className="text-sm font-bold text-[#1b4332] mt-4 mb-1">{line.slice(4)}</h3>;
+        if (line.startsWith("> ")) return <div key={i} className="bg-[#f0faf4] border-l-4 border-[#2d6a4f] rounded-r-xl px-4 py-3 text-sm font-bold text-[#1b4332]">{line.slice(2)}</div>;
+        if (line.startsWith("- ")) return <div key={i} className="flex items-start gap-2 text-sm text-[#6b7280]"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#52b788] shrink-0" />{line.slice(2)}</div>;
+        if (line.startsWith("---")) return <hr key={i} className="border-[#95d5b2] my-4" />;
+        if (line.trim() === "") return <div key={i} className="h-2" />;
+        return <p key={i} className="text-sm text-[#6b7280] leading-relaxed">{line}</p>;
+      })}
+    </div>
+  );
+}
+
 const TAGS = ["个人定位", "视觉表达", "内容运营", "账号增长", "平台策略", "IP案例", "工具方法"];
 
 type ArticleFormProps = {
@@ -33,6 +50,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [contentTab, setContentTab] = useState<"edit" | "preview">("edit");
 
   const [form, setForm] = useState({
     title: initialData?.title ?? "",
@@ -184,12 +202,14 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase mb-1.5">阅读时长（分钟）</label>
+            <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase mb-1.5">
+              阅读时长（分钟）<span className="ml-1 text-[#95d5b2] normal-case font-normal">自动计算</span>
+            </label>
             <input
               type="text"
               value={form.readTime}
-              onChange={(e) => setForm((f) => ({ ...f, readTime: e.target.value }))}
-              className="w-full text-xs text-[#1b4332] border border-[#95d5b2] rounded-lg px-3 py-2 focus:outline-none focus:border-[#40916c]"
+              readOnly
+              className="w-full text-xs text-[#6b7280] border border-[#95d5b2] rounded-lg px-3 py-2 bg-[#f0faf4] cursor-default"
             />
           </div>
         </div>
@@ -209,16 +229,45 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
         {/* Content */}
         <div className="bg-white border border-[#95d5b2] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
-            <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase">正文（Markdown）</label>
+            <div className="flex items-center gap-3">
+              <label className="block text-[10px] font-medium text-[#52b788] tracking-widest uppercase">正文（Markdown）</label>
+              <div className="flex gap-1">
+                {(["edit", "preview"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setContentTab(tab)}
+                    className={`text-[10px] px-2.5 py-1 rounded-md border transition-colors ${
+                      contentTab === tab
+                        ? "bg-[#2d6a4f] text-white border-[#2d6a4f]"
+                        : "text-[#6b7280] border-[#95d5b2] hover:border-[#52b788]"
+                    }`}
+                  >
+                    {tab === "edit" ? "编辑" : "预览"}
+                  </button>
+                ))}
+              </div>
+            </div>
             <span className="text-[10px] text-[#6b7280]">{form.content.length} 字</span>
           </div>
-          <textarea
-            value={form.content}
-            onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-            placeholder={`## 痛点切入\n\n你的开头...\n\n## 核心方法\n\n内容...`}
-            rows={24}
-            className="w-full text-sm text-[#4b5563] font-mono border-none outline-none resize-y placeholder-[#95d5b2] leading-relaxed"
-          />
+          {contentTab === "edit" ? (
+            <textarea
+              value={form.content}
+              onChange={(e) => {
+                const content = e.target.value;
+                const words = content.replace(/[^一-龥a-zA-Z0-9]/g, "").length;
+                const minutes = Math.max(1, Math.round(words / 300));
+                setForm((f) => ({ ...f, content, readTime: String(minutes) }));
+              }}
+              placeholder={`## 痛点切入\n\n你的开头...\n\n## 核心方法\n\n内容...`}
+              rows={24}
+              className="w-full text-sm text-[#4b5563] font-mono border-none outline-none resize-y placeholder-[#95d5b2] leading-relaxed"
+            />
+          ) : (
+            <div className="min-h-[400px] border border-[#f0faf4] rounded-xl p-4 bg-[#fafffe]">
+              <SimplePreview content={form.content} />
+            </div>
+          )}
         </div>
       </div>
     </div>

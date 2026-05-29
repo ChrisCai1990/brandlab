@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/db";
 import { Article } from "@/lib/models";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareButtons } from "@/components/ShareButtons";
+import { ViewTracker } from "@/components/ViewTracker";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -139,6 +140,7 @@ export default async function ArticlePage({
   return (
     <div className="bg-white min-h-screen">
       <ReadingProgress />
+      <ViewTracker slug={slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -182,7 +184,24 @@ export default async function ArticlePage({
             </div>
           </article>
 
-          <aside className="space-y-5">
+          {/* Mobile CTA - shown below article on small screens */}
+          <div className="lg:hidden mt-8 bg-[#1b4332] rounded-xl p-5 text-center">
+            <div className="w-12 h-12 rounded-xl bg-[#2d6a4f] flex items-center justify-center mx-auto mb-3">
+              <span className="text-white text-lg font-bold">拾</span>
+            </div>
+            <p className="text-xs font-bold text-white mb-1">加入创作者社群</p>
+            <p className="text-[10px] text-[#b7e4c7] mb-4 leading-relaxed">
+              5000+ 创作者在这里交流，还有3套免费模板等你领
+            </p>
+            <Link
+              href="/contact"
+              className="block text-xs bg-[#1b4332] border border-[#52b788] text-white px-4 py-2.5 rounded-lg hover:bg-[#2d6a4f] transition-colors"
+            >
+              加微信，进社群
+            </Link>
+          </div>
+
+          <aside className="hidden lg:block space-y-5">
             {related.length > 0 && (
               <div className="border border-[#95d5b2] rounded-xl p-5">
                 <h4 className="text-xs font-medium text-[#52b788] tracking-widest uppercase mb-4">

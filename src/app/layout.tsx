@@ -30,6 +30,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["https://brandlab.ink/opengraph-image"],
   },
+  alternates: {
+    types: {
+      "application/rss+xml": "https://brandlab.ink/feed.xml",
+    },
+  },
 };
 
 export default function RootLayout({
