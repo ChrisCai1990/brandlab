@@ -9,15 +9,17 @@ export const metadata: Metadata = {
     template: "%s · 品牌拾研社",
   },
   description: "每天一条干货，帮你把账号做成有影响力的个人品牌。专为创作者、超级个体、想靠账号变现的创业者。",
-  metadataBase: new URL("https://brandlab.cn"),
+  metadataBase: new URL("https://brandlab.ink"),
   openGraph: {
     type: "website",
     locale: "zh_CN",
     siteName: "品牌拾研社 · BrandLab",
-    url: "https://brandlab.cn",
+    title: "品牌拾研社 · BrandLab",
+    description: "每天一条干货，帮你把账号做成有影响力的个人品牌。专为创作者、超级个体、想靠账号变现的创业者。",
+    url: "https://brandlab.ink",
     images: [
       {
-        url: "/opengraph-image",
+        url: "https://brandlab.ink/opengraph-image",
         width: 1200,
         height: 630,
         alt: "品牌拾研社 · BrandLab",
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/opengraph-image"],
+    images: ["https://brandlab.ink/opengraph-image"],
   },
 };
 

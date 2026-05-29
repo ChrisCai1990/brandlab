@@ -45,7 +45,25 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticle(slug);
   if (!article) return {};
-  return { title: article.title, description: article.desc };
+  const ogImage = `https://brandlab.ink/library/${slug}/opengraph-image`;
+  return {
+    title: article.title,
+    description: article.desc,
+    openGraph: {
+      type: "article",
+      title: article.title,
+      description: article.desc,
+      url: `https://brandlab.ink/library/${slug}`,
+      siteName: "品牌拾研社 · BrandLab",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.desc,
+      images: [ogImage],
+    },
+  };
 }
 
 const mdxComponents = {
