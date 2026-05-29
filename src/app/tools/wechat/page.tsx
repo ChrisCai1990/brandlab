@@ -11,8 +11,6 @@ function applyStyleBlocks(doc: Document): void {
 
   const cssText = styleEls.map(s => s.textContent || "").join("\n");
 
-  // Use the browser's native CSS parser (CSSOM) for reliable rule extraction.
-  // Regex-based parsing breaks on comments, multi-line values, and complex selectors.
   const tmpStyle = document.createElement("style");
   tmpStyle.textContent = cssText;
   document.head.appendChild(tmpStyle);
@@ -21,39 +19,104 @@ function applyStyleBlocks(doc: Document): void {
     const sheet = tmpStyle.sheet;
     if (!sheet) return;
 
+    // 1. Collect CSS variable definitions from :root / html
+    const cssVars: Record<string, string> = {};
+    for (const rule of Array.from(sheet.cssRules)) {
+      if (!(rule instanceof CSSStyleRule)) continue;
+      if (!/^(?::root|html)$/.test(rule.selectorText.trim())) continue;
+      const s = rule.style;
+      for (let i = 0; i < s.length; i++) {
+        const p = s[i];
+        if (p.startsWith("--")) cssVars[p] = s.getPropertyValue(p).trim();
+      }
+    }
+
+    const resolveVars = (val: string): string =>
+      val.replace(/var\((--[^,)]+)(?:,\s*([^)]+))?\)/g, (_, name, fb) =>
+        cssVars[name.trim()] || (fb ?? ""));
+
+    // 2. Save original inline styles — they have the highest specificity and must win
+    const origStyles = new Map<Element, string>();
+    doc.querySelectorAll("[style]").forEach(el => {
+      origStyles.set(el, el.getAttribute("style") || "");
+      el.removeAttribute("style");
+    });
+
+    // 3. Apply CSS rules in document order, APPENDING each time so later
+    //    (more-specific) rules override earlier ones — matches normal CSS cascade
     for (const rule of Array.from(sheet.cssRules)) {
       if (!(rule instanceof CSSStyleRule)) continue;
 
-      // Split compound selectors; skip pseudo-class/element ones
-      // (they can't be meaningfully inlined and WeChat ignores them anyway)
-      const selectors = rule.selectorText
-        .split(",")
-        .map(s => s.trim())
-        .filter(s => s && !/:[\w-]/.test(s));
+      const sel = rule.selectorText;
 
-      if (selectors.length === 0) continue;
+      // Handle ::before / ::after — inject content as an inline <span>
+      if (/::?(?:before|after)/.test(sel)) {
+        const isBefore = /::?before/.test(sel);
+        const content = rule.style.getPropertyValue("content");
+        if (!content || content === "none" || content === "normal") continue;
+        const text = content.replace(/^(['"`])(.*)\1$/, "$2");
+        if (!text) continue;
 
-      const ruleStyle = rule.style;
-      const decls: string[] = [];
-      for (let i = 0; i < ruleStyle.length; i++) {
-        const prop = ruleStyle[i];
-        const val = ruleStyle.getPropertyValue(prop);
-        const prio = ruleStyle.getPropertyPriority(prop);
-        if (val) decls.push(prio ? `${prop}:${val} !important` : `${prop}:${val}`);
+        const rs = rule.style;
+        const pseudoDecls: string[] = [];
+        for (let i = 0; i < rs.length; i++) {
+          const p = rs[i];
+          if (p === "content") continue;
+          let v = rs.getPropertyValue(p);
+          if (!v) continue;
+          if (v.includes("var(")) { v = resolveVars(v); if (v.includes("var(")) continue; }
+          pseudoDecls.push(`${p}:${v}`);
+        }
+
+        const baseSel = sel.replace(/::?(?:before|after).*/, "").trim();
+        if (!baseSel) continue;
+        try {
+          doc.querySelectorAll(baseSel).forEach(el => {
+            const span = doc.createElement("span");
+            if (pseudoDecls.length) span.setAttribute("style", pseudoDecls.join(";"));
+            span.textContent = text;
+            if (isBefore) el.insertBefore(span, el.firstChild);
+            else el.appendChild(span);
+          });
+        } catch { /* unsupported selector */ }
+        continue;
       }
-      if (decls.length === 0) continue;
+
+      // Skip other pseudo-classes/elements (:hover, :focus, :nth-child…)
+      const selectors = sel.split(",").map(s => s.trim()).filter(s => s && !/:[\w-]/.test(s));
+      if (!selectors.length) continue;
+
+      const rs = rule.style;
+      const decls: string[] = [];
+      for (let i = 0; i < rs.length; i++) {
+        const p = rs[i];
+        let v = rs.getPropertyValue(p);
+        const prio = rs.getPropertyPriority(p);
+        if (!v) continue;
+        if (v.includes("var(")) { v = resolveVars(v); if (v.includes("var(")) continue; }
+        decls.push(prio ? `${p}:${v} !important` : `${p}:${v}`);
+      }
+      if (!decls.length) continue;
       const declStr = decls.join(";");
 
-      for (const sel of selectors) {
+      for (const s of selectors) {
         try {
-          doc.querySelectorAll(sel).forEach(el => {
+          doc.querySelectorAll(s).forEach(el => {
             const existing = el.getAttribute("style") || "";
-            // Class styles go first; existing inline styles override them (higher specificity)
-            el.setAttribute("style", existing ? `${declStr};${existing}` : declStr);
+            // APPEND: later rules go to the end and win (mirrors CSS cascade order)
+            el.setAttribute("style", existing ? `${existing};${declStr}` : declStr);
           });
-        } catch { /* unsupported selector in DOMParser context */ }
+        } catch { /* unsupported selector */ }
       }
     }
+
+    // 4. Re-apply original inline styles last — they always win
+    for (const [el, orig] of origStyles) {
+      if (!orig) continue;
+      const cls = el.getAttribute("style") || "";
+      el.setAttribute("style", cls ? `${cls};${orig}` : orig);
+    }
+
   } finally {
     document.head.removeChild(tmpStyle);
   }
@@ -67,6 +130,7 @@ function applyStyleBlocks(doc: Document): void {
 const REMOVE_TAGS = new Set([
   "script", "style", "link", "meta", "title", "noscript",
   "head", "svg", "canvas", "video", "audio", "form",
+  "button", "input", "select", "textarea", "iframe",
 ]);
 const BLOCK_TAGS = new Set([
   "div", "section", "article", "main", "header", "footer",
