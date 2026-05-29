@@ -125,6 +125,187 @@ function applyStyleBlocks(doc: Document): void {
   doc.querySelectorAll("[class]").forEach(el => el.removeAttribute("class"));
 }
 
+// ─── Cover generator ─────────────────────────────────────────────────────────
+
+type CoverScheme = "dark" | "brand" | "light";
+
+function buildCoverSVG(title: string, sub: string, scheme: CoverScheme): string {
+  const pal = {
+    dark:  { bg: "#111111", title: "#ffffff", sub: "#666666", rule: "#2a2a2a", kicker: "#3a3a3a", foot: "#252525" },
+    brand: { bg: "#1b4332", title: "#ffffff", sub: "#6baf8a", rule: "#2d6a4f", kicker: "#4a9970", foot: "#2d6a4f" },
+    light: { bg: "#fafafa", title: "#111111", sub: "#888888", rule: "#dedede", kicker: "#cccccc", foot: "#dedede" },
+  }[scheme];
+
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  // Wrap title: split roughly at midpoint on a punctuation if possible
+  const MAX = 14;
+  const lines: string[] = [];
+  if (title.length <= MAX) {
+    lines.push(title);
+  } else {
+    const mid = Math.ceil(title.length / 2);
+    let bp = mid;
+    for (let i = mid; i >= Math.max(0, mid - 5); i--) {
+      if ("，。、！？·：".includes(title[i] ?? "")) { bp = i + 1; break; }
+    }
+    lines.push(title.slice(0, bp).trim());
+    if (title.slice(bp).trim()) lines.push(title.slice(bp).trim());
+  }
+
+  const W = 900, H = 383, cx = 450;
+  const LINE_H = 64;
+  const totalH = lines.length * LINE_H;
+  const ty0 = H / 2 - totalH / 2 + LINE_H / 2;
+  const r1 = ty0 - LINE_H / 2 - 18;
+  const r2 = ty0 + totalH - LINE_H / 2 + 18;
+  const sy = r2 + 34;
+
+  const titleRows = lines
+    .map((l, i) =>
+      `<text x="${cx}" y="${ty0 + i * LINE_H}" font-family="-apple-system,'PingFang SC','Helvetica Neue',sans-serif" font-size="46" font-weight="600" fill="${pal.title}" text-anchor="middle" dominant-baseline="middle">${esc(l)}</text>`)
+    .join("\n  ");
+
+  return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="${W}" height="${H}" fill="${pal.bg}"/>
+  <text x="${cx}" y="44" font-family="-apple-system,'PingFang SC',sans-serif" font-size="10" fill="${pal.kicker}" text-anchor="middle" letter-spacing="4">BRANDLAB · 品牌拾研社</text>
+  <line x1="240" y1="${r1}" x2="660" y2="${r1}" stroke="${pal.rule}" stroke-width="0.8"/>
+  ${titleRows}
+  <line x1="240" y1="${r2}" x2="660" y2="${r2}" stroke="${pal.rule}" stroke-width="0.8"/>
+  ${sub ? `<text x="${cx}" y="${sy}" font-family="-apple-system,'PingFang SC',sans-serif" font-size="15" fill="${pal.sub}" text-anchor="middle">${esc(sub)}</text>` : ""}
+  <text x="${cx}" y="364" font-family="-apple-system,'PingFang SC',sans-serif" font-size="10" fill="${pal.foot}" text-anchor="middle" letter-spacing="5">BRANDLAB.INK</text>
+</svg>`;
+}
+
+function CoverGenerator({ source }: { source: string }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [sub, setSub] = useState("");
+  const [scheme, setScheme] = useState<CoverScheme>("dark");
+  const [dlBusy, setDlBusy] = useState(false);
+
+  const handleOpen = () => {
+    if (source.trim()) {
+      const doc = new DOMParser().parseFromString(source, "text/html");
+      const tEl = doc.querySelector("h1, .hero-title, .cover-title");
+      const sEl = doc.querySelector(".hero-desc, .cover-sub, .hero-sub");
+      setTitle(tEl?.textContent?.trim() ?? "");
+      setSub(sEl?.textContent?.trim() ?? "");
+    }
+    setOpen(true);
+  };
+
+  const svg = buildCoverSVG(title || "文章标题", sub, scheme);
+  const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+
+  const downloadPNG = async () => {
+    setDlBusy(true);
+    try {
+      const img = new Image();
+      await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = rej; img.src = svgUrl; });
+      const canvas = document.createElement("canvas");
+      canvas.width = 900; canvas.height = 383;
+      canvas.getContext("2d")!.drawImage(img, 0, 0);
+      const a = document.createElement("a");
+      a.download = "cover.png"; a.href = canvas.toDataURL("image/png"); a.click();
+    } finally { setDlBusy(false); }
+  };
+
+  const SCHEMES: { id: CoverScheme; label: string }[] = [
+    { id: "dark",  label: "深夜黑" },
+    { id: "brand", label: "品牌绿" },
+    { id: "light", label: "简约白" },
+  ];
+
+  return (
+    <>
+      <button
+        onClick={handleOpen}
+        className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium text-[#6b7280] hover:border-gray-300 hover:text-[#111] transition-all"
+      >
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <rect x="1" y="1" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
+          <line x1="4" y1="11" x2="9" y2="11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          <line x1="6.5" y1="9" x2="6.5" y2="11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+        </svg>
+        生成封面
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ background: "rgba(0,0,0,0.55)" }}
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+              <span className="text-sm font-medium text-[#111]">生成封面图</span>
+              <button onClick={() => setOpen(false)} className="text-gray-300 hover:text-gray-500 text-lg leading-none transition-colors">✕</button>
+            </div>
+
+            {/* Preview */}
+            <div className="px-5 pt-4">
+              <img src={svgUrl} alt="封面预览" className="w-full rounded-lg" style={{ aspectRatio: "900/383" }} />
+            </div>
+
+            {/* Controls */}
+            <div className="px-5 py-4 space-y-3">
+              {/* Scheme picker */}
+              <div className="flex gap-2">
+                {SCHEMES.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => setScheme(s.id)}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      scheme === s.id
+                        ? "border-[#111] text-[#111] bg-gray-50"
+                        : "border-gray-200 text-gray-400 hover:border-gray-300"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Title */}
+              <input
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="标题"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+              />
+
+              {/* Subtitle */}
+              <input
+                value={sub}
+                onChange={e => setSub(e.target.value)}
+                placeholder="副标题（可选）"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 pb-5">
+              <button
+                onClick={downloadPNG}
+                disabled={!title.trim() || dlBusy}
+                className="w-full py-2.5 rounded-xl bg-[#111] text-white text-sm font-medium disabled:opacity-30 hover:bg-[#333] transition-colors"
+              >
+                {dlBusy ? "生成中…" : "下载 PNG（900 × 383）"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ─── Share button ────────────────────────────────────────────────────────────
 
 function ShareButton() {
@@ -348,6 +529,7 @@ export default function WechatConverterPage() {
         {error && <span className="text-sm text-red-500 shrink-0">{error}</span>}
 
         <div className="ml-auto flex items-center gap-3">
+          <CoverGenerator source={source} />
           {source && (
             <button
               onClick={handleClear}
