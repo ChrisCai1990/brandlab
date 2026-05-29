@@ -125,6 +125,43 @@ function applyStyleBlocks(doc: Document): void {
   doc.querySelectorAll("[class]").forEach(el => el.removeAttribute("class"));
 }
 
+// ─── Share button ────────────────────────────────────────────────────────────
+
+function ShareButton() {
+  const [state, setState] = useState<"idle" | "copied">("idle");
+  const copy = () => {
+    navigator.clipboard.writeText("https://brandlab.ink/tools/wechat");
+    setState("copied");
+    setTimeout(() => setState("idle"), 2000);
+  };
+  return (
+    <button
+      onClick={copy}
+      className="flex items-center gap-1.5 text-xs text-[#9ca3af] hover:text-[#40916c] transition-colors"
+    >
+      {state === "copied" ? (
+        <>
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7l3.5 3.5L12 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          链接已复制
+        </>
+      ) : (
+        <>
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+            <circle cx="3" cy="7" r="1.8" stroke="currentColor" strokeWidth="1.3"/>
+            <circle cx="11" cy="2.5" r="1.8" stroke="currentColor" strokeWidth="1.3"/>
+            <circle cx="11" cy="11.5" r="1.8" stroke="currentColor" strokeWidth="1.3"/>
+            <line x1="4.7" y1="6.1" x2="9.3" y2="3.4" stroke="currentColor" strokeWidth="1.3"/>
+            <line x1="4.7" y1="7.9" x2="9.3" y2="10.6" stroke="currentColor" strokeWidth="1.3"/>
+          </svg>
+          分享工具
+        </>
+      )}
+    </button>
+  );
+}
+
 // ─── DOM → WeChat <section> HTML ─────────────────────────────────────────────
 
 const REMOVE_TAGS = new Set([
@@ -446,11 +483,15 @@ export default function WechatConverterPage() {
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 border-t border-gray-100 bg-gray-50 px-6 py-2 flex items-center">
+      <div className="shrink-0 border-t border-gray-100 bg-gray-50 px-6 py-2 flex items-center gap-4">
         <p className="text-xs text-[#9ca3af]">
           复制全部 → 公众号编辑器 → <kbd className="bg-gray-200 rounded px-1 py-0.5 text-[11px] text-[#555]">Ctrl+V</kbd> 粘贴
         </p>
-        <span className="text-xs text-[#c0c0c0] ml-auto">section 原生格式 · 背景色 · 圆角 · flex 完整保留</span>
+        <div className="ml-auto flex items-center gap-3">
+          <ShareButton />
+          <span className="text-xs text-[#d0d0d0]">·</span>
+          <span className="text-xs text-[#c0c0c0]">section 原生格式 · 背景色 · 圆角 · flex 完整保留</span>
+        </div>
       </div>
 
     </div>
