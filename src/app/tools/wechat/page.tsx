@@ -3,114 +3,56 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 
-// ─── CSS pre-inliner (壹伴 approach) ─────────────────────────────────────────
-// Parse <style> blocks and apply matching rules as inline styles.
-// This runs synchronously in the browser — no iframe or CDN timing needed.
+// ═══════════════════════════════════════════════════════════════
+// STEP 1: CSS → Inline styles  (壹伴核心逻辑)
+// 正则解析 <style> 块，把每条 CSS 规则应用到匹配元素的 style 属性
+// 完全不需要 iframe 或 getComputedStyle，同步执行，零延迟
+// ═══════════════════════════════════════════════════════════════
 
-function preInlineCss(html: string): string {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-
+function applyStyleBlocks(doc: Document): void {
   const styleEls = Array.from(doc.querySelectorAll("style"));
-  if (styleEls.length === 0) return html;
+  if (styleEls.length === 0) return;
 
-  // Inject a temporary <style> into the main document so the browser can
-  // parse the CSS rules via CSSOM (handles selectors, shorthand, etc.)
-  const tempStyle = document.createElement("style");
-  tempStyle.textContent = styleEls.map(s => s.textContent || "").join("\n");
-  document.head.appendChild(tempStyle);
+  const cssText = styleEls.map(s => s.textContent || "").join("\n");
 
-  try {
-    const sheet = tempStyle.sheet;
-    if (!sheet) return html;
-
-    const rules = Array.from(sheet.cssRules).filter(
-      r => r instanceof CSSStyleRule,
-    ) as CSSStyleRule[];
-
-    // Apply each rule to matching elements in the parsed document
-    for (const rule of rules) {
-      try {
-        doc.querySelectorAll(rule.selectorText).forEach(el => {
-          const decls = Array.from(rule.style)
-            .map(p => `${p}:${rule.style.getPropertyValue(p)}`)
-            .join(";");
-          const existing = el.getAttribute("style") || "";
-          el.setAttribute("style", existing ? `${existing};${decls}` : decls);
-        });
-      } catch {
-        // Invalid selector — skip
-      }
-    }
-  } finally {
-    document.head.removeChild(tempStyle);
+  // Parse CSS rules: find all "selector { declarations }" blocks
+  // Handles nested braces by matching only single-depth
+  const ruleRe = /([^@{}/][^{}]*?)\{([^{}]+)\}/g;
+  const rules: Array<[string, string]> = [];
+  let m;
+  while ((m = ruleRe.exec(cssText)) !== null) {
+    const decls = m[2].trim().replace(/\s*:\s*/g, ":").replace(/\s*;\s*/g, ";");
+    m[1].split(",").forEach(sel => {
+      const s = sel.trim();
+      if (s && decls) rules.push([s, decls]);
+    });
   }
 
-  // Remove style tags and class attributes — output is fully inline
+  // Apply rules in document order (later rules override earlier ones via style concatenation)
+  for (const [sel, decls] of rules) {
+    try {
+      doc.querySelectorAll(sel).forEach(el => {
+        const existing = el.getAttribute("style") || "";
+        el.setAttribute("style", existing ? `${existing};${decls}` : decls);
+      });
+    } catch {
+      // Unsupported selector (pseudo-classes etc.) — skip
+    }
+  }
+
+  // Remove <style> tags and class attributes — output is fully inline
   styleEls.forEach(s => s.remove());
   doc.querySelectorAll("[class]").forEach(el => el.removeAttribute("class"));
-
-  return `<!DOCTYPE html><html><head>${doc.head.innerHTML}</head><body>${doc.body.innerHTML}</body></html>`;
 }
 
-// ─── Style extraction ────────────────────────────────────────────────────────
-
-const STYLE_PROPS = [
-  "color", "font-size", "font-weight", "font-family", "font-style",
-  "text-decoration", "text-align", "line-height", "letter-spacing", "text-transform",
-  "margin-top", "margin-bottom", "margin-left", "margin-right",
-  "padding-top", "padding-bottom", "padding-left", "padding-right",
-  "border-top", "border-bottom", "border-left", "border-right", "border-radius",
-  "background-color",
-  "display", "flex-direction", "flex-wrap", "justify-content",
-  "align-items", "align-self", "flex", "gap", "flex-shrink",
-  "width", "max-width", "min-width", "height",
-  "text-indent", "white-space", "word-break", "vertical-align", "opacity",
-];
-
-function shouldSkip(prop: string, val: string): boolean {
-  if (!val || val === "initial" || val === "inherit" || val === "unset") return true;
-  if (prop === "background-color" && (val === "rgba(0, 0, 0, 0)" || val === "transparent")) return true;
-  if (["margin-top","margin-bottom","margin-left","margin-right",
-       "padding-top","padding-bottom","padding-left","padding-right"].includes(prop) && val === "0px") return true;
-  if (prop.startsWith("border") && (val.includes("none") || val === "0px")) return true;
-  if (prop === "opacity" && val === "1") return true;
-  if (prop === "text-indent" && val === "0px") return true;
-  if (prop === "letter-spacing" && val === "normal") return true;
-  if (prop === "vertical-align" && val === "baseline") return true;
-  if (prop === "text-transform" && val === "none") return true;
-  if (prop === "text-decoration" && val.startsWith("none")) return true;
-  if (prop === "display" && val === "inline") return true;
-  if (prop === "gap" && (val === "normal" || val === "0px")) return true;
-  if (prop === "flex-direction" && val === "row") return true;
-  if (prop === "flex-wrap" && val === "nowrap") return true;
-  if ((prop === "align-items" || prop === "justify-content") && val === "normal") return true;
-  if (prop === "flex" && val === "0 1 auto") return true;
-  if (prop === "flex-shrink" && val === "1") return true;
-  if (prop === "white-space" && val === "normal") return true;
-  return false;
-}
-
-function getInlineStyle(el: Element, win: Window): string {
-  const cs = win.getComputedStyle(el as HTMLElement);
-  const parts: string[] = [];
-  for (const prop of STYLE_PROPS) {
-    const val = cs.getPropertyValue(prop);
-    if (shouldSkip(prop, val)) continue;
-    if (prop === "font-size") {
-      const px = parseFloat(val);
-      if (!isNaN(px) && px > 22) { parts.push("font-size:22px"); continue; }
-    }
-    parts.push(`${prop}:${val}`);
-  }
-  return parts.join(";");
-}
-
-// ─── DOM → WeChat <section> HTML ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// STEP 2: DOM → WeChat <section> HTML
+// 把元素转为微信原生 section 格式，直接使用 style 属性里的内联样式
+// ═══════════════════════════════════════════════════════════════
 
 const REMOVE_TAGS = new Set([
   "script", "style", "link", "meta", "title", "noscript",
-  "head", "svg", "canvas", "video", "audio", "iframe", "form",
+  "head", "svg", "canvas", "video", "audio", "form",
 ]);
 const BLOCK_TAGS = new Set([
   "div", "section", "article", "main", "header", "footer",
@@ -119,7 +61,7 @@ const BLOCK_TAGS = new Set([
 ]);
 const KEEP_ATTRS = new Set(["src", "alt", "href", "width", "height", "colspan", "rowspan"]);
 
-function processNode(node: Node, win: Window): string {
+function nodeToWechat(node: Node): string {
   if (node.nodeType === Node.TEXT_NODE) return node.textContent || "";
   if (node.nodeType !== Node.ELEMENT_NODE) return "";
 
@@ -131,37 +73,53 @@ function processNode(node: Node, win: Window): string {
   if (tag === "hr") return `<section style="border-top:0.5px solid rgb(229,229,229);margin:16px 0;"></section>`;
 
   let inner = "";
-  for (const child of Array.from(el.childNodes)) inner += processNode(child, win);
+  for (const child of Array.from(el.childNodes)) inner += nodeToWechat(child);
 
   if (tag === "img") {
     const src = el.getAttribute("src") || "";
     const alt = el.getAttribute("alt") || "";
-    const extra = getInlineStyle(el, win);
-    return `<img src="${src}" alt="${alt}" style="max-width:100%;height:auto;display:block;margin:8px auto${extra ? ";" + extra : ""}">`;
+    const s = el.getAttribute("style") || "";
+    const style = `max-width:100%;height:auto;display:block;margin:8px auto${s ? ";" + s : ""}`;
+    return `<img src="${src}" alt="${alt}" style="${style}">`;
   }
 
   if (tag === "a") {
-    const s = getInlineStyle(el, win);
+    // WeChat strips external links — keep text, lose href
+    const s = el.getAttribute("style") || "";
     return `<span${s ? ` style="${s}"` : ""}>${inner}</span>`;
   }
 
-  const style = getInlineStyle(el, win);
+  const style = el.getAttribute("style") || "";
   const styleAttr = style ? ` style="${style}"` : "";
   const extraAttrs = Array.from(el.attributes)
     .filter(a => KEEP_ATTRS.has(a.name))
-    .map(a => `${a.name}="${a.value}"`).join(" ");
-  const attrs = extraAttrs ? " " + extraAttrs : "";
+    .map(a => `${a.name}="${a.value}"`)
+    .join(" ");
+  const ea = extraAttrs ? " " + extraAttrs : "";
 
-  // All block elements → <section> (WeChat native format)
-  if (BLOCK_TAGS.has(tag)) return `<section${styleAttr}${attrs}>${inner}</section>`;
+  // Block elements → <section> (WeChat native format)
+  if (BLOCK_TAGS.has(tag)) return `<section${styleAttr}${ea}>${inner}</section>`;
 
-  return `<${tag}${styleAttr}${attrs}>${inner}</${tag}>`;
+  return `<${tag}${styleAttr}${ea}>${inner}</${tag}>`;
 }
 
-function buildWechatHtml(iframeDoc: Document, iframeWin: Window): string {
-  const body = iframeDoc.body;
+// ═══════════════════════════════════════════════════════════════
+// Full conversion pipeline
+// ═══════════════════════════════════════════════════════════════
+
+function convertHtmlToWechat(html: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+
+  // Inline all CSS from <style> blocks (壹伴 approach)
+  applyStyleBlocks(doc);
+
+  // Build WeChat section-based output
   let content = "";
-  for (const child of Array.from(body.childNodes)) content += processNode(child, iframeWin);
+  for (const child of Array.from(doc.body.childNodes)) {
+    content += nodeToWechat(child);
+  }
+
   return (
     `<section style="max-width:640px;margin:0 auto;padding:1.5rem 0;` +
     `font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;` +
@@ -171,7 +129,9 @@ function buildWechatHtml(iframeDoc: Document, iframeWin: Window): string {
   );
 }
 
-// ─── Copy tab ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Copy tab
+// ═══════════════════════════════════════════════════════════════
 
 function openCopyTab(html: string): void {
   const page = `<!DOCTYPE html>
@@ -182,7 +142,7 @@ function openCopyTab(html: string): void {
 <title>公众号内容 — 按 Ctrl+C 复制</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:0;background:#e8e8e8;font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
+body{margin:0;padding:0;background:#e8e8e8;font-family:-apple-system,'PingFang SC',sans-serif}
 #tip{position:fixed;top:0;left:0;right:0;z-index:9999;background:#1b4332;color:#fff;text-align:center;padding:14px 20px;font-size:14px}
 #tip kbd{background:#2d6a4f;border:1px solid #52b788;border-radius:4px;padding:2px 8px;font-family:inherit;font-size:13px}
 #wrap{padding:64px 20px 40px}
@@ -206,7 +166,9 @@ window.addEventListener('load',function(){
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Component
+// ═══════════════════════════════════════════════════════════════
 
 export default function WechatConverterPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -217,10 +179,6 @@ export default function WechatConverterPage() {
   const [copied, setCopied] = useState<"html" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const rawIframeRef = useRef<HTMLIFrameElement>(null);
-  const shouldProcessRef = useRef(false);
-  // Delay before extracting: short for CSS-only templates, long for Tailwind CDN
-  const extractDelayRef = useRef(800);
 
   useEffect(() => {
     return () => { if (rawBlobUrl) URL.revokeObjectURL(rawBlobUrl); };
@@ -232,52 +190,22 @@ export default function WechatConverterPage() {
     setError("");
     setOutput("");
     setProcessing(true);
-    shouldProcessRef.current = true;
 
-    const text = await f.text();
+    try {
+      const text = await f.text();
 
-    // Detect Tailwind CDN — requires JS execution, needs longer wait
-    const hasTailwindCdn = /tailwindcss\.com|cdn\.tailwind/i.test(text);
+      // Original HTML → display iframe (left panel preview)
+      const origBlob = new Blob([text], { type: "text/html;charset=utf-8" });
+      setRawBlobUrl(URL.createObjectURL(origBlob));
 
-    if (hasTailwindCdn) {
-      // Tailwind: load original HTML, wait 3.5s for CDN to apply classes
-      extractDelayRef.current = 3500;
-      const blob = new Blob([text], { type: "text/html;charset=utf-8" });
-      setRawBlobUrl(URL.createObjectURL(blob));
-    } else {
-      // CSS <style> blocks or inline styles: pre-inline synchronously (壹伴 approach)
-      // — no CDN timing dependency, works instantly
-      extractDelayRef.current = 600;
-      const inlined = preInlineCss(text);
-      const blob = new Blob([inlined], { type: "text/html;charset=utf-8" });
-      setRawBlobUrl(URL.createObjectURL(blob));
+      // Convert synchronously — no iframe, no CDN, no timing issues
+      const result = convertHtmlToWechat(text);
+      setOutput(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "处理失败，请重试");
+    } finally {
+      setProcessing(false);
     }
-  }, []);
-
-  // After the display iframe loads, wait for styles to settle then extract.
-  // For CSS templates this is near-instant; for Tailwind we wait for the CDN.
-  const handleIframeLoad = useCallback(() => {
-    if (!shouldProcessRef.current) return;
-    setTimeout(() => {
-      if (!shouldProcessRef.current) return;
-      shouldProcessRef.current = false;
-      const iframe = rawIframeRef.current;
-      if (!iframe?.contentDocument || !iframe?.contentWindow) {
-        setProcessing(false);
-        return;
-      }
-      try {
-        const result = buildWechatHtml(
-          iframe.contentDocument,
-          iframe.contentWindow as Window,
-        );
-        setOutput(result);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "处理失败");
-      } finally {
-        setProcessing(false);
-      }
-    }, extractDelayRef.current);
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -289,15 +217,20 @@ export default function WechatConverterPage() {
 
   const handleCopyHtml = async () => {
     if (!output) return;
-    try { await navigator.clipboard.writeText(output); setCopied("html"); setTimeout(() => setCopied(null), 2500); }
-    catch { setError("复制失败，请手动从下方源码区域复制"); }
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied("html");
+      setTimeout(() => setCopied(null), 2500);
+    } catch {
+      setError("复制失败，请手动从下方源码区域复制");
+    }
   };
 
   const reset = () => {
-    setOutput(""); setRawBlobUrl(""); setFile(null);
-    setError(""); setProcessing(false);
-    shouldProcessRef.current = false;
+    setOutput(""); setRawBlobUrl(""); setFile(null); setError("");
   };
+
+  const done = !!output;
 
   return (
     <div className="bg-white min-h-screen">
@@ -317,13 +250,11 @@ export default function WechatConverterPage() {
           <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">工具</p>
           <h1 className="text-3xl font-bold text-[#1b4332] mb-3">公众号排版转换器</h1>
           <p className="text-sm text-[#6b7280]">
-            上传任意 HTML 文件，转换为微信公众号原生{" "}
-            <code className="bg-gray-100 px-1 rounded text-xs">&lt;section&gt;</code>{" "}
-            格式，直接粘贴到编辑器
+            上传 HTML 文件（支持 CSS 类写法），自动内联样式转为微信公众号原生格式，直接粘贴到编辑器
           </p>
         </div>
 
-        {/* Upload — shown until a file is selected */}
+        {/* Upload */}
         {!rawBlobUrl && (
           <>
             <div
@@ -340,13 +271,13 @@ export default function WechatConverterPage() {
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
               <div className="text-4xl mb-4">📄</div>
               <p className="text-sm font-medium text-[#1b4332] mb-2">拖拽 HTML 文件到这里，或点击选择</p>
-              <p className="text-xs text-[#6b7280]">支持 .html / .htm 格式</p>
+              <p className="text-xs text-[#6b7280]">支持 CSS class 写法 / 内联样式 / Tailwind 模板</p>
             </div>
             {error && <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg"><p className="text-sm text-red-600">{error}</p></div>}
           </>
         )}
 
-        {/* Results — shown as soon as a blob URL exists */}
+        {/* Results */}
         {rawBlobUrl && (
           <div className="space-y-6">
 
@@ -354,7 +285,7 @@ export default function WechatConverterPage() {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <p className="text-sm font-bold text-[#1b4332]">
-                  {processing ? "正在提取样式（等待 Tailwind 渲染）…" : "转换完成"}
+                  {processing ? "转换中…" : "转换完成"}
                 </p>
                 <p className="text-xs text-[#6b7280] mt-0.5">来源：{file?.name}</p>
               </div>
@@ -363,11 +294,11 @@ export default function WechatConverterPage() {
                   className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors">
                   重新上传
                 </button>
-                <button onClick={handleCopyHtml} disabled={!output}
+                <button onClick={handleCopyHtml} disabled={!done}
                   className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors disabled:opacity-40">
                   {copied === "html" ? "✓ 已复制" : "复制 HTML 源码"}
                 </button>
-                <button onClick={handleOpenCopyTab} disabled={!output}
+                <button onClick={handleOpenCopyTab} disabled={!done}
                   className="text-xs bg-[#1b4332] text-white px-5 py-2 rounded-lg hover:bg-[#40916c] transition-colors font-medium disabled:opacity-40">
                   打开复制页 → 再按 Ctrl+C
                 </button>
@@ -379,40 +310,33 @@ export default function WechatConverterPage() {
             {/* Dual preview */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
-              {/* Left: original (this iframe is also used for style extraction) */}
+              {/* Left: original */}
               <div className="border border-[#95d5b2] rounded-xl overflow-hidden">
                 <div className="border-b border-[#95d5b2] bg-[#f0faf4] px-5 py-3 flex items-center justify-between">
                   <p className="text-xs font-medium text-[#52b788] tracking-widest uppercase">原始模板</p>
-                  <p className="text-xs text-[#6b7280]">完整渲染 · 样式从此提取</p>
+                  <p className="text-xs text-[#6b7280]">上传文件完整渲染</p>
                 </div>
                 <div style={{ height: "520px" }} className="bg-white">
-                  <iframe
-                    ref={rawIframeRef}
-                    src={rawBlobUrl}
-                    onLoad={handleIframeLoad}
-                    className="w-full h-full border-none"
-                    title="原始模板"
-                    sandbox="allow-same-origin allow-scripts"
-                  />
+                  <iframe src={rawBlobUrl} className="w-full h-full border-none"
+                    title="原始模板" sandbox="allow-same-origin allow-scripts" />
                 </div>
               </div>
 
-              {/* Right: WeChat section-format */}
+              {/* Right: WeChat format */}
               <div className="border border-[#95d5b2] rounded-xl overflow-hidden">
                 <div className="border-b border-[#95d5b2] bg-[#f0faf4] px-5 py-3 flex items-center justify-between">
                   <p className="text-xs font-medium text-[#52b788] tracking-widest uppercase">WeChat 格式</p>
-                  <p className="text-xs text-[#6b7280]">section 原生格式 · 模拟手机宽度</p>
+                  <p className="text-xs text-[#6b7280]">section 原生 · 手机宽度预览</p>
                 </div>
                 <div className="overflow-auto bg-[#f0f0f0]" style={{ height: "520px" }}>
                   {processing ? (
-                    <div className="flex flex-col items-center justify-center h-full gap-3">
+                    <div className="flex items-center justify-center h-full gap-3">
                       <div className="flex gap-1.5">
                         {[0,1,2].map(i => (
-                          <span key={i} className="w-2 h-2 rounded-full bg-[#52b788] inline-block animate-bounce"
+                          <span key={i} className="w-2 h-2 rounded-full bg-[#52b788] animate-bounce"
                             style={{ animationDelay: `${i*0.15}s` }} />
                         ))}
                       </div>
-                      <p className="text-xs text-[#6b7280]">等待 Tailwind 渲染完成…</p>
                     </div>
                   ) : (
                     <div style={{ width: "375px", margin: "0 auto", background: "white", minHeight: "100%" }}>
@@ -425,11 +349,11 @@ export default function WechatConverterPage() {
             </div>
 
             {/* HTML source */}
-            {output && (
+            {done && (
               <div className="border border-[#95d5b2] rounded-xl overflow-hidden">
                 <div className="border-b border-[#95d5b2] bg-[#f0faf4] px-5 py-3 flex items-center justify-between">
                   <p className="text-xs font-medium text-[#52b788] tracking-widest uppercase">WeChat HTML 源码</p>
-                  <p className="text-xs text-[#6b7280]">全部为 &lt;section&gt; 原生格式</p>
+                  <p className="text-xs text-[#6b7280]">&lt;section&gt; 原生格式，可直接粘贴</p>
                 </div>
                 <textarea readOnly value={output} rows={6}
                   className="w-full p-4 text-xs text-[#4b5563] font-mono bg-gray-50 focus:outline-none resize-y border-none" />
@@ -437,7 +361,7 @@ export default function WechatConverterPage() {
             )}
 
             {/* Steps */}
-            {output && (
+            {done && (
               <div className="bg-[#f0faf4] border border-[#95d5b2] rounded-xl p-5">
                 <p className="text-xs font-bold text-[#1b4332] mb-3">粘贴步骤</p>
                 <ol className="space-y-1.5">
