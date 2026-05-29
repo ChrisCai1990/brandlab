@@ -148,15 +148,44 @@ function convertToWechat(html: string): Promise<string> {
   });
 }
 
-function selectAndCopy(el: HTMLElement): boolean {
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  const sel = window.getSelection();
-  sel?.removeAllRanges();
-  sel?.addRange(range);
-  const ok = document.execCommand("copy");
-  sel?.removeAllRanges();
-  return ok;
+function openCopyTab(html: string): void {
+  // Render into a full standalone page so the browser provides complete visual
+  // rendering (backgrounds, colors, etc.) to the clipboard. The page
+  // auto-selects all content on load — user only needs to press Ctrl+C once.
+  const page = `<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>公众号内容 — 按 Ctrl+C 复制</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}
+#tip{position:fixed;top:0;left:0;right:0;z-index:9999;background:#1b4332;color:#fff;text-align:center;padding:14px 20px;font-size:14px;letter-spacing:.3px}
+#tip kbd{background:#2d6a4f;border:1px solid #52b788;border-radius:4px;padding:2px 8px;font-family:inherit;font-size:13px}
+#wrap{padding:64px 20px 40px;max-width:660px;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="tip">✅ 内容已自动全选 — 按 <kbd>Ctrl+C</kbd>（Mac：<kbd>Cmd+C</kbd>）复制，然后粘贴到公众号编辑器</div>
+<div id="wrap">${html}</div>
+<script>
+window.addEventListener('load',function(){
+  var el=document.getElementById('wrap');
+  var r=document.createRange();
+  r.selectNodeContents(el);
+  var s=window.getSelection();
+  s.removeAllRanges();
+  s.addRange(r);
+});
+</script>
+</body>
+</html>`;
+
+  const blob = new Blob([page], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 export default function WechatConverterPage() {
@@ -164,7 +193,7 @@ export default function WechatConverterPage() {
   const [processing, setProcessing] = useState(false);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState<"rich" | "html" | null>(null);
+  const [copied, setCopied] = useState<"html" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -199,23 +228,19 @@ export default function WechatConverterPage() {
     [handleFile]
   );
 
-  const handleCopy = async (type: "rich" | "html") => {
+  const handleOpenCopyTab = () => {
+    if (!output) return;
+    openCopyTab(output);
+  };
+
+  const handleCopyHtml = async () => {
     if (!output) return;
     try {
-      if (type === "rich") {
-        // Copy from the visible rendered preview — browsers include full CSS
-        // rendering (backgrounds, colors, etc.) only from visible elements.
-        const el = previewRef.current;
-        if (!el) throw new Error("预览区域未就绪");
-        const ok = selectAndCopy(el);
-        if (!ok) throw new Error("execCommand 不可用");
-      } else {
-        await navigator.clipboard.writeText(output);
-      }
-      setCopied(type);
+      await navigator.clipboard.writeText(output);
+      setCopied("html");
       setTimeout(() => setCopied(null), 2500);
     } catch {
-      setError("复制失败，请在预览区域手动 Ctrl+A 全选后 Ctrl+C 复制");
+      setError("复制失败，请手动从下方源码区域复制");
     }
   };
 
@@ -329,18 +354,16 @@ export default function WechatConverterPage() {
                   重新上传
                 </button>
                 <button
-                  onClick={() => handleCopy("html")}
+                  onClick={handleCopyHtml}
                   className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors"
                 >
                   {copied === "html" ? "✓ 已复制" : "复制 HTML 源码"}
                 </button>
                 <button
-                  onClick={() => handleCopy("rich")}
+                  onClick={handleOpenCopyTab}
                   className="text-xs bg-[#1b4332] text-white px-5 py-2 rounded-lg hover:bg-[#40916c] transition-colors font-medium"
                 >
-                  {copied === "rich"
-                    ? "✓ 复制成功！去公众号粘贴"
-                    : "复制富文本 → 粘贴到公众号"}
+                  打开复制页 → 再按 Ctrl+C
                 </button>
               </div>
             </div>
@@ -388,9 +411,9 @@ export default function WechatConverterPage() {
               <p className="text-xs font-bold text-[#1b4332] mb-3">粘贴步骤</p>
               <ol className="space-y-1.5">
                 {[
-                  "点击上方「复制富文本」按钮",
-                  "打开微信公众号后台 → 素材管理 → 新建图文",
-                  "在正文编辑区域按 Ctrl+V（Windows）或 Cmd+V（Mac）",
+                  "点击「打开复制页」，会在新标签页打开已渲染的内容",
+                  "新页面内容已自动全选（蓝色高亮），直接按 Ctrl+C（Mac：Cmd+C）",
+                  "切换到微信公众号编辑器，按 Ctrl+V 粘贴",
                   "检查排版，适当调整后发布",
                 ].map((step, i) => (
                   <li key={i} className="text-xs text-[#6b7280] flex items-start gap-2">
