@@ -3,6 +3,56 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 
+// ─── CSS pre-inliner (壹伴 approach) ─────────────────────────────────────────
+// Parse <style> blocks and apply matching rules as inline styles.
+// This runs synchronously in the browser — no iframe or CDN timing needed.
+
+function preInlineCss(html: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+
+  const styleEls = Array.from(doc.querySelectorAll("style"));
+  if (styleEls.length === 0) return html;
+
+  // Inject a temporary <style> into the main document so the browser can
+  // parse the CSS rules via CSSOM (handles selectors, shorthand, etc.)
+  const tempStyle = document.createElement("style");
+  tempStyle.textContent = styleEls.map(s => s.textContent || "").join("\n");
+  document.head.appendChild(tempStyle);
+
+  try {
+    const sheet = tempStyle.sheet;
+    if (!sheet) return html;
+
+    const rules = Array.from(sheet.cssRules).filter(
+      r => r instanceof CSSStyleRule,
+    ) as CSSStyleRule[];
+
+    // Apply each rule to matching elements in the parsed document
+    for (const rule of rules) {
+      try {
+        doc.querySelectorAll(rule.selectorText).forEach(el => {
+          const decls = Array.from(rule.style)
+            .map(p => `${p}:${rule.style.getPropertyValue(p)}`)
+            .join(";");
+          const existing = el.getAttribute("style") || "";
+          el.setAttribute("style", existing ? `${existing};${decls}` : decls);
+        });
+      } catch {
+        // Invalid selector — skip
+      }
+    }
+  } finally {
+    document.head.removeChild(tempStyle);
+  }
+
+  // Remove style tags and class attributes — output is fully inline
+  styleEls.forEach(s => s.remove());
+  doc.querySelectorAll("[class]").forEach(el => el.removeAttribute("class"));
+
+  return `<!DOCTYPE html><html><head>${doc.head.innerHTML}</head><body>${doc.body.innerHTML}</body></html>`;
+}
+
 // ─── Style extraction ────────────────────────────────────────────────────────
 
 const STYLE_PROPS = [
@@ -167,10 +217,10 @@ export default function WechatConverterPage() {
   const [copied, setCopied] = useState<"html" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // The LEFT display iframe — we reuse its rendered DOM for style extraction
   const rawIframeRef = useRef<HTMLIFrameElement>(null);
-  // Prevent re-processing on accidental iframe reloads
   const shouldProcessRef = useRef(false);
+  // Delay before extracting: short for CSS-only templates, long for Tailwind CDN
+  const extractDelayRef = useRef(800);
 
   useEffect(() => {
     return () => { if (rawBlobUrl) URL.revokeObjectURL(rawBlobUrl); };
@@ -183,15 +233,29 @@ export default function WechatConverterPage() {
     setOutput("");
     setProcessing(true);
     shouldProcessRef.current = true;
+
     const text = await f.text();
-    const blob = new Blob([text], { type: "text/html;charset=utf-8" });
-    setRawBlobUrl(URL.createObjectURL(blob));
-    // Processing happens in handleIframeLoad once Tailwind has applied
+
+    // Detect Tailwind CDN — requires JS execution, needs longer wait
+    const hasTailwindCdn = /tailwindcss\.com|cdn\.tailwind/i.test(text);
+
+    if (hasTailwindCdn) {
+      // Tailwind: load original HTML, wait 3.5s for CDN to apply classes
+      extractDelayRef.current = 3500;
+      const blob = new Blob([text], { type: "text/html;charset=utf-8" });
+      setRawBlobUrl(URL.createObjectURL(blob));
+    } else {
+      // CSS <style> blocks or inline styles: pre-inline synchronously (壹伴 approach)
+      // — no CDN timing dependency, works instantly
+      extractDelayRef.current = 600;
+      const inlined = preInlineCss(text);
+      const blob = new Blob([inlined], { type: "text/html;charset=utf-8" });
+      setRawBlobUrl(URL.createObjectURL(blob));
+    }
   }, []);
 
-  // Called when the display iframe's onLoad fires.
-  // We wait 3.5s for Tailwind CDN to process all classes, then extract styles
-  // from the SAME already-rendered iframe — guaranteeing accurate getComputedStyle.
+  // After the display iframe loads, wait for styles to settle then extract.
+  // For CSS templates this is near-instant; for Tailwind we wait for the CDN.
   const handleIframeLoad = useCallback(() => {
     if (!shouldProcessRef.current) return;
     setTimeout(() => {
@@ -213,7 +277,7 @@ export default function WechatConverterPage() {
       } finally {
         setProcessing(false);
       }
-    }, 3500);
+    }, extractDelayRef.current);
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
