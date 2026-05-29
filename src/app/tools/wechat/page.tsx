@@ -18,6 +18,12 @@ const STYLE_PROPS = [
   "text-transform", "box-shadow", "overflow",
 ];
 
+function rgbToHex(rgb: string): string {
+  const m = rgb.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (!m) return "";
+  return "#" + [m[1], m[2], m[3]].map(n => parseInt(n).toString(16).padStart(2, "0")).join("");
+}
+
 const REMOVE_TAGS = new Set(["script", "style", "link", "meta", "title", "noscript", "head"]);
 const TAG_REMAP: Record<string, string> = {
   article: "div", main: "div",
@@ -42,6 +48,17 @@ function getInlineStyle(el: Element, win: Window): string {
     if (prop === "vertical-align" && val === "baseline") continue;
     if (prop === "overflow" && val === "visible") continue;
     if (prop === "text-transform" && val === "none") continue;
+
+    // Cap font-size for WeChat mobile width (~375px).
+    // Desktop templates often use 48–96px headings that break WeChat's narrow column.
+    if (prop === "font-size") {
+      const px = parseFloat(val);
+      if (!isNaN(px) && px > 28) {
+        parts.push(`font-size:28px`);
+        continue;
+      }
+    }
+
     parts.push(`${prop}:${val}`);
   }
 
@@ -91,9 +108,13 @@ function processNode(node: Node, win: Window): string {
   // Wrap block elements with a background in a single-cell table (135editor / Xiumi technique).
   if (BG_BLOCK_TAGS.has(tag) && styleStr.includes("background-color:")) {
     const tdStyle = styleStr.replace(/display:[^;]+;?/g, "");
+    // bgcolor attribute as fallback for older WeChat versions
+    const bgMatch = styleStr.match(/background-color:(rgba?\([^)]+\)|#[0-9a-fA-F]+)/);
+    const bgHex = bgMatch ? rgbToHex(bgMatch[1]) : "";
+    const bgAttr = bgHex ? ` bgcolor="${bgHex}"` : "";
     return (
-      `<table style="width:100%;border-collapse:collapse;border-spacing:0;">` +
-      `<tbody><tr><td style="${tdStyle}"${otherAttrs}>${inner}</td></tr></tbody>` +
+      `<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-spacing:0;">` +
+      `<tbody><tr><td${bgAttr} style="${tdStyle}"${otherAttrs}>${inner}</td></tr></tbody>` +
       `</table>`
     );
   }
@@ -399,14 +420,16 @@ export default function WechatConverterPage() {
                 </div>
               </div>
 
-              {/* WeChat version */}
+              {/* WeChat version — simulated at 375px phone width */}
               <div className="border border-[#95d5b2] rounded-xl overflow-hidden">
                 <div className="border-b border-[#95d5b2] bg-[#f0faf4] px-5 py-3 flex items-center justify-between">
                   <p className="text-xs font-medium text-[#52b788] tracking-widest uppercase">公众号版本</p>
-                  <p className="text-xs text-[#6b7280]">粘贴后实际效果</p>
+                  <p className="text-xs text-[#6b7280]">模拟手机宽度（375px）</p>
                 </div>
-                <div className="overflow-auto bg-white p-6" style={{ height: "520px" }}>
-                  <div dangerouslySetInnerHTML={{ __html: output }} />
+                <div className="overflow-auto bg-[#f0f0f0]" style={{ height: "520px" }}>
+                  <div style={{ width: "375px", margin: "0 auto", background: "white", minHeight: "100%" }}>
+                    <div className="p-3" dangerouslySetInnerHTML={{ __html: output }} />
+                  </div>
                 </div>
               </div>
             </div>
