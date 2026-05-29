@@ -10,44 +10,20 @@ export default function OGImage() {
     (
       <div
         style={{
-          background: "#1b4332",
+          background: "#2d6a4f",
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "16px",
+          borderRadius: 48,
+          color: "white",
+          fontSize: 140,
+          fontWeight: 700,
           fontFamily: "sans-serif",
         }}
       >
-        {/* Logo badge */}
-        <div
-          style={{
-            width: "80px",
-            height: "80px",
-            borderRadius: "20px",
-            background: "#40916c",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "40px",
-            fontWeight: "bold",
-            color: "white",
-          }}
-        >
-          拾
-        </div>
-
-        {/* Brand name */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-          <span style={{ fontSize: "18px", fontWeight: "bold", color: "white" }}>
-            品牌拾研社
-          </span>
-          <span style={{ fontSize: "12px", color: "#52b788", letterSpacing: "2px" }}>
-            BrandLab
-          </span>
-        </div>
+        拾
       </div>
     ),
     { ...size }
