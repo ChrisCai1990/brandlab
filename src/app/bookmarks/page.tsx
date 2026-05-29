@@ -19,10 +19,18 @@ export default function BookmarksPage() {
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [mounted, setMounted] = useState(false);
 
-  // ── wechat articles ──
+  // ── wechat: saved articles ──
   const [wechatArticles, setWechatArticles] = useState<WechatArticle[]>([]);
   const [wechatLoading, setWechatLoading] = useState(false);
   const [copyId, setCopyId] = useState<string | null>(null);
+
+  // ── wechat: converter ──
+  const [input, setInput] = useState("");
+  const [outputHtml, setOutputHtml] = useState("");
+  const [converting, setConverting] = useState(false);
+  const [convertError, setConvertError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
 
   useEffect(() => {
     setMounted(true);
@@ -58,13 +66,44 @@ export default function BookmarksPage() {
     setTitles(nextTitles);
   }
 
-  async function copyWechat(article: WechatArticle) {
+  async function handleConvert() {
+    if (!input.trim()) return;
+    setConverting(true);
+    setConvertError("");
+    setOutputHtml("");
+    try {
+      const res = await fetch("/api/tools/wechat-format", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: input }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "转换失败");
+      setOutputHtml(data.html);
+    } catch (e: unknown) {
+      setConvertError(e instanceof Error ? e.message : "转换失败，请重试");
+    } finally {
+      setConverting(false);
+    }
+  }
+
+  async function copyOutput() {
+    try {
+      await navigator.clipboard.writeText(outputHtml);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }
+
+  async function copySaved(article: WechatArticle) {
     try {
       await navigator.clipboard.writeText(article.wechatHtml);
       setCopyId(article.id);
       setTimeout(() => setCopyId(null), 2000);
     } catch {
-      // fallback: select from textarea
+      // ignore
     }
   }
 
@@ -158,50 +197,126 @@ export default function BookmarksPage() {
 
         {/* ── 公众号文章 ── */}
         {activeTab === "wechat" && (
-          <>
-            <div className="mb-8">
-              <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">公众号</p>
-              <h1 className="text-3xl font-bold text-[#1b4332] mb-1">公众号文章</h1>
-              <p className="text-sm text-[#6b7280]">点击「复制」直接粘贴到公众号编辑器，样式完整保留</p>
+          <div className="space-y-8">
+
+            {/* 转换工具 */}
+            <div>
+              <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">格式转换</p>
+              <h2 className="text-xl font-bold text-[#1b4332] mb-1">粘贴内容，一键转换</h2>
+              <p className="text-sm text-[#6b7280] mb-5">支持 Markdown 或纯文字，AI 自动套用 BrandLab 模板</p>
+
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={`粘贴你的文章内容，例如：\n\n## 为什么大多数人定位模糊\n\n很多人做账号的逻辑是先发着看...\n\n> 定位不是你做什么，是别人为什么关注你\n\n## 三步找到定位\n\n1. 列出你最擅长的3件事\n2. 找市场上真实存在的需求\n3. 找竞品没有占领的交叉点`}
+                rows={10}
+                className="w-full text-sm text-[#333] border border-[#95d5b2] rounded-xl px-4 py-3 outline-none resize-y placeholder-[#c5e0ce] leading-relaxed focus:border-[#40916c] font-mono"
+              />
+
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-xs text-[#95d5b2]">{input.length} 字</span>
+                <button
+                  onClick={handleConvert}
+                  disabled={converting || !input.trim()}
+                  className="text-sm bg-[#1b4332] text-white px-6 py-2.5 rounded-lg hover:bg-[#2d6a4f] transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {converting ? (
+                    <>
+                      <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      转换中...
+                    </>
+                  ) : "转换成公众号格式"}
+                </button>
+              </div>
+
+              {convertError && (
+                <p className="mt-3 text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5">{convertError}</p>
+              )}
             </div>
 
-            {wechatLoading ? (
-              <div className="text-center py-20 text-sm text-[#95d5b2]">加载中...</div>
-            ) : wechatArticles.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="text-4xl mb-4">📝</div>
-                <p className="text-sm text-[#6b7280] mb-2">还没有公众号文章</p>
-                <p className="text-xs text-[#95d5b2]">在后台编辑文章时，填入「公众号 HTML」即可在这里显示</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {wechatArticles.map((article) => (
-                  <div
-                    key={article.id}
-                    className="flex items-center justify-between gap-4 border border-[#95d5b2] rounded-xl px-5 py-4 hover:border-[#52b788] transition-all"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#1b4332] leading-snug line-clamp-1">{article.title}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-[#52b788] bg-[#f0faf4] px-2 py-0.5 rounded-full">{article.tag}</span>
-                        <span className="text-xs text-[#95d5b2]">{new Date(article.date).toLocaleDateString("zh-CN")}</span>
-                      </div>
+            {/* 转换结果 */}
+            {outputHtml && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-[#1b4332]">转换结果</p>
+                    <div className="flex gap-1">
+                      {(["preview", "code"] as const).map((m) => (
+                        <button
+                          key={m}
+                          onClick={() => setViewMode(m)}
+                          className={`text-[11px] px-2.5 py-1 rounded-md border transition-colors ${
+                            viewMode === m
+                              ? "bg-[#2d6a4f] text-white border-[#2d6a4f]"
+                              : "text-[#6b7280] border-[#95d5b2] hover:border-[#52b788]"
+                          }`}
+                        >
+                          {m === "preview" ? "预览" : "HTML"}
+                        </button>
+                      ))}
                     </div>
-                    <button
-                      onClick={() => copyWechat(article)}
-                      className={`shrink-0 text-xs px-4 py-2 rounded-lg font-medium transition-all ${
-                        copyId === article.id
-                          ? "bg-[#f0faf4] text-[#2d6a4f] border border-[#52b788]"
-                          : "bg-[#1b4332] text-white hover:bg-[#2d6a4f]"
-                      }`}
-                    >
-                      {copyId === article.id ? "✓ 已复制" : "复制"}
-                    </button>
                   </div>
-                ))}
+                  <button
+                    onClick={copyOutput}
+                    className={`text-sm px-5 py-2 rounded-lg font-medium transition-all ${
+                      copied
+                        ? "bg-[#f0faf4] text-[#2d6a4f] border border-[#52b788]"
+                        : "bg-[#1b4332] text-white hover:bg-[#2d6a4f]"
+                    }`}
+                  >
+                    {copied ? "✓ 已复制" : "复制"}
+                  </button>
+                </div>
+
+                {viewMode === "preview" ? (
+                  <div
+                    className="border border-[#e5e7eb] rounded-xl p-4 bg-[#fafffe] overflow-auto"
+                    dangerouslySetInnerHTML={{ __html: outputHtml }}
+                  />
+                ) : (
+                  <textarea
+                    readOnly
+                    value={outputHtml}
+                    rows={16}
+                    className="w-full text-xs text-[#4b5563] font-mono border border-[#e5e7eb] rounded-xl px-4 py-3 outline-none resize-y bg-[#fafffe]"
+                  />
+                )}
               </div>
             )}
-          </>
+
+            {/* 已保存的文章 */}
+            {!wechatLoading && wechatArticles.length > 0 && (
+              <div>
+                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-3">已保存文章</p>
+                <div className="space-y-3">
+                  {wechatArticles.map((article) => (
+                    <div
+                      key={article.id}
+                      className="flex items-center justify-between gap-4 border border-[#95d5b2] rounded-xl px-5 py-4 hover:border-[#52b788] transition-all"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[#1b4332] leading-snug line-clamp-1">{article.title}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-[#52b788] bg-[#f0faf4] px-2 py-0.5 rounded-full">{article.tag}</span>
+                          <span className="text-xs text-[#95d5b2]">{new Date(article.date).toLocaleDateString("zh-CN")}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => copySaved(article)}
+                        className={`shrink-0 text-xs px-4 py-2 rounded-lg font-medium transition-all ${
+                          copyId === article.id
+                            ? "bg-[#f0faf4] text-[#2d6a4f] border border-[#52b788]"
+                            : "bg-[#1b4332] text-white hover:bg-[#2d6a4f]"
+                        }`}
+                      >
+                        {copyId === article.id ? "✓ 已复制" : "复制"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
