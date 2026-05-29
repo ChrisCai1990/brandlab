@@ -11,7 +11,7 @@ const PAGE_SIZE = 12;
 
 type ArticleRow = { id: string; slug: string; title: string; tag: string; desc: string; date: string; readTime: string };
 
-async function getDbArticles(): Promise<ArticleRow[]> {
+async function getAllArticles(): Promise<ArticleRow[]> {
   try {
     await connectDB();
     const rows = await Article.find({ published: true })
@@ -21,11 +21,39 @@ async function getDbArticles(): Promise<ArticleRow[]> {
     return rows.map((a) => ({
       id: String(a._id),
       slug: a.slug,
-      title: a.title,
-      tag: a.tag,
-      desc: a.desc,
+      title: a.title ?? "",
+      tag: a.tag ?? "",
+      desc: a.desc ?? "",
       date: new Date(a.date).toISOString().split("T")[0],
-      readTime: a.readTime,
+      readTime: a.readTime ?? "5",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function searchArticles(q: string, category?: string): Promise<ArticleRow[]> {
+  try {
+    await connectDB();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query: Record<string, any> = { published: true };
+    if (category && category !== "全部") query.tag = category;
+    if (q.trim()) {
+      const regex = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      query.$or = [{ title: regex }, { desc: regex }, { content: regex }];
+    }
+    const rows = await Article.find(query)
+      .sort({ date: -1 })
+      .select("slug title tag desc date readTime")
+      .lean();
+    return rows.map((a) => ({
+      id: String(a._id),
+      slug: a.slug,
+      title: a.title ?? "",
+      tag: a.tag ?? "",
+      desc: a.desc ?? "",
+      date: new Date(a.date).toISOString().split("T")[0],
+      readTime: a.readTime ?? "5",
     }));
   } catch {
     return [];
@@ -40,14 +68,13 @@ export default async function LibraryPage({
   const { category, q, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10));
 
-  const merged = await getDbArticles();
-
-  let filtered = merged;
-  if (category && category !== "全部") filtered = filtered.filter((a) => a.tag === category);
-  if (q?.trim()) {
-    const lower = q.toLowerCase();
-    filtered = filtered.filter((a) => a.title.toLowerCase().includes(lower) || a.desc.toLowerCase().includes(lower));
-  }
+  // Always fetch all articles for category counts in the filter bar
+  const merged = await getAllArticles();
+  // If there's a search query or category filter, query DB directly; otherwise reuse merged
+  const filtered =
+    q?.trim() || (category && category !== "全部")
+      ? await searchArticles(q ?? "", category)
+      : merged;
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
