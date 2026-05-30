@@ -63,6 +63,14 @@ const templates = [
     icon: "📰",
     href: "/tools/wechat",
   },
+  {
+    title: "HTML 内容生成器",
+    desc: "输入内容，AI 自动生成精美 HTML —— 小红书笔记卡、金句卡片、个人品牌介绍页、活动海报，6 种模板，一键复制。",
+    tags: ["在线工具", "AI生成"],
+    type: "免费",
+    icon: "✨",
+    href: "/tools/html-creator",
+  },
 ];
 
 const toolList = [
