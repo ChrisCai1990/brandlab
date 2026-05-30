@@ -80,7 +80,8 @@ export type SubscriptionPlan = "free" | "monthly" | "yearly" | "lifetime";
 
 export interface IUser {
   _id: mongoose.Types.ObjectId;
-  email: string;
+  phone: string;
+  email?: string;
   passwordHash: string;
   subscriptionPlan: SubscriptionPlan;
   subscriptionExpiry: Date | null;
@@ -90,7 +91,8 @@ export interface IUser {
 
 const UserSchema = new mongoose.Schema<IUser>(
   {
-    email:             { type: String, required: true, unique: true, lowercase: true },
+    phone:             { type: String, unique: true, sparse: true },
+    email:             { type: String, unique: true, sparse: true, lowercase: true },
     passwordHash:      { type: String, required: true },
     subscriptionPlan:  { type: String, enum: ["free","monthly","yearly","lifetime"], default: "free" },
     subscriptionExpiry:{ type: Date, default: null },

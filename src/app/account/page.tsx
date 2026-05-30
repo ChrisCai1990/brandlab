@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type UserInfo = {
-  email: string;
+  phone: string;
   subscriptionPlan: string;
   subscriptionExpiry: string | null;
   isActive: boolean;
@@ -69,7 +69,7 @@ export default function AccountPage() {
           {/* Profile card */}
           <div className="border border-[#95d5b2] rounded-2xl p-6">
             <h2 className="text-xs font-medium text-[#52b788] tracking-widest uppercase mb-4">账户信息</h2>
-            <p className="text-sm text-[#1b4332] font-medium">{user.email}</p>
+            <p className="text-sm text-[#1b4332] font-medium">{user.phone}</p>
           </div>
 
           {/* Subscription card */}

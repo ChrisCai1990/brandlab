@@ -12,7 +12,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "用户不存在" }, { status: 404 });
 
   return NextResponse.json({
-    email: user.email,
+    phone: user.phone,
     subscriptionPlan: user.subscriptionPlan,
     subscriptionExpiry: user.subscriptionExpiry,
     isActive: isSubscriptionActive(user.subscriptionPlan, user.subscriptionExpiry ?? null),

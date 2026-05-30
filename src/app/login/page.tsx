@@ -9,7 +9,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") ?? "/account";
 
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ phone: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,13 +55,13 @@ function LoginForm() {
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">邮箱</label>
+            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">手机号</label>
             <input
-              type="email"
+              type="tel"
               required
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              placeholder="your@email.com"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              placeholder="请输入手机号"
               className="w-full text-sm border border-[#95d5b2] rounded-xl px-4 py-3 outline-none focus:border-[#2d6a4f] text-[#1b4332] placeholder-[#95d5b2]"
             />
           </div>

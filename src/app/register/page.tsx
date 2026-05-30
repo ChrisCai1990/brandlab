@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ phone: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +20,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, password: form.password }),
+        body: JSON.stringify({ phone: form.phone, password: form.password }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "注册失败"); return; }
@@ -54,13 +54,13 @@ export default function RegisterPage() {
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">邮箱</label>
+            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">手机号</label>
             <input
-              type="email"
+              type="tel"
               required
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              placeholder="your@email.com"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              placeholder="请输入11位手机号"
               className="w-full text-sm border border-[#95d5b2] rounded-xl px-4 py-3 outline-none focus:border-[#2d6a4f] text-[#1b4332] placeholder-[#95d5b2]"
             />
           </div>

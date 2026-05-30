@@ -6,23 +6,25 @@ const SECRET = new TextEncoder().encode(
 );
 export const USER_COOKIE = "user_session";
 
-export async function signUserToken(userId: string, email: string): Promise<string> {
-  return new SignJWT({ userId, email })
+export async function signUserToken(userId: string, phone: string): Promise<string> {
+  return new SignJWT({ userId, phone })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("30d")
     .sign(SECRET);
 }
 
-export async function verifyUserToken(token: string): Promise<{ userId: string; email: string } | null> {
+export async function verifyUserToken(token: string): Promise<{ userId: string; phone: string } | null> {
   try {
     const { payload } = await jwtVerify(token, SECRET);
-    return { userId: payload.userId as string, email: payload.email as string };
+    // 兼容旧 token（email 字段）
+    const phone = (payload.phone ?? payload.email) as string;
+    return { userId: payload.userId as string, phone };
   } catch {
     return null;
   }
 }
 
-export async function getUserSession(): Promise<{ userId: string; email: string } | null> {
+export async function getUserSession(): Promise<{ userId: string; phone: string } | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(USER_COOKIE)?.value;
