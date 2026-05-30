@@ -4,12 +4,31 @@ import { connectDB } from "@/lib/db";
 import { Setting } from "@/lib/models";
 
 export async function POST(req: Request) {
-  const { password } = await req.json();
+  const { phone, password } = await req.json();
+  if (!phone) return NextResponse.json({ error: "请输入手机号" }, { status: 400 });
   if (!password) return NextResponse.json({ error: "请输入密码" }, { status: 400 });
 
-  let valid = false;
+  // 验证手机号
+  let phoneValid = false;
   try {
     await connectDB();
+    const phoneSetting = await Setting.findOne({ key: "admin_phone" }).lean();
+    if (phoneSetting?.value) {
+      phoneValid = phoneSetting.value === phone;
+    } else {
+      const envPhone = process.env.ADMIN_PHONE;
+      if (envPhone && phone === envPhone) phoneValid = true;
+    }
+  } catch {
+    const envPhone = process.env.ADMIN_PHONE;
+    if (envPhone && phone === envPhone) phoneValid = true;
+  }
+
+  if (!phoneValid) return NextResponse.json({ error: "手机号或密码错误" }, { status: 401 });
+
+  // 验证密码
+  let valid = false;
+  try {
     const setting = await Setting.findOne({ key: "admin_password_hash" }).lean();
     if (setting?.value) valid = await verifyPassword(password, setting.value);
   } catch {}
@@ -19,7 +38,7 @@ export async function POST(req: Request) {
     if (envPwd && password === envPwd) valid = true;
   }
 
-  if (!valid) return NextResponse.json({ error: "密码错误" }, { status: 401 });
+  if (!valid) return NextResponse.json({ error: "手机号或密码错误" }, { status: 401 });
 
   const token = await signToken();
   const res = NextResponse.json({ ok: true });

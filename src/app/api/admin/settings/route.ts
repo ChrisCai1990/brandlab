@@ -10,7 +10,7 @@ async function guard() {
 
 export async function POST(req: Request) {
   const err = await guard(); if (err) return err;
-  const { action, currentPassword, newPassword } = await req.json();
+  const { action, currentPassword, newPassword, newPhone } = await req.json();
 
   if (action === "change_password") {
     if (!newPassword || newPassword.length < 6)
@@ -32,6 +32,30 @@ export async function POST(req: Request) {
     await Setting.findOneAndUpdate(
       { key: "admin_password_hash" },
       { value: hash },
+      { upsert: true }
+    );
+    return NextResponse.json({ ok: true });
+  }
+
+  if (action === "change_phone") {
+    if (!newPhone || !/^1[3-9]\d{9}$/.test(newPhone))
+      return NextResponse.json({ error: "请输入正确的手机号" }, { status: 400 });
+
+    await connectDB();
+    let valid = false;
+    try {
+      const setting = await Setting.findOne({ key: "admin_password_hash" }).lean();
+      if (setting?.value) valid = await verifyPassword(currentPassword, setting.value);
+    } catch {}
+    if (!valid) {
+      const envPwd = process.env.ADMIN_PASSWORD;
+      if (envPwd && currentPassword === envPwd) valid = true;
+    }
+    if (!valid) return NextResponse.json({ error: "密码验证失败" }, { status: 400 });
+
+    await Setting.findOneAndUpdate(
+      { key: "admin_phone" },
+      { value: newPhone },
       { upsert: true }
     );
     return NextResponse.json({ ok: true });

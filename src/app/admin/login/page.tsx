@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,13 +18,13 @@ export default function LoginPage() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ phone, password }),
     });
 
     if (res.ok) {
       router.push("/admin/articles");
     } else {
-      setError("密码错误，请重试");
+      setError("手机号或密码错误，请重试");
       setLoading(false);
     }
   }
@@ -40,9 +41,24 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white border border-[#95d5b2] rounded-2xl p-8">
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-2">
+              手机号
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="请输入手机号"
+              className="w-full border border-[#95d5b2] rounded-lg px-4 py-3 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white"
+              required
+              autoFocus
+            />
+          </div>
+
           <div className="mb-5">
             <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-2">
-              管理员密码
+              密码
             </label>
             <input
               type="password"
@@ -51,7 +67,6 @@ export default function LoginPage() {
               placeholder="请输入密码"
               className="w-full border border-[#95d5b2] rounded-lg px-4 py-3 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white"
               required
-              autoFocus
             />
           </div>
 
@@ -61,7 +76,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !password}
+            disabled={loading || !phone || !password}
             className="w-full bg-[#1b4332] text-white py-3 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? "登录中..." : "登录"}
