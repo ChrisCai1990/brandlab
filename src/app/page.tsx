@@ -13,6 +13,8 @@ const modules = [
   { category: "平台策略", icon: "◐", title: "平台策略", desc: "读懂各平台算法，让内容被更多人看到" },
   { category: "IP案例",   icon: "◑", title: "IP案例",   desc: "拆解真实成长路径，找可复制的规律" },
   { category: "工具方法", icon: "◒", title: "工具方法", desc: "效率工具 + 实用模板，让创作更省力" },
+  { category: "变现路径", icon: "◓", title: "变现路径", desc: "6种变现模式全拆解，找到最适合你的路" },
+  { category: "私域运营", icon: "◔", title: "私域运营", desc: "从公域到私域，建立你的流量护城河" },
 ];
 
 const resources = [
