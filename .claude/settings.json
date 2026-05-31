@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -q '^git commit' && git -C \"D:\\Claude CODE\\brandlab\" push origin master 2>/dev/null || true",
+            "shell": "bash"
+          }
+        ]
+      }
+    ]
+  }
+}

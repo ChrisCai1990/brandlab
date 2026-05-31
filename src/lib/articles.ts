@@ -5,7 +5,9 @@ export type Category =
   | "账号增长"
   | "平台策略"
   | "IP案例"
-  | "工具方法";
+  | "工具方法"
+  | "变现路径"
+  | "私域运营";
 
 export interface Article {
   slug: string;
@@ -32,4 +34,6 @@ export const categories = [
   "平台策略",
   "IP案例",
   "工具方法",
+  "变现路径",
+  "私域运营",
 ] as const;
