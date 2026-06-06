@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { connectDB } from "@/lib/db";
 import { Article } from "@/lib/models";
@@ -74,9 +74,7 @@ export default async function LibraryPage({
   const { category, q, page, sort } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10));
 
-  // Always fetch all articles for category counts in the filter bar (use default date sort for counts)
   const merged = await getAllArticles(sort);
-  // If there's a search query or category filter, query DB directly; otherwise reuse merged
   const filtered =
     q?.trim() || (category && category !== "全部")
       ? await searchArticles(q ?? "", category, sort)
@@ -86,19 +84,19 @@ export default async function LibraryPage({
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="bg-[#f0faf4] border-b border-[#95d5b2] py-14 px-8">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">内容库</p>
-          <h1 className="text-4xl font-bold text-[#1b4332] mb-2">每天一条干货</h1>
+    <div className="bg-black min-h-screen">
+      <div className="border-b border-[#1f1f1f] bg-[#0a0a0a] py-16 px-8">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-xs text-[#555555] font-medium tracking-widest uppercase mb-3">内容库</p>
+          <h1 className="text-4xl font-bold text-white mb-3">每天一条干货</h1>
           <div className="flex items-center gap-4 flex-wrap">
-            <p className="text-sm text-[#6b7280]">{merged.length} 篇精选文章 · 9大模块 · 持续更新</p>
+            <p className="text-sm text-[#888888]">{merged.length} 篇精选文章 · 9大模块 · 持续更新</p>
             <ReadingStatsWrapper total={merged.length} />
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8 py-10">
+      <div className="max-w-5xl mx-auto px-8 py-10">
         <Suspense fallback={<div className="h-20" />}>
           <LibraryFilter
             active={category ?? "全部"}
@@ -109,31 +107,31 @@ export default async function LibraryPage({
           />
         </Suspense>
 
-        <p className="text-xs text-[#6b7280] mb-5">
+        <p className="text-xs text-[#555555] mb-5">
           共 {filtered.length} 篇
-          {category && category !== "全部" && <span className="ml-1 text-[#40916c] font-medium">· {category}</span>}
-          {q?.trim() && <span className="ml-1 text-[#40916c] font-medium">· 搜索"{q}"</span>}
+          {category && category !== "全部" && <span className="ml-1 text-[#a0a0a0] font-medium">· {category}</span>}
+          {q?.trim() && <span className="ml-1 text-[#a0a0a0] font-medium">· 搜索"{q}"</span>}
         </p>
 
         {paginated.length === 0 ? (
-          <div className="text-center py-20 text-[#6b7280]">
+          <div className="text-center py-20 text-[#555555]">
             <p className="text-sm mb-2">没有找到相关文章</p>
-            <Link href="/library" className="text-xs text-[#40916c] hover:text-[#2d6a4f]">清除筛选 →</Link>
+            <Link href="/library" className="text-xs text-[#888888] hover:text-white transition-colors">清除筛选 →</Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px border border-[#1f1f1f]">
             {paginated.map((article) => (
               <Link key={article.slug} href={`/library/${article.slug}`}
-                className="group border border-[#95d5b2] rounded-xl p-6 hover:border-[#52b788] hover:shadow-sm transition-all">
+                className="group bg-[#0a0a0a] p-6 hover:bg-[#111111] transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#f0faf4] text-[#40916c]">{article.tag}</span>
-                  <span className="text-[10px] text-[#6b7280]">{article.readTime} 分钟</span>
+                  <span className="text-xs font-medium px-2.5 py-1 bg-[#111111] text-[#888888]">{article.tag}</span>
+                  <span className="text-[10px] text-[#555555]">{article.readTime} 分钟</span>
                 </div>
-                <h3 className="text-sm font-bold text-[#1b4332] mb-2 group-hover:text-[#2d6a4f] transition-colors leading-snug"><Highlight text={article.title} query={q ?? ""} /></h3>
-                <p className="text-xs text-[#6b7280] leading-relaxed line-clamp-2 mb-4"><Highlight text={article.desc} query={q ?? ""} /></p>
+                <h3 className="text-sm font-bold text-white mb-2 group-hover:text-[#e0e0e0] transition-colors leading-snug"><Highlight text={article.title} query={q ?? ""} /></h3>
+                <p className="text-xs text-[#555555] leading-relaxed line-clamp-2 mb-4"><Highlight text={article.desc} query={q ?? ""} /></p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-[#95d5b2]">{article.date}</span>
-                  <span className="text-xs text-[#52b788] group-hover:text-[#40916c] transition-colors">阅读全文 →</span>
+                  <span className="text-[10px] text-[#333333]">{article.date}</span>
+                  <span className="text-xs text-[#555555] group-hover:text-white transition-colors">阅读全文 →</span>
                 </div>
               </Link>
             ))}
@@ -144,21 +142,21 @@ export default async function LibraryPage({
           <div className="flex items-center justify-center gap-2 mt-12">
             {currentPage > 1 && (
               <Link href={`/library?${new URLSearchParams({ ...(category ? { category } : {}), ...(q ? { q } : {}), page: String(currentPage - 1) })}`}
-                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#52b788] transition-colors">
+                className="text-xs border border-[#1f1f1f] text-[#888888] px-4 py-2 hover:border-[#333333] hover:text-white transition-colors">
                 ← 上一页
               </Link>
             )}
             <div className="flex gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <Link key={p} href={`/library?${new URLSearchParams({ ...(category ? { category } : {}), ...(q ? { q } : {}), page: String(p) })}`}
-                  className={`text-xs w-8 h-8 flex items-center justify-center rounded-lg border transition-colors ${p === currentPage ? "bg-[#2d6a4f] text-white border-[#2d6a4f]" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs w-8 h-8 flex items-center justify-center border transition-colors ${p === currentPage ? "bg-white text-black border-white" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333] hover:text-white"}`}>
                   {p}
                 </Link>
               ))}
             </div>
             {currentPage < totalPages && (
               <Link href={`/library?${new URLSearchParams({ ...(category ? { category } : {}), ...(q ? { q } : {}), page: String(currentPage + 1) })}`}
-                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#52b788] transition-colors">
+                className="text-xs border border-[#1f1f1f] text-[#888888] px-4 py-2 hover:border-[#333333] hover:text-white transition-colors">
                 下一页 →
               </Link>
             )}

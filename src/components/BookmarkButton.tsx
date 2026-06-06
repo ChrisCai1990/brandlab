@@ -16,7 +16,6 @@ export function BookmarkButton({ slug, title }: { slug: string; title: string })
       ? bookmarks.filter((s) => s !== slug)
       : [...bookmarks, slug];
     localStorage.setItem("bookmarks", JSON.stringify(next));
-    // Also store title for display
     const titles: Record<string, string> = JSON.parse(localStorage.getItem("bookmarkTitles") || "{}");
     if (!saved) titles[slug] = title;
     else delete titles[slug];
@@ -27,10 +26,10 @@ export function BookmarkButton({ slug, title }: { slug: string; title: string })
   return (
     <button
       onClick={toggle}
-      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 border transition-colors ${
         saved
-          ? "bg-[#f0faf4] border-[#52b788] text-[#40916c]"
-          : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788] hover:text-[#40916c]"
+          ? "border-white text-white"
+          : "border-[#1f1f1f] text-[#888888] hover:border-[#333333] hover:text-white"
       }`}
     >
       <span>{saved ? "★" : "☆"}</span>

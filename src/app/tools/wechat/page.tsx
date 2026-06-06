@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -278,7 +278,7 @@ function CoverGenerator({ source }: { source: string }) {
     <>
       <button
         onClick={handleOpen}
-        className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium text-[#6b7280] hover:border-gray-300 hover:text-[#111] transition-all"
+        className="flex items-center gap-1.5 border border-gray-200 rounded-none px-3 py-2 text-xs font-medium text-[#888888] hover:border-gray-300 hover:text-[#111] transition-all"
       >
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
           <rect x="1" y="1" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
@@ -295,7 +295,7 @@ function CoverGenerator({ source }: { source: string }) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl"
+            className="bg-black rounded-none w-full max-w-lg overflow-hidden shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -306,7 +306,7 @@ function CoverGenerator({ source }: { source: string }) {
 
             {/* Preview */}
             <div className="px-5 pt-4">
-              <img src={svgUrl} alt="封面预览" className="w-full rounded-lg" style={{ aspectRatio: "900/383" }} />
+              <img src={svgUrl} alt="封面预览" className="w-full rounded-none" style={{ aspectRatio: "900/383" }} />
             </div>
 
             {/* Controls */}
@@ -317,7 +317,7 @@ function CoverGenerator({ source }: { source: string }) {
                   <button
                     key={s.id}
                     onClick={() => setScheme(s.id)}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                    className={`flex-1 py-1.5 rounded-none text-xs font-medium border transition-all ${
                       scheme === s.id
                         ? "border-[#111] text-[#111] bg-gray-50"
                         : "border-gray-200 text-gray-400 hover:border-gray-300"
@@ -334,13 +334,13 @@ function CoverGenerator({ source }: { source: string }) {
                   value={kicker}
                   onChange={e => setKicker(e.target.value)}
                   placeholder="顶部小字（kicker）"
-                  className="flex-1 min-w-0 px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+                  className="flex-1 min-w-0 px-3 py-2 rounded-none border border-gray-200 text-xs outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
                 />
                 <input
                   value={cat}
                   onChange={e => setCat(e.target.value)}
                   placeholder="分类标签"
-                  className="w-28 px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+                  className="w-28 px-3 py-2 rounded-none border border-gray-200 text-xs outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
                 />
               </div>
 
@@ -349,7 +349,7 @@ function CoverGenerator({ source }: { source: string }) {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="标题"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+                className="w-full px-3 py-2 rounded-none border border-gray-200 text-sm outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
               />
 
               {/* Subtitle */}
@@ -357,7 +357,7 @@ function CoverGenerator({ source }: { source: string }) {
                 value={sub}
                 onChange={e => setSub(e.target.value)}
                 placeholder="副标题（可选）"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
+                className="w-full px-3 py-2 rounded-none border border-gray-200 text-sm outline-none focus:border-gray-400 transition-colors placeholder:text-gray-300"
               />
             </div>
 
@@ -366,7 +366,7 @@ function CoverGenerator({ source }: { source: string }) {
               <button
                 onClick={downloadPNG}
                 disabled={!title.trim() || dlBusy}
-                className="w-full py-2.5 rounded-xl bg-[#111] text-white text-sm font-medium disabled:opacity-30 hover:bg-[#333] transition-colors"
+                className="w-full py-2.5 rounded-none bg-[#111] text-white text-sm font-medium disabled:opacity-30 hover:bg-[#333] transition-colors"
               >
                 {dlBusy ? "生成中…" : "下载超清 PNG（2700 × 1149 · 3×）"}
               </button>
@@ -390,7 +390,7 @@ function ShareButton() {
   return (
     <button
       onClick={copy}
-      className="flex items-center gap-1.5 text-xs text-[#9ca3af] hover:text-[#40916c] transition-colors"
+      className="flex items-center gap-1.5 text-xs text-[#9ca3af] hover:text-[#a0a0a0] transition-colors"
     >
       {state === "copied" ? (
         <>
@@ -558,30 +558,30 @@ export default function WechatConverterPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col bg-white overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] flex flex-col bg-black overflow-hidden">
 
       {/* Breadcrumb */}
-      <div className="border-b border-[#95d5b2] bg-[#f0faf4] shrink-0">
-        <div className="max-w-6xl mx-auto px-6 py-2.5 flex items-center gap-2 text-xs text-[#6b7280]">
-          <Link href="/" className="hover:text-[#40916c] transition-colors">首页</Link>
+      <div className="border-b border-[#1f1f1f] bg-[#0a0a0a] shrink-0">
+        <div className="max-w-6xl mx-auto px-6 py-2.5 flex items-center gap-2 text-xs text-[#888888]">
+          <Link href="/" className="hover:text-[#a0a0a0] transition-colors">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#40916c] transition-colors">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#a0a0a0] transition-colors">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1b4332] font-medium">公众号排版转换器</span>
+          <span className="text-white font-medium">公众号排版转换器</span>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="border-b border-gray-200 bg-white shrink-0 px-6 py-3 flex items-center gap-4">
+      <div className="border-b border-gray-200 bg-black shrink-0 px-6 py-3 flex items-center gap-4">
         <button
           onClick={() => fileInputRef.current?.click()}
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm font-medium transition-all shrink-0 ${
+          className={`flex items-center gap-2 border rounded-none px-4 py-2 text-sm font-medium transition-all shrink-0 ${
             isDragging
-              ? "border-[#40916c] bg-[#f0faf4] text-[#1b4332]"
-              : "border-[#95d5b2] text-[#2d6a4f] hover:border-[#40916c] hover:bg-[#f0faf4]"
+              ? "border-[#333333] bg-[#0a0a0a] text-white"
+              : "border-[#1f1f1f] text-white hover:border-[#333333] hover:bg-[#0a0a0a]"
           }`}
         >
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
@@ -593,7 +593,7 @@ export default function WechatConverterPage() {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
 
         {fileName ? (
-          <span className="text-sm text-[#6b7280] truncate max-w-xs">{fileName}</span>
+          <span className="text-sm text-[#888888] truncate max-w-xs">{fileName}</span>
         ) : (
           <span className="text-sm text-[#9ca3af]">支持 CSS class 写法 · 内联样式 · 拖拽上传</span>
         )}
@@ -605,7 +605,7 @@ export default function WechatConverterPage() {
           {source && (
             <button
               onClick={handleClear}
-              className="text-xs text-[#6b7280] hover:text-[#40916c] transition-colors"
+              className="text-xs text-[#888888] hover:text-[#a0a0a0] transition-colors"
             >
               清除
             </button>
@@ -613,12 +613,12 @@ export default function WechatConverterPage() {
           <button
             onClick={handleCopy}
             disabled={!output}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-2 rounded-none text-sm font-medium transition-all ${
               !output
                 ? "bg-gray-100 text-[#ccc] cursor-not-allowed"
                 : copied
-                ? "bg-[#40916c] text-white"
-                : "bg-[#1b4332] text-white hover:bg-[#2d6a4f]"
+                ? "bg-[#111111] text-white"
+                : "bg-[#0a0a0a] text-white hover:bg-white"
             }`}
           >
             {copied ? (
@@ -654,8 +654,8 @@ export default function WechatConverterPage() {
                 onClick={() => setLeftTab("code")}
                 className={`px-3 py-1 text-xs font-medium transition-colors ${
                   leftTab === "code"
-                    ? "bg-[#1b4332] text-white"
-                    : "bg-white text-[#6b7280] hover:bg-gray-100"
+                    ? "bg-[#0a0a0a] text-white"
+                    : "bg-black text-[#888888] hover:bg-gray-100"
                 }`}
               >
                 源码
@@ -664,8 +664,8 @@ export default function WechatConverterPage() {
                 onClick={() => setLeftTab("preview")}
                 className={`px-3 py-1 text-xs font-medium transition-colors border-l border-gray-200 ${
                   leftTab === "preview"
-                    ? "bg-[#1b4332] text-white"
-                    : "bg-white text-[#6b7280] hover:bg-gray-100"
+                    ? "bg-[#0a0a0a] text-white"
+                    : "bg-black text-[#888888] hover:bg-gray-100"
                 }`}
               >
                 预览
@@ -687,13 +687,13 @@ export default function WechatConverterPage() {
               placeholder={"粘贴 HTML 源码，或点击「导入文件」上传 .html 文件…\n\n支持内联样式和 CSS class 两种写法，自动实时转换。"}
               spellCheck={false}
               className={`absolute inset-0 w-full h-full resize-none font-mono text-[12px] leading-relaxed p-4 outline-none text-[#333] placeholder:text-[#c0c0c0] transition-colors ${
-                isDragging ? "bg-[#f0faf4]" : "bg-[#fafafa]"
+                isDragging ? "bg-[#0a0a0a]" : "bg-[#fafafa]"
               } ${leftTab === "code" ? "block" : "hidden"}`}
             />
 
             {/* Preview iframe */}
             {leftTab === "preview" && (
-              <div className="absolute inset-0 overflow-auto bg-white">
+              <div className="absolute inset-0 overflow-auto bg-black">
                 {previewUrl ? (
                   <iframe
                     src={previewUrl}
@@ -717,12 +717,12 @@ export default function WechatConverterPage() {
 
           {/* Right panel header */}
           <div className="shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-            <span className="text-xs font-medium text-[#52b788] tracking-widest uppercase">WeChat 格式</span>
+            <span className="text-xs font-medium text-[#888888] tracking-widest uppercase">WeChat 格式</span>
             <span className="text-xs text-[#9ca3af]">点击「复制全部」粘贴到公众号</span>
           </div>
 
           {/* Right content */}
-          <div className="flex-1 overflow-auto bg-white">
+          <div className="flex-1 overflow-auto bg-black">
             {output ? (
               <div
                 ref={previewRef}

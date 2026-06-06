@@ -43,8 +43,8 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#6b7280]">加载中...</p>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <p className="text-sm text-[#888888]">加载中...</p>
       </div>
     );
   }
@@ -56,49 +56,49 @@ export default function AccountPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-black">
       <div className="max-w-xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <Link href="/" className="text-xs text-[#6b7280] hover:text-[#2d6a4f] transition-colors">
+          <Link href="/" className="text-xs text-[#888888] hover:text-white transition-colors">
             ← 返回首页
           </Link>
-          <h1 className="text-2xl font-bold text-[#1b4332] mt-3">我的账户</h1>
+          <h1 className="text-2xl font-bold text-white mt-3">我的账户</h1>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-px border border-[#1f1f1f]">
           {/* Profile card */}
-          <div className="border border-[#95d5b2] rounded-2xl p-6">
-            <h2 className="text-xs font-medium text-[#52b788] tracking-widest uppercase mb-4">账户信息</h2>
-            <p className="text-sm text-[#1b4332] font-medium">{user.phone}</p>
+          <div className="bg-[#0a0a0a] p-6">
+            <h2 className="text-xs font-medium text-[#555555] tracking-widest uppercase mb-4">账户信息</h2>
+            <p className="text-sm text-white font-medium">{user.phone}</p>
           </div>
 
           {/* Subscription card */}
-          <div className="border border-[#95d5b2] rounded-2xl p-6">
-            <h2 className="text-xs font-medium text-[#52b788] tracking-widest uppercase mb-4">订阅状态</h2>
+          <div className="bg-[#0a0a0a] p-6">
+            <h2 className="text-xs font-medium text-[#555555] tracking-widest uppercase mb-4">订阅状态</h2>
             <div className="flex items-center gap-3 mb-3">
               <span
-                className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                className={`text-xs font-medium px-2.5 py-1 border ${
                   user.isActive
-                    ? "bg-[#f0faf4] text-[#2d6a4f]"
-                    : "bg-[#f3f4f6] text-[#6b7280]"
+                    ? "border-white text-white"
+                    : "border-[#1f1f1f] text-[#555555]"
                 }`}
               >
                 {PLAN_LABELS[user.subscriptionPlan] ?? user.subscriptionPlan}
               </span>
               {user.isActive && (
-                <span className="text-[10px] text-[#52b788]">有效中</span>
+                <span className="text-[10px] text-[#888888]">有效中</span>
               )}
             </div>
             {expiryStr && (
-              <p className="text-xs text-[#6b7280]">到期时间：{expiryStr}</p>
+              <p className="text-xs text-[#555555]">到期时间：{expiryStr}</p>
             )}
             {user.subscriptionPlan === "lifetime" && (
-              <p className="text-xs text-[#52b788]">终身有效，无需续订</p>
+              <p className="text-xs text-[#888888]">终身有效，无需续订</p>
             )}
             {!user.isActive && (
               <Link
                 href="/member"
-                className="inline-block mt-4 text-xs bg-[#1b4332] text-white px-4 py-2 rounded-lg hover:bg-[#40916c] transition-colors"
+                className="inline-block mt-4 text-xs border border-white text-white px-4 py-2 hover:bg-white hover:text-black transition-colors"
               >
                 升级会员
               </Link>
@@ -106,22 +106,22 @@ export default function AccountPage() {
             {user.isActive && user.subscriptionPlan !== "lifetime" && (
               <Link
                 href="/member"
-                className="inline-block mt-4 text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors"
+                className="inline-block mt-4 text-xs border border-[#1f1f1f] text-[#888888] px-4 py-2 hover:border-white hover:text-white transition-colors"
               >
                 升级套餐
               </Link>
             )}
           </div>
-
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="w-full text-sm text-[#6b7280] border border-[#e5e7eb] rounded-xl py-3 hover:border-red-300 hover:text-red-400 transition-colors disabled:opacity-50"
-          >
-            {loggingOut ? "退出中..." : "退出登录"}
-          </button>
         </div>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="w-full mt-4 text-sm text-[#555555] border border-[#1f1f1f] py-3 hover:border-red-800 hover:text-red-400 transition-colors disabled:opacity-50"
+        >
+          {loggingOut ? "退出中..." : "退出登录"}
+        </button>
       </div>
     </div>
   );

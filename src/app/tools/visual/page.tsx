@@ -191,29 +191,29 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
   }
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="border-b border-[#95d5b2] bg-[#f0faf4]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6b7280]">
-          <Link href="/" className="hover:text-[#40916c]">首页</Link>
+    <div className="bg-black min-h-screen">
+      <div className="border-b border-[#1f1f1f] bg-[#0a0a0a]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#888888]">
+          <Link href="/" className="hover:text-[#a0a0a0]">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#40916c]">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#a0a0a0]">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1b4332] font-medium">视觉系统设计模板</span>
+          <span className="text-white font-medium">视觉系统设计模板</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">视觉系统设计模板</h1>
-          <p className="text-sm text-[#6b7280]">选择你的账号风格，生成配色方案 + 字体规范 + 封面设计指南，建立统一的视觉识别系统</p>
+          <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-white mb-3">视觉系统设计模板</h1>
+          <p className="text-sm text-[#888888]">选择你的账号风格，生成配色方案 + 字体规范 + 封面设计指南，建立统一的视觉识别系统</p>
         </div>
 
         {/* Form */}
-        <div className="bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8 mb-10 space-y-7">
+        <div className="bg-[#0a0a0a] border border-[#1f1f1f] rounded-none p-8 mb-10 space-y-7">
           {/* 风格选择 */}
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">
               账号视觉风格 <span className="text-rose-400">*</span>
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -221,15 +221,15 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
                 <button
                   key={s.id}
                   onClick={() => setForm(f => ({ ...f, style: s.id }))}
-                  className={`border rounded-xl p-4 text-left transition-all ${form.style === s.id ? "border-[#40916c] bg-white shadow-sm" : "border-[#95d5b2] hover:border-[#52b788] bg-white"}`}
+                  className={`border rounded-none p-4 text-left transition-all ${form.style === s.id ? "border-[#333333] bg-black shadow-sm" : "border-[#1f1f1f] hover:border-[#333333] bg-black"}`}
                 >
                   <div className="flex gap-1.5 mb-2">
                     {s.colors.map((c) => (
-                      <div key={c} className="w-5 h-5 rounded-full border border-white/50 shadow-sm" style={{ backgroundColor: c }} />
+                      <div key={c} className="w-5 h-5 rounded-sm border border-white/50 shadow-sm" style={{ backgroundColor: c }} />
                     ))}
                   </div>
-                  <p className={`text-xs font-bold mb-0.5 ${form.style === s.id ? "text-[#40916c]" : "text-[#1b4332]"}`}>{s.label}</p>
-                  <p className="text-[10px] text-[#6b7280] leading-snug">{s.desc}</p>
+                  <p className={`text-xs font-bold mb-0.5 ${form.style === s.id ? "text-[#a0a0a0]" : "text-white"}`}>{s.label}</p>
+                  <p className="text-[10px] text-[#888888] leading-snug">{s.desc}</p>
                 </button>
               ))}
             </div>
@@ -238,24 +238,24 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
           {/* 账号方向 + 平台 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">
+              <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">
                 账号方向 <span className="text-rose-400">*</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {NICHE_OPTIONS.map((n) => (
                   <button key={n} onClick={() => setForm(f => ({ ...f, niche: n }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.niche === n ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-sm border transition-all ${form.niche === n ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                     {n}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">目标平台</label>
+              <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">目标平台</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map((p) => (
                   <button key={p} onClick={() => setForm(f => ({ ...f, platform: p }))}
-                    className={`text-xs px-4 py-2 rounded-full border transition-all ${form.platform === p ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                    className={`text-xs px-4 py-2 rounded-sm border transition-all ${form.platform === p ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                     {p}
                   </button>
                 ))}
@@ -266,24 +266,24 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
           {/* 内容调性 + 账号名 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">内容调性</label>
+              <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">内容调性</label>
               <div className="flex flex-wrap gap-2">
                 {TONE_OPTIONS.map((t) => (
                   <button key={t} onClick={() => setForm(f => ({ ...f, tone: t }))}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.tone === t ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                    className={`text-xs px-3 py-1.5 rounded-sm border transition-all ${form.tone === t ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                     {t}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-2">账号名/品牌名（可选）</label>
+              <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-2">账号名/品牌名（可选）</label>
               <input
                 type="text"
                 value={form.nickname}
                 onChange={(e) => setForm(f => ({ ...f, nickname: e.target.value }))}
                 placeholder="例如：阿黑的职场笔记"
-                className="w-full border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white"
+                className="w-full border border-[#1f1f1f] rounded-none px-4 py-2.5 text-sm text-white placeholder-[#333333] focus:outline-none focus:border-[#333333] bg-black"
               />
             </div>
           </div>
@@ -292,7 +292,7 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
             <button
               onClick={handleGenerate}
               disabled={!canGenerate}
-              className="bg-[#1b4332] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-[#0a0a0a] text-white px-8 py-3 rounded-none text-sm font-medium hover:bg-[#111111] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               生成视觉系统 →
             </button>
@@ -304,44 +304,44 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
           <>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-bold text-[#1b4332]">你的视觉系统规范</h2>
-                <p className="text-xs text-[#6b7280] mt-1">{result.headline}</p>
+                <h2 className="text-lg font-bold text-white">你的视觉系统规范</h2>
+                <p className="text-xs text-[#888888] mt-1">{result.headline}</p>
               </div>
               <button onClick={copyResult}
-                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-2 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors">
+                className="text-xs border border-[#1f1f1f] text-[#888888] px-4 py-2 rounded-none hover:border-[#333333] hover:text-[#a0a0a0] transition-colors">
                 {copied ? "✓ 已复制" : "复制规范"}
               </button>
             </div>
 
             <div className="space-y-4">
               {/* 配色方案 */}
-              <div className="border border-[#95d5b2] rounded-xl p-5">
-                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">主色系方案</p>
+              <div className="border border-[#1f1f1f] rounded-none p-5">
+                <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-4">主色系方案</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {result.palette.map((p) => (
                     <div key={p.hex}>
                       <div
-                        className="h-14 rounded-lg mb-2 border border-black/5"
+                        className="h-14 rounded-none mb-2 border border-black/5"
                         style={{ backgroundColor: p.hex }}
                       />
-                      <p className="text-xs font-bold text-[#1b4332]">{p.name}</p>
-                      <p className="text-[10px] text-[#6b7280] font-mono">{p.hex}</p>
-                      <p className="text-[10px] text-[#6b7280] leading-snug mt-0.5">{p.role}</p>
+                      <p className="text-xs font-bold text-white">{p.name}</p>
+                      <p className="text-[10px] text-[#888888] font-mono">{p.hex}</p>
+                      <p className="text-[10px] text-[#888888] leading-snug mt-0.5">{p.role}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* 模拟封面预览 */}
-              <div className="border border-[#95d5b2] rounded-xl p-5">
-                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">封面效果预览</p>
+              <div className="border border-[#1f1f1f] rounded-none p-5">
+                <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-4">封面效果预览</p>
                 <div className="grid grid-cols-3 gap-3">
                   {result.cover.map((template, i) => {
                     const mainColor = result.palette[0].hex;
                     const accentColor = result.palette[1].hex;
                     const bgColor = result.palette[2].hex;
                     return (
-                      <div key={i} className="aspect-[3/4] rounded-xl overflow-hidden border border-[#95d5b2] relative flex flex-col" style={{ backgroundColor: bgColor }}>
+                      <div key={i} className="aspect-[3/4] rounded-none overflow-hidden border border-[#1f1f1f] relative flex flex-col" style={{ backgroundColor: bgColor }}>
                         {i === 0 && (
                           <>
                             <div className="flex-1 flex">
@@ -362,7 +362,7 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
                             <div className="h-2 rounded mb-2 w-3/4" style={{ backgroundColor: mainColor }} />
                             <div className="h-1.5 rounded mb-1 w-full" style={{ backgroundColor: mainColor, opacity: 0.6 }} />
                             <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: mainColor, opacity: 0.4 }} />
-                            <div className="mt-4 px-4 py-1.5 rounded-full" style={{ backgroundColor: accentColor }}>
+                            <div className="mt-4 px-4 py-1.5 rounded-sm" style={{ backgroundColor: accentColor }}>
                               <div className="h-1 w-8 rounded" style={{ backgroundColor: bgColor }} />
                             </div>
                           </div>
@@ -386,39 +386,39 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
                 </div>
                 <div className="mt-3 space-y-1.5">
                   {result.cover.map((c, i) => (
-                    <p key={i} className="text-[11px] text-[#6b7280]">
-                      <span className="font-medium text-[#1b4332]">方案{i + 1}：</span>{c}
+                    <p key={i} className="text-[11px] text-[#888888]">
+                      <span className="font-medium text-white">方案{i + 1}：</span>{c}
                     </p>
                   ))}
                 </div>
               </div>
 
               {/* 字体系统 */}
-              <div className="border border-[#95d5b2] rounded-xl p-5">
-                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">字体系统</p>
+              <div className="border border-[#1f1f1f] rounded-none p-5">
+                <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-4">字体系统</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <p className="text-[10px] text-[#52b788] font-medium mb-1">中文字体</p>
-                    <p className="text-xs text-[#1b4332] font-medium">{result.fonts.cn}</p>
+                    <p className="text-[10px] text-[#888888] font-medium mb-1">中文字体</p>
+                    <p className="text-xs text-white font-medium">{result.fonts.cn}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#52b788] font-medium mb-1">英文辅助字体</p>
-                    <p className="text-xs text-[#1b4332] font-medium">{result.fonts.en}</p>
+                    <p className="text-[10px] text-[#888888] font-medium mb-1">英文辅助字体</p>
+                    <p className="text-xs text-white font-medium">{result.fonts.en}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#52b788] font-medium mb-1">字号规范</p>
+                    <p className="text-[10px] text-[#888888] font-medium mb-1">字号规范</p>
                     <p className="text-xs text-[#4b5563] leading-relaxed">{result.fonts.size}</p>
                   </div>
                 </div>
               </div>
 
               {/* 设计原则 */}
-              <div className="border border-[#95d5b2] rounded-xl p-5">
-                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">视觉设计原则</p>
+              <div className="border border-[#1f1f1f] rounded-none p-5">
+                <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-4">视觉设计原则</p>
                 <div className="space-y-2.5">
                   {result.tips.map((tip, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <span className="text-xs font-bold text-[#52b788] shrink-0 w-5">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="text-xs font-bold text-[#888888] shrink-0 w-5">{String(i + 1).padStart(2, "0")}</span>
                       <p className="text-xs text-[#4b5563] leading-relaxed">{tip}</p>
                     </div>
                   ))}
@@ -426,12 +426,12 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
               </div>
             </div>
 
-            <div className="mt-8 bg-[#1b4332] rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="mt-8 bg-[#0a0a0a] rounded-none p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-white mb-1">想要Canva封面模板？</p>
-                <p className="text-xs text-[#74c69d]">加入社群，获取4套可直接编辑的封面模板 + 视觉规范完整文档</p>
+                <p className="text-xs text-[#a0a0a0]">加入社群，获取4套可直接编辑的封面模板 + 视觉规范完整文档</p>
               </div>
-              <Link href="/contact" className="shrink-0 text-xs bg-[#2d6a4f] border border-[#52b788] text-white px-5 py-2.5 rounded-lg hover:bg-[#40916c] transition-colors">
+              <Link href="/contact" className="shrink-0 text-xs bg-white border border-[#333333] text-white px-5 py-2.5 rounded-none hover:bg-[#111111] transition-colors">
                 获取模板
               </Link>
             </div>
@@ -439,23 +439,23 @@ ${result.tips.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
         )}
 
         {/* AI Prompt */}
-        <div className="mt-16 border-t border-[#95d5b2] pt-14">
+        <div className="mt-16 border-t border-[#1f1f1f] pt-14">
           <div className="mb-6">
-            <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">进阶方案</p>
-            <h2 className="text-xl font-bold text-[#1b4332] mb-2">用 AI 设计更专业的视觉系统</h2>
-            <p className="text-sm text-[#6b7280]">把下方提示词复制到 ChatGPT 或 Claude，详细描述你的账号定位，获得完整定制的视觉系统设计方案。</p>
+            <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-2">进阶方案</p>
+            <h2 className="text-xl font-bold text-white mb-2">用 AI 设计更专业的视觉系统</h2>
+            <p className="text-sm text-[#888888]">把下方提示词复制到 ChatGPT 或 Claude，详细描述你的账号定位，获得完整定制的视觉系统设计方案。</p>
           </div>
-          <div className="border border-[#95d5b2] rounded-2xl overflow-hidden">
-            <div className="bg-[#f0faf4] border-b border-[#95d5b2] px-5 py-3 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#1b4332]">AI 提示词模板</span>
+          <div className="border border-[#1f1f1f] rounded-none overflow-hidden">
+            <div className="bg-[#0a0a0a] border-b border-[#1f1f1f] px-5 py-3 flex items-center justify-between">
+              <span className="text-xs font-medium text-white">AI 提示词模板</span>
               <button
                 onClick={() => { navigator.clipboard.writeText(AI_PROMPT); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
-                className="text-xs border border-[#95d5b2] text-[#6b7280] px-4 py-1.5 rounded-lg hover:border-[#40916c] hover:text-[#40916c] transition-colors"
+                className="text-xs border border-[#1f1f1f] text-[#888888] px-4 py-1.5 rounded-none hover:border-[#333333] hover:text-[#a0a0a0] transition-colors"
               >
                 {copiedPrompt ? "✓ 已复制" : "复制提示词"}
               </button>
             </div>
-            <div className="bg-white px-6 py-5">
+            <div className="bg-black px-6 py-5">
               <pre className="text-[11px] text-[#4b5563] leading-relaxed whitespace-pre-wrap font-mono">{AI_PROMPT}</pre>
             </div>
           </div>

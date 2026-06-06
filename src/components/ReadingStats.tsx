@@ -15,10 +15,10 @@ export function ReadingStats({ total }: { total: number }) {
   const pct = Math.round((count / total) * 100);
 
   return (
-    <div className="flex items-center gap-2 text-xs text-[#6b7280]">
-      <div className="flex-1 h-1 bg-[#f0faf4] rounded-full overflow-hidden max-w-[80px]">
+    <div className="flex items-center gap-2 text-xs text-[#555555]">
+      <div className="flex-1 h-px bg-[#1f1f1f] overflow-hidden max-w-[80px] relative">
         <div
-          className="h-full bg-[#52b788] rounded-full transition-all"
+          className="h-full bg-white absolute left-0 top-0 transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>

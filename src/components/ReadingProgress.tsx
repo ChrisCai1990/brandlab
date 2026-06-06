@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -19,9 +19,9 @@ export function ReadingProgress() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-[#f0faf4]">
+    <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-[#0d0d0d]">
       <div
-        className="h-full bg-[#40916c] transition-all duration-100"
+        className="h-full bg-white transition-all duration-100"
         style={{ width: `${progress}%` }}
       />
     </div>

@@ -80,38 +80,38 @@ export default function AudiencePage() {
   const canGenerate = form.age && form.gender;
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="border-b border-[#95d5b2] bg-[#f0faf4]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6b7280]">
-          <Link href="/" className="hover:text-[#40916c]">首页</Link>
+    <div className="bg-black min-h-screen">
+      <div className="border-b border-[#1f1f1f] bg-[#0a0a0a]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#888888]">
+          <Link href="/" className="hover:text-[#a0a0a0]">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#40916c]">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#a0a0a0]">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1b4332] font-medium">粉丝画像分析表</span>
+          <span className="text-white font-medium">粉丝画像分析表</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">粉丝画像分析表</h1>
-          <p className="text-sm text-[#6b7280]">描述你的目标受众，生成结构化画像 + 内容策略 + 变现路径</p>
+          <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-white mb-3">粉丝画像分析表</h1>
+          <p className="text-sm text-[#888888]">描述你的目标受众，生成结构化画像 + 内容策略 + 变现路径</p>
         </div>
 
-        <div className="bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8 mb-10 space-y-6">
+        <div className="bg-[#0a0a0a] border border-[#1f1f1f] rounded-none p-8 mb-10 space-y-6">
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-2">你的账号方向</label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-2">你的账号方向</label>
             <input type="text" value={form.niche} onChange={(e) => setForm(f => ({ ...f, niche: e.target.value }))}
               placeholder="例如：职场成长、亲子育儿、护肤美妆"
-              className="w-full border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white" />
+              className="w-full border border-[#1f1f1f] rounded-none px-4 py-2.5 text-sm text-white placeholder-[#333333] focus:outline-none focus:border-[#333333] bg-black" />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">受众年龄段 <span className="text-rose-400">*</span></label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">受众年龄段 <span className="text-rose-400">*</span></label>
             <div className="flex flex-wrap gap-2">
               {AGE_GROUPS.map((a) => (
                 <button key={a} onClick={() => setForm(f => ({ ...f, age: a }))}
-                  className={`text-xs px-4 py-2 rounded-full border transition-all ${form.age === a ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-4 py-2 rounded-sm border transition-all ${form.age === a ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {a}
                 </button>
               ))}
@@ -119,11 +119,11 @@ export default function AudiencePage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">性别比例 <span className="text-rose-400">*</span></label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">性别比例 <span className="text-rose-400">*</span></label>
             <div className="flex flex-wrap gap-2">
               {GENDERS.map((g) => (
                 <button key={g} onClick={() => setForm(f => ({ ...f, gender: g }))}
-                  className={`text-xs px-4 py-2 rounded-full border transition-all ${form.gender === g ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-4 py-2 rounded-sm border transition-all ${form.gender === g ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {g}
                 </button>
               ))}
@@ -131,11 +131,11 @@ export default function AudiencePage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">主要痛点（可多选）</label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">主要痛点（可多选）</label>
             <div className="flex flex-wrap gap-2">
               {PAIN_POINTS.map((p) => (
                 <button key={p} onClick={() => togglePain(p)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.pains.includes(p) ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-3 py-1.5 rounded-sm border transition-all ${form.pains.includes(p) ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {p}
                 </button>
               ))}
@@ -143,11 +143,11 @@ export default function AudiencePage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">主要内容消费场景</label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">主要内容消费场景</label>
             <div className="flex flex-wrap gap-2">
               {SCENES.map((s) => (
                 <button key={s} onClick={() => setForm(f => ({ ...f, scene: f.scene === s ? "" : s }))}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.scene === s ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-3 py-1.5 rounded-sm border transition-all ${form.scene === s ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {s}
                 </button>
               ))}
@@ -156,7 +156,7 @@ export default function AudiencePage() {
 
           <div className="flex justify-end">
             <button onClick={() => setResult(generatePersona(form))} disabled={!canGenerate}
-              className="bg-[#1b4332] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              className="bg-[#0a0a0a] text-white px-8 py-3 rounded-none text-sm font-medium hover:bg-[#111111] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               生成画像 →
             </button>
           </div>
@@ -164,9 +164,9 @@ export default function AudiencePage() {
 
         {result && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#1b4332]">粉丝画像分析结果</h2>
+            <h2 className="text-lg font-bold text-white">粉丝画像分析结果</h2>
 
-            <div className="bg-[#1b4332] rounded-xl p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-[#0a0a0a] rounded-none p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: "年龄特征", value: form.age },
                 { label: "性别构成", value: form.gender },
@@ -174,50 +174,50 @@ export default function AudiencePage() {
                 { label: "消费场景", value: form.scene || "未指定" },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-[10px] text-[#52b788] font-medium uppercase tracking-widest mb-1">{label}</p>
+                  <p className="text-[10px] text-[#888888] font-medium uppercase tracking-widest mb-1">{label}</p>
                   <p className="text-xs text-white font-medium">{value}</p>
                 </div>
               ))}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-[#95d5b2] rounded-xl p-5">
-                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-3">受众深度画像</p>
+              <div className="border border-[#1f1f1f] rounded-none p-5">
+                <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-3">受众深度画像</p>
                 <div className="space-y-3">
-                  <div><p className="text-[10px] text-[#52b788] mb-0.5">年龄洞察</p><p className="text-xs text-[#1b4332] leading-relaxed">{result.profile.age}</p></div>
-                  <div><p className="text-[10px] text-[#52b788] mb-0.5">性别洞察</p><p className="text-xs text-[#1b4332] leading-relaxed">{result.profile.gender}</p></div>
+                  <div><p className="text-[10px] text-[#888888] mb-0.5">年龄洞察</p><p className="text-xs text-white leading-relaxed">{result.profile.age}</p></div>
+                  <div><p className="text-[10px] text-[#888888] mb-0.5">性别洞察</p><p className="text-xs text-white leading-relaxed">{result.profile.gender}</p></div>
                 </div>
               </div>
-              <div className="border border-[#95d5b2] rounded-xl p-5">
-                <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-3">变现建议</p>
+              <div className="border border-[#1f1f1f] rounded-none p-5">
+                <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-3">变现建议</p>
                 <div className="space-y-3">
-                  <div><p className="text-[10px] text-[#52b788] mb-0.5">推荐变现方式</p><p className="text-xs text-[#1b4332] leading-relaxed">{result.monetize.method}</p></div>
-                  <div><p className="text-[10px] text-[#52b788] mb-0.5">转化策略</p><p className="text-xs text-[#1b4332] leading-relaxed">{result.monetize.trust}</p></div>
+                  <div><p className="text-[10px] text-[#888888] mb-0.5">推荐变现方式</p><p className="text-xs text-white leading-relaxed">{result.monetize.method}</p></div>
+                  <div><p className="text-[10px] text-[#888888] mb-0.5">转化策略</p><p className="text-xs text-white leading-relaxed">{result.monetize.trust}</p></div>
                 </div>
               </div>
             </div>
 
-            <div className="border border-[#95d5b2] rounded-xl p-5">
-              <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">内容策略建议</p>
+            <div className="border border-[#1f1f1f] rounded-none p-5">
+              <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-4">内容策略建议</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-[10px] text-[#52b788] font-medium mb-2">四个内容切入角度</p>
+                  <p className="text-[10px] text-[#888888] font-medium mb-2">四个内容切入角度</p>
                   <div className="space-y-1.5">
                     {result.strategy.angles.map((a, i) => (
                       <div key={i} className="flex items-start gap-2">
-                        <span className="text-[10px] text-[#52b788] font-bold w-3 shrink-0">{i + 1}</span>
-                        <p className="text-xs text-[#1b4332] leading-relaxed">{a}</p>
+                        <span className="text-[10px] text-[#888888] font-bold w-3 shrink-0">{i + 1}</span>
+                        <p className="text-xs text-white leading-relaxed">{a}</p>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#52b788] font-medium mb-2">内容形式建议</p>
-                  <p className="text-xs text-[#1b4332] leading-relaxed">{result.strategy.format}</p>
+                  <p className="text-[10px] text-[#888888] font-medium mb-2">内容形式建议</p>
+                  <p className="text-xs text-white leading-relaxed">{result.strategy.format}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#52b788] font-medium mb-2">行动号召（CTA）</p>
-                  <p className="text-xs text-[#1b4332] leading-relaxed">{result.strategy.cta}</p>
+                  <p className="text-[10px] text-[#888888] font-medium mb-2">行动号召（CTA）</p>
+                  <p className="text-xs text-white leading-relaxed">{result.strategy.cta}</p>
                 </div>
               </div>
             </div>

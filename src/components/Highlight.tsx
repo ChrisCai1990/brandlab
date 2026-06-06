@@ -6,7 +6,7 @@ export function Highlight({ text, query }: { text: string; query: string }) {
     <>
       {parts.map((part, i) =>
         regex.test(part) ? (
-          <mark key={i} className="bg-[#d8f3dc] text-[#1b4332] rounded px-0.5 not-italic font-medium">
+          <mark key={i} className="bg-white text-black px-0.5 not-italic font-medium">
             {part}
           </mark>
         ) : (

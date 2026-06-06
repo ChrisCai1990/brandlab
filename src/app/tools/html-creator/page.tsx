@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -178,48 +178,48 @@ export default function HtmlCreatorPage() {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-black min-h-screen">
       {/* Breadcrumb */}
-      <div className="border-b border-[#95d5b2] bg-[#f0faf4]">
-        <div className="max-w-6xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6b7280]">
-          <Link href="/" className="hover:text-[#40916c] transition-colors">首页</Link>
+      <div className="border-b border-[#1f1f1f] bg-[#0a0a0a]">
+        <div className="max-w-6xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#888888]">
+          <Link href="/" className="hover:text-[#a0a0a0] transition-colors">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#40916c] transition-colors">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#a0a0a0] transition-colors">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1b4332] font-medium">HTML内容生成器</span>
+          <span className="text-white font-medium">HTML内容生成器</span>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-8 py-12">
         {/* Header */}
         <div className="mb-10">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">AI 工具</p>
-          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">HTML 内容生成器</h1>
-          <p className="text-sm text-[#6b7280] max-w-xl">
+          <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-2">AI 工具</p>
+          <h1 className="text-3xl font-bold text-white mb-3">HTML 内容生成器</h1>
+          <p className="text-sm text-[#888888] max-w-xl">
             选择模板，输入内容，AI 自动生成精美 HTML —— 小红书笔记卡、金句卡、个人介绍页、活动海报，一键复制使用。
           </p>
         </div>
 
         {/* Step 1: 选模板 */}
         <div className="mb-8">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-4">① 选择模板</p>
+          <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-4">① 选择模板</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {TEMPLATES.map((tpl) => (
               <button
                 key={tpl.id}
                 onClick={() => selectTemplate(tpl)}
-                className={`text-left p-4 rounded-xl border transition-all ${
+                className={`text-left p-4 rounded-none border transition-all ${
                   selectedTemplate.id === tpl.id
-                    ? "border-[#40916c] bg-[#f0faf4] shadow-sm"
-                    : "border-[#d1fae5] hover:border-[#95d5b2] hover:bg-[#f9fffe]"
+                    ? "border-[#333333] bg-[#0a0a0a] shadow-sm"
+                    : "border-[#d1fae5] hover:border-[#1f1f1f] hover:bg-[#f9fffe]"
                 }`}
               >
                 <div className="text-xl mb-2">{tpl.icon}</div>
-                <div className="text-sm font-semibold text-[#1b4332] mb-1">{tpl.title}</div>
-                <div className="text-xs text-[#6b7280] leading-relaxed">{tpl.desc}</div>
+                <div className="text-sm font-semibold text-white mb-1">{tpl.title}</div>
+                <div className="text-xs text-[#888888] leading-relaxed">{tpl.desc}</div>
                 {selectedTemplate.id === tpl.id && (
-                  <div className="mt-2 flex items-center gap-1 text-xs text-[#40916c] font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#40916c]" />
+                  <div className="mt-2 flex items-center gap-1 text-xs text-[#a0a0a0] font-medium">
+                    <span className="w-1.5 h-1.5 rounded-sm bg-[#111111]" />
                     已选择
                   </div>
                 )}
@@ -231,7 +231,7 @@ export default function HtmlCreatorPage() {
         {/* Step 2: 填写内容 */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase">
+            <p className="text-xs text-[#888888] font-medium tracking-widest uppercase">
               ② 填写内容（{selectedTemplate.icon} {selectedTemplate.title}）
             </p>
             <span className="text-xs text-[#9ca3af]">
@@ -245,7 +245,7 @@ export default function HtmlCreatorPage() {
             onKeyDown={handleKeyDown}
             placeholder={selectedTemplate.placeholder}
             rows={10}
-            className="w-full border border-[#95d5b2] rounded-xl px-5 py-4 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#52b788] focus:border-transparent resize-none bg-[#fafffe] leading-relaxed"
+            className="w-full border border-[#1f1f1f] rounded-none px-5 py-4 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#52b788] focus:border-transparent resize-none bg-[#fafffe] leading-relaxed"
           />
         </div>
 
@@ -254,7 +254,7 @@ export default function HtmlCreatorPage() {
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="flex items-center gap-2 bg-[#1b4332] text-white px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-[#2d6a4f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-[#0a0a0a] text-white px-8 py-3.5 rounded-none font-medium text-sm hover:bg-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
@@ -274,7 +274,7 @@ export default function HtmlCreatorPage() {
           {generatedHtml && !loading && (
             <button
               onClick={handleGenerate}
-              className="text-sm text-[#52b788] hover:text-[#2d6a4f] transition-colors"
+              className="text-sm text-[#888888] hover:text-white transition-colors"
             >
               重新生成 →
             </button>
@@ -283,26 +283,26 @@ export default function HtmlCreatorPage() {
 
         {/* Error */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-5 py-4">
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-600 text-sm rounded-none px-5 py-4">
             {error}
           </div>
         )}
 
         {/* Preview + Result */}
         {generatedHtml && (
-          <div className="border border-[#95d5b2] rounded-2xl overflow-hidden">
+          <div className="border border-[#1f1f1f] rounded-none overflow-hidden">
             {/* Preview Header */}
-            <div className="bg-[#f0faf4] border-b border-[#95d5b2] px-6 py-3 flex items-center justify-between">
+            <div className="bg-[#0a0a0a] border-b border-[#1f1f1f] px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-400" />
-                <span className="w-3 h-3 rounded-full bg-yellow-400" />
-                <span className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="ml-3 text-xs text-[#6b7280] font-medium">预览</span>
+                <span className="w-3 h-3 rounded-sm bg-red-400" />
+                <span className="w-3 h-3 rounded-sm bg-yellow-400" />
+                <span className="w-3 h-3 rounded-sm bg-green-400" />
+                <span className="ml-3 text-xs text-[#888888] font-medium">预览</span>
               </div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={copyHtml}
-                  className="flex items-center gap-1.5 text-xs bg-[#1b4332] text-white px-4 py-2 rounded-lg hover:bg-[#2d6a4f] transition-colors"
+                  className="flex items-center gap-1.5 text-xs bg-[#0a0a0a] text-white px-4 py-2 rounded-none hover:bg-white transition-colors"
                 >
                   {copied ? "✓ 已复制" : "复制 HTML"}
                 </button>
@@ -314,16 +314,16 @@ export default function HtmlCreatorPage() {
               <iframe
                 ref={iframeRef}
                 sandbox="allow-scripts allow-same-origin"
-                className="w-full max-w-4xl bg-white rounded-lg shadow-sm"
+                className="w-full max-w-4xl bg-black rounded-none shadow-sm"
                 style={{ height: "700px", border: "none" }}
                 title="HTML预览"
               />
             </div>
 
             {/* HTML Code */}
-            <div className="border-t border-[#95d5b2]">
+            <div className="border-t border-[#1f1f1f]">
               <details className="group">
-                <summary className="flex items-center gap-2 px-6 py-3 text-xs text-[#6b7280] cursor-pointer hover:text-[#1b4332] transition-colors select-none bg-[#f0faf4]">
+                <summary className="flex items-center gap-2 px-6 py-3 text-xs text-[#888888] cursor-pointer hover:text-white transition-colors select-none bg-[#0a0a0a]">
                   <svg className="w-3.5 h-3.5 group-open:rotate-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -338,8 +338,8 @@ export default function HtmlCreatorPage() {
         )}
 
         {/* Tips */}
-        <div className="mt-12 bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8">
-          <h3 className="text-sm font-bold text-[#1b4332] mb-4 flex items-center gap-2">
+        <div className="mt-12 bg-[#0a0a0a] border border-[#1f1f1f] rounded-none p-8">
+          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
             <span>💡</span> 使用技巧
           </h3>
           <ul className="space-y-2.5">
@@ -349,8 +349,8 @@ export default function HtmlCreatorPage() {
               "复制 HTML 后可直接粘贴到公众号编辑器、Notion、或保存为 .html 文件",
               "小红书卡片建议截图分享，金句卡直接截图效果最佳",
             ].map((tip, i) => (
-              <li key={i} className="text-xs text-[#6b7280] flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#52b788] shrink-0 mt-1.5" />
+              <li key={i} className="text-xs text-[#888888] flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-sm bg-[#52b788] shrink-0 mt-1.5" />
                 {tip}
               </li>
             ))}

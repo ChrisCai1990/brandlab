@@ -34,29 +34,29 @@ export function SubscribeForm() {
 
   if (status === "success") {
     return (
-      <p className="text-sm text-[#74c69d] font-medium">{message}</p>
+      <p className="text-sm text-[#a0a0a0] font-medium">{message}</p>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-0 w-full max-w-sm">
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="输入你的邮箱地址"
         required
-        className="flex-1 px-4 py-2.5 rounded-lg text-sm text-[#1b4332] placeholder-[#6b7280]/50 bg-white border border-[#40916c] focus:outline-none focus:border-[#52b788]"
+        className="flex-1 px-4 py-3 text-sm text-white placeholder-[#555555] bg-[#111111] border border-[#333333] focus:outline-none focus:border-white transition-colors"
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="bg-[#40916c] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#52b788] transition-colors disabled:opacity-50 shrink-0"
+        className="bg-white text-black px-5 py-3 text-sm font-medium hover:bg-[#e0e0e0] transition-colors disabled:opacity-50 shrink-0"
       >
         {status === "loading" ? "订阅中..." : "订阅"}
       </button>
       {status === "error" && (
-        <p className="text-xs text-red-400 mt-1 w-full">{message}</p>
+        <p className="text-xs text-red-400 mt-2 w-full">{message}</p>
       )}
     </form>
   );

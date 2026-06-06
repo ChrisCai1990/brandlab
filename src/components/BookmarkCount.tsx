@@ -14,7 +14,7 @@ export function BookmarkCount() {
   if (count === 0) return null;
 
   return (
-    <Link href="/bookmarks" className="flex items-center gap-1 text-xs text-[#40916c] hover:text-[#2d6a4f]">
+    <Link href="/bookmarks" className="flex items-center gap-1 text-xs text-[#888888] hover:text-white transition-colors">
       ★ {count}篇收藏
     </Link>
   );

@@ -34,70 +34,70 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-[#2d6a4f] flex items-center justify-center">
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="w-8 h-8 border border-[#333333] flex items-center justify-center">
               <span className="text-white text-sm font-bold">拾</span>
             </div>
-            <span className="text-sm font-bold text-[#1b4332]">品牌拾研社</span>
+            <span className="text-sm font-bold text-white">品牌拾研社</span>
           </Link>
-          <h1 className="text-xl font-bold text-[#1b4332]">创建账户</h1>
-          <p className="text-xs text-[#6b7280] mt-1">注册后即可订阅会员</p>
+          <h1 className="text-2xl font-bold text-white">创建账户</h1>
+          <p className="text-xs text-[#888888] mt-1">注册后即可订阅会员</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-center">
+            <div className="text-xs text-red-400 border border-red-900 bg-red-950/20 px-4 py-3 text-center">
               {error}
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">手机号</label>
+            <label className="block text-xs font-medium text-[#555555] tracking-widest uppercase mb-1.5">手机号</label>
             <input
               type="tel"
               required
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
               placeholder="请输入11位手机号"
-              className="w-full text-sm border border-[#95d5b2] rounded-xl px-4 py-3 outline-none focus:border-[#2d6a4f] text-[#1b4332] placeholder-[#95d5b2]"
+              className="w-full text-sm border border-[#1f1f1f] px-4 py-3 outline-none focus:border-[#333333] text-white placeholder-[#333333] bg-[#0a0a0a] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">密码</label>
+            <label className="block text-xs font-medium text-[#555555] tracking-widest uppercase mb-1.5">密码</label>
             <input
               type="password"
               required
               value={form.password}
               onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
               placeholder="至少6位"
-              className="w-full text-sm border border-[#95d5b2] rounded-xl px-4 py-3 outline-none focus:border-[#2d6a4f] text-[#1b4332] placeholder-[#95d5b2]"
+              className="w-full text-sm border border-[#1f1f1f] px-4 py-3 outline-none focus:border-[#333333] text-white placeholder-[#333333] bg-[#0a0a0a] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-1.5">确认密码</label>
+            <label className="block text-xs font-medium text-[#555555] tracking-widest uppercase mb-1.5">确认密码</label>
             <input
               type="password"
               required
               value={form.confirm}
               onChange={(e) => setForm((f) => ({ ...f, confirm: e.target.value }))}
               placeholder="再输一遍"
-              className="w-full text-sm border border-[#95d5b2] rounded-xl px-4 py-3 outline-none focus:border-[#2d6a4f] text-[#1b4332] placeholder-[#95d5b2]"
+              className="w-full text-sm border border-[#1f1f1f] px-4 py-3 outline-none focus:border-[#333333] text-white placeholder-[#333333] bg-[#0a0a0a] transition-colors"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#1b4332] text-white text-sm font-medium py-3 rounded-xl hover:bg-[#40916c] transition-colors disabled:opacity-50"
+            className="w-full border border-white text-white text-sm font-medium py-3 hover:bg-white hover:text-black transition-colors disabled:opacity-50"
           >
             {loading ? "注册中..." : "注册"}
           </button>
         </form>
 
-        <p className="text-center text-xs text-[#6b7280] mt-6">
+        <p className="text-center text-xs text-[#555555] mt-6">
           已有账户？
-          <Link href="/login" className="text-[#2d6a4f] font-medium ml-1 hover:underline">
+          <Link href="/login" className="text-[#888888] hover:text-white transition-colors font-medium ml-1">
             直接登录
           </Link>
         </p>

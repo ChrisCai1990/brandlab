@@ -35,7 +35,7 @@ function generatePlan(form: Form) {
   const phases = [
     {
       phase: "第一阶段（0-3个月）",
-      color: "text-[#40916c] bg-[#f0faf4]",
+      color: "text-[#a0a0a0] bg-[#0a0a0a]",
       goal: "建立信任，积累第一批忠实粉丝",
       tasks: ["每周稳定更新3-5条内容", "100%回复评论建立互动", "输出免费资源引流私域", `尝试${ranked[0]?.name || "知识付费"}的最低门槛产品`],
     },
@@ -65,31 +65,31 @@ export default function MonetizePage() {
   }
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="border-b border-[#95d5b2] bg-[#f0faf4]">
-        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#6b7280]">
-          <Link href="/" className="hover:text-[#40916c]">首页</Link>
+    <div className="bg-black min-h-screen">
+      <div className="border-b border-[#1f1f1f] bg-[#0a0a0a]">
+        <div className="max-w-5xl mx-auto px-8 py-3 flex items-center gap-2 text-xs text-[#888888]">
+          <Link href="/" className="hover:text-[#a0a0a0]">首页</Link>
           <span>/</span>
-          <Link href="/tools" className="hover:text-[#40916c]">工具资源</Link>
+          <Link href="/tools" className="hover:text-[#a0a0a0]">工具资源</Link>
           <span>/</span>
-          <span className="text-[#1b4332] font-medium">变现路径规划表</span>
+          <span className="text-white font-medium">变现路径规划表</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-10">
-          <p className="text-xs text-[#52b788] font-medium tracking-widest uppercase mb-2">免费工具</p>
-          <h1 className="text-3xl font-bold text-[#1b4332] mb-3">变现路径规划表</h1>
-          <p className="text-sm text-[#6b7280]">告诉我你的粉丝量和账号方向，生成最适合你的变现优先级 + 三阶段行动路线图</p>
+          <p className="text-xs text-[#888888] font-medium tracking-widest uppercase mb-2">免费工具</p>
+          <h1 className="text-3xl font-bold text-white mb-3">变现路径规划表</h1>
+          <p className="text-sm text-[#888888]">告诉我你的粉丝量和账号方向，生成最适合你的变现优先级 + 三阶段行动路线图</p>
         </div>
 
-        <div className="bg-[#f0faf4] border border-[#95d5b2] rounded-2xl p-8 mb-10 space-y-6">
+        <div className="bg-[#0a0a0a] border border-[#1f1f1f] rounded-none p-8 mb-10 space-y-6">
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">目前粉丝量 <span className="text-rose-400">*</span></label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">目前粉丝量 <span className="text-rose-400">*</span></label>
             <div className="flex flex-wrap gap-2">
               {FOLLOWER_RANGES.map((r) => (
                 <button key={r} onClick={() => setForm(f => ({ ...f, followers: r }))}
-                  className={`text-xs px-4 py-2 rounded-full border transition-all ${form.followers === r ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-4 py-2 rounded-sm border transition-all ${form.followers === r ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {r}
                 </button>
               ))}
@@ -97,11 +97,11 @@ export default function MonetizePage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">账号方向</label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">账号方向</label>
             <div className="flex flex-wrap gap-2 mb-3">
               {NICHES.map((n) => (
                 <button key={n} onClick={() => setForm(f => ({ ...f, niche: n }))}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.niche === n ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-3 py-1.5 rounded-sm border transition-all ${form.niche === n ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {n}
                 </button>
               ))}
@@ -109,15 +109,15 @@ export default function MonetizePage() {
             <input type="text" value={NICHES.includes(form.niche) ? "" : form.niche}
               onChange={(e) => setForm(f => ({ ...f, niche: e.target.value }))}
               placeholder="或自定义输入"
-              className="w-full border border-[#95d5b2] rounded-lg px-4 py-2.5 text-sm text-[#1b4332] placeholder-[#6b7280]/40 focus:outline-none focus:border-[#40916c] bg-white" />
+              className="w-full border border-[#1f1f1f] rounded-none px-4 py-2.5 text-sm text-white placeholder-[#333333] focus:outline-none focus:border-[#333333] bg-black" />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#52b788] tracking-widest uppercase mb-3">你的核心优势（可多选）</label>
+            <label className="block text-xs font-medium text-[#888888] tracking-widest uppercase mb-3">你的核心优势（可多选）</label>
             <div className="flex flex-wrap gap-2">
               {STRENGTHS.map((s) => (
                 <button key={s} onClick={() => toggleStrength(s)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${form.strengths.includes(s) ? "border-[#40916c] bg-[#f0faf4] text-[#40916c] font-medium" : "border-[#95d5b2] text-[#6b7280] hover:border-[#52b788]"}`}>
+                  className={`text-xs px-3 py-1.5 rounded-sm border transition-all ${form.strengths.includes(s) ? "border-[#333333] bg-[#0a0a0a] text-[#a0a0a0] font-medium" : "border-[#1f1f1f] text-[#888888] hover:border-[#333333]"}`}>
                   {s}
                 </button>
               ))}
@@ -126,7 +126,7 @@ export default function MonetizePage() {
 
           <div className="flex justify-end">
             <button onClick={() => setResult(generatePlan(form))} disabled={!form.followers}
-              className="bg-[#1b4332] text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-[#40916c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              className="bg-[#0a0a0a] text-white px-8 py-3 rounded-none text-sm font-medium hover:bg-[#111111] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               生成规划 →
             </button>
           </div>
@@ -135,19 +135,19 @@ export default function MonetizePage() {
         {result && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-bold text-[#1b4332] mb-4">变现方式优先级</h2>
+              <h2 className="text-lg font-bold text-white mb-4">变现方式优先级</h2>
               <div className="space-y-3">
                 {result.ranked.map((m, i) => (
-                  <div key={m.name} className={`border rounded-xl p-4 flex items-start gap-4 ${m.feasible ? "border-[#95d5b2]" : "border-[#e8f0ee] opacity-60"}`}>
-                    <div className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-[#f0faf4] text-[#40916c]">{i + 1}</div>
+                  <div key={m.name} className={`border rounded-none p-4 flex items-start gap-4 ${m.feasible ? "border-[#1f1f1f]" : "border-[#e8f0ee] opacity-60"}`}>
+                    <div className="shrink-0 w-7 h-7 rounded-sm flex items-center justify-center text-xs font-bold bg-[#0a0a0a] text-[#a0a0a0]">{i + 1}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-bold text-[#1b4332]">{m.name}</span>
-                        <span className="text-[10px] text-[#52b788]">{"★".repeat(m.stars)}{"☆".repeat(5 - m.stars)}</span>
-                        {!m.feasible && <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">需{m.minFollowers}+粉丝</span>}
+                        <span className="text-sm font-bold text-white">{m.name}</span>
+                        <span className="text-[10px] text-[#888888]">{"★".repeat(m.stars)}{"☆".repeat(5 - m.stars)}</span>
+                        {!m.feasible && <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-sm">需{m.minFollowers}+粉丝</span>}
                       </div>
-                      <p className="text-xs text-[#6b7280] mb-1">{m.desc}</p>
-                      <p className="text-[10px] text-[#40916c] font-medium">行动：{m.action}</p>
+                      <p className="text-xs text-[#888888] mb-1">{m.desc}</p>
+                      <p className="text-[10px] text-[#a0a0a0] font-medium">行动：{m.action}</p>
                     </div>
                   </div>
                 ))}
@@ -155,19 +155,19 @@ export default function MonetizePage() {
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-[#1b4332] mb-4">三阶段行动路线图</h2>
+              <h2 className="text-lg font-bold text-white mb-4">三阶段行动路线图</h2>
               <div className="space-y-4">
                 {result.phases.map((phase) => (
-                  <div key={phase.phase} className="border border-[#95d5b2] rounded-xl p-5">
+                  <div key={phase.phase} className="border border-[#1f1f1f] rounded-none p-5">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${phase.color}`}>{phase.phase}</span>
-                      <span className="text-xs text-[#6b7280]">目标：{phase.goal}</span>
+                      <span className={`text-[10px] font-medium px-2.5 py-1 rounded-sm ${phase.color}`}>{phase.phase}</span>
+                      <span className="text-xs text-[#888888]">目标：{phase.goal}</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {phase.tasks.map((task, i) => (
                         <div key={i} className="flex items-start gap-2">
-                          <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[#52b788] shrink-0" />
-                          <p className="text-xs text-[#1b4332]">{task}</p>
+                          <span className="mt-1 w-1.5 h-1.5 rounded-sm bg-[#52b788] shrink-0" />
+                          <p className="text-xs text-white">{task}</p>
                         </div>
                       ))}
                     </div>
