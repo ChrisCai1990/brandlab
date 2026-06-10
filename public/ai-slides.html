@@ -187,13 +187,18 @@ html, body {
 .layer-tag { font-size: var(--t-micro); font-weight: var(--w-label); padding:3px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
 
 /* ══════════ S3c Chat vs Agent ══════════ */
-.s3c { align-items:flex-start; text-align:left; }
-
+.s3c {
+  align-items:flex-start; text-align:left;
+  padding: clamp(28px,3.5vh,48px) clamp(40px,7vw,100px);
+}
+.s3c .eyebrow { margin-bottom: clamp(8px,1vh,14px); }
 .s3c h2 {
   font-size: var(--t-title);
   font-weight: var(--w-title);
-  color:var(--white); text-align:center; margin-bottom:clamp(14px,2vh,24px); width:100%;
+  color:var(--white); text-align:center; margin-bottom:clamp(10px,1.2vh,16px); width:100%;
 }
+.s3c .compare-head { padding: clamp(9px,1.1vh,13px) clamp(12px,1.3vw,16px); }
+.s3c .compare-row  { padding: clamp(6px,0.8vh,10px) clamp(12px,1.3vw,16px); }
 
 .compare-wrap { display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,1.2vw,16px); width:100%; }
 
