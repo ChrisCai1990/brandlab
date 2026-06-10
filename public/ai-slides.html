@@ -198,17 +198,27 @@ html, body {
 .compare-wrap { display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,1.2vw,16px); width:100%; }
 
 .compare-col { border-radius:14px; overflow:hidden; }
-.compare-col.chat  { background:rgba(99,102,241,.07);  border:1px solid rgba(99,102,241,.18); }
-.compare-col.agent { background:rgba(232,115,74,.07); border:1px solid rgba(232,115,74,.18); }
+.compare-col.chat  {
+  background:rgba(99,102,241,.1);
+  border:1px solid rgba(99,102,241,.35);
+  border-top: 3px solid #6366f1;
+}
+.compare-col.agent {
+  background:rgba(232,115,74,.1);
+  border:1px solid rgba(232,115,74,.35);
+  border-top: 3px solid var(--orange);
+}
 
-.compare-head { display:flex; align-items:center; gap:10px; padding:clamp(11px,1.4vh,16px) clamp(14px,1.5vw,18px); border-bottom:1px solid rgba(255,255,255,0.06); }
-.compare-head .ico { font-size:clamp(16px,1.6vw,22px); }
-.compare-head h3 { font-size: var(--t-card-h); font-weight: var(--w-card); color:var(--white); }
+.compare-head { display:flex; align-items:center; gap:10px; padding:clamp(12px,1.5vh,18px) clamp(14px,1.5vw,18px); border-bottom:1px solid rgba(255,255,255,0.07); }
+.compare-head .ico { font-size:clamp(18px,1.8vw,24px); }
+.compare-col.chat  .compare-head h3 { font-size: var(--t-card-h); font-weight: var(--w-card); color:#a5b4fc; }
+.compare-col.agent .compare-head h3 { font-size: var(--t-card-h); font-weight: var(--w-card); color:#fdba74; }
 
-.compare-row { padding:clamp(7px,1vh,11px) clamp(14px,1.5vw,18px); border-bottom:1px solid rgba(255,255,255,0.04); }
+.compare-row { padding:clamp(8px,1.1vh,12px) clamp(14px,1.5vw,18px); border-bottom:1px solid rgba(255,255,255,0.05); }
 .compare-row:last-child { border-bottom:none; }
-.row-label { font-size: var(--t-micro); font-weight: var(--w-label); color:var(--faint); letter-spacing:1px; margin-bottom:2px; }
-.compare-row p { font-size: var(--t-small); color:rgba(255,255,255,0.65); line-height:1.55; }
+.compare-col.chat  .row-label { font-size: var(--t-micro); font-weight: var(--w-label); color:rgba(165,180,252,0.7); letter-spacing:1px; margin-bottom:2px; }
+.compare-col.agent .row-label { font-size: var(--t-micro); font-weight: var(--w-label); color:rgba(253,186,116,0.7); letter-spacing:1px; margin-bottom:2px; }
+.compare-row p { font-size: var(--t-small); color:rgba(255,255,255,0.75); line-height:1.55; }
 
 /* ══════════ S3d 三家对比 ══════════ */
 .s3d { align-items:flex-start; }
