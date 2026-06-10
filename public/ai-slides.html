@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI操作系统 · 壹拾青年</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --orange: #e8734a;
+  --dark:   #0a0f1e;
+  --mid:    #111827;
+  --white:  #ffffff;
+  --gray:   #6b7280;
+}
+
+html, body {
+  width:100%; height:100%; overflow:hidden;
+  font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background: var(--dark);
+}
+
+/* ── 滑动容器 ── */
+.deck {
+  width:100%; height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+}
+
+.slide {
+  width:100%; height:100vh;
+  scroll-snap-align:start;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:60px 48px;
+  position:relative; overflow:hidden;
+  text-align:center;
+}
+
+/* ── 进度条 ── */
+.nav {
+  position:fixed; right:16px; top:50%;
+  transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:5px;
+  z-index:999;
+}
+.pip {
+  width:3px; height:12px; border-radius:2px;
+  background:rgba(255,255,255,0.15); cursor:pointer;
+  transition:all .3s;
+}
+.pip.on { height:22px; background:var(--orange); }
+
+/* ── 装饰光晕 ── */
+.glow {
+  position:absolute; border-radius:50%;
+  filter:blur(80px); opacity:0.12; pointer-events:none;
+}
+
+/* ══════════════════════════════
+   S1  封面
+══════════════════════════════ */
+.s1 { background:var(--dark); }
+
+.s1 .glow-a {
+  width:500px; height:500px;
+  background:var(--orange);
+  top:-100px; right:-100px;
+}
+.s1 .glow-b {
+  width:400px; height:400px;
+  background:#3b82f6;
+  bottom:-80px; left:-80px;
+}
+
+.s1-label {
+  font-size:12px; letter-spacing:4px; color:rgba(255,255,255,0.35);
+  text-transform:uppercase; margin-bottom:32px;
+}
+
+.s1 h1 {
+  font-size:56px; font-weight:900; color:var(--white);
+  line-height:1.1; letter-spacing:-2px; margin-bottom:24px;
+}
+.s1 h1 em { font-style:normal; color:var(--orange); }
+
+.s1-desc {
+  font-size:17px; color:rgba(255,255,255,0.45);
+  line-height:1.8; margin-bottom:56px;
+}
+
+.s1-stats {
+  display:flex; gap:56px; justify-content:center;
+  padding-top:36px; border-top:1px solid rgba(255,255,255,0.08);
+}
+.s1-stat { display:flex; flex-direction:column; align-items:center; }
+.s1-stat-n {
+  font-size:48px; font-weight:900; color:var(--white);
+  line-height:1; letter-spacing:-2px;
+}
+.s1-stat-n span { font-size:22px; color:var(--orange); font-weight:700; }
+.s1-stat-l { font-size:12px; color:rgba(255,255,255,0.3); margin-top:8px; line-height:1.6; }
+
+/* ══════════════════════════════
+   S2  痛点（白底）
+══════════════════════════════ */
+.s2 { background:#ffffff; }
+
+.s2-label {
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--orange); margin-bottom:24px;
+}
+
+.s2 h2 {
+  font-size:44px; font-weight:900; color:#0a0f1e;
+  line-height:1.15; letter-spacing:-1.5px; margin-bottom:48px;
+}
+.s2 h2 em { font-style:normal; color:var(--orange); }
+
+.pain-row {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; width:100%;
+}
+.pain-card {
+  background:#f9fafb; border:1.5px solid #f3f4f6; border-radius:16px;
+  padding:22px 20px; text-align:left;
+  transition:border-color .2s;
+}
+.pain-card .ico { font-size:24px; margin-bottom:10px; display:block; }
+.pain-card p { font-size:13px; color:#4b5563; line-height:1.75; }
+
+/* ══════════════════════════════
+   S3  核心洞察（全屏大字）
+══════════════════════════════ */
+.s3 { background:var(--dark); }
+
+.s3 .glow-a {
+  width:600px; height:300px;
+  background:var(--orange); opacity:0.07;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  border-radius:50%; filter:blur(100px);
+}
+
+.s3-eyebrow {
+  font-size:12px; letter-spacing:4px; color:var(--orange);
+  font-weight:700; margin-bottom:28px;
+}
+
+.s3-pre {
+  font-size:16px; color:rgba(255,255,255,0.4);
+  margin-bottom:20px; line-height:1.8;
+}
+
+.s3 h2 {
+  font-size:48px; font-weight:900; color:var(--white);
+  line-height:1.15; letter-spacing:-1.5px;
+}
+.s3 h2 em { font-style:normal; color:var(--orange); }
+
+/* ══════════════════════════════
+   S3b  AI七层能力结构
+══════════════════════════════ */
+.s3b {
+  background:var(--dark);
+  align-items:flex-start; text-align:left;
+  padding:40px 36px 32px;
+  justify-content:center;
+}
+
+.s3b-eyebrow {
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--orange); margin-bottom:8px; display:block;
+}
+.s3b h2 {
+  font-size:24px; font-weight:900; color:var(--white);
+  line-height:1.2; margin-bottom:18px; letter-spacing:-0.5px;
+}
+
+.layers { display:flex; flex-direction:column; gap:7px; width:100%; }
+
+.layer {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px; border-radius:10px;
+  border-left:4px solid transparent;
+}
+.layer-7 { background:rgba(232,115,74,.12); border-color:#e8734a; }
+.layer-6 { background:rgba(239,68,68,.1);   border-color:#ef4444; }
+.layer-5 { background:rgba(249,115,22,.1);  border-color:#f97316; }
+.layer-4 { background:rgba(234,179,8,.1);   border-color:#eab308; }
+.layer-3 { background:rgba(16,185,129,.1);  border-color:#10b981; }
+.layer-2 { background:rgba(59,130,246,.1);  border-color:#3b82f6; }
+.layer-1 { background:rgba(99,102,241,.1);  border-color:#6366f1; }
+
+.layer-lv {
+  font-size:18px; font-weight:900; color:rgba(255,255,255,0.15);
+  min-width:24px; line-height:1; text-align:center;
+}
+.layer-body { flex:1; }
+.layer-body h4 {
+  font-size:16px; font-weight:800; color:var(--white);
+  line-height:1; margin-bottom:3px;
+}
+.layer-body .sub {
+  font-size:12px; color:rgba(255,255,255,0.38); line-height:1;
+}
+.layer-tag {
+  font-size:11px; font-weight:700;
+  padding:4px 10px; border-radius:20px;
+  white-space:nowrap; flex-shrink:0;
+}
+
+/* ══════════════════════════════
+   S3c  Chat vs Agent
+══════════════════════════════ */
+.s3c { background:#ffffff; align-items:flex-start; text-align:left; padding:36px 28px 28px; }
+
+.s3c-eyebrow {
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--orange); margin-bottom:10px; display:block; width:100%; text-align:center;
+}
+.s3c h2 {
+  font-size:18px; font-weight:900; color:#111827;
+  text-align:center; margin-bottom:18px; line-height:1.3;
+}
+
+.compare-wrap {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;
+}
+
+.compare-col {
+  border-radius:14px; overflow:hidden;
+}
+.compare-col.chat { background:#f0f4ff; border:1.5px solid #c7d7fd; }
+.compare-col.agent { background:#fff7f3; border:1.5px solid #fbd4c5; }
+
+.compare-head {
+  display:flex; align-items:center; gap:8px;
+  padding:12px 14px; border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.compare-head .ico { font-size:18px; }
+.compare-head h3 { font-size:15px; font-weight:800; color:#111827; }
+
+.compare-rows { display:flex; flex-direction:column; }
+.compare-row {
+  display:flex; flex-direction:column;
+  padding:9px 14px;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+}
+.compare-row:last-child { border-bottom:none; }
+.row-label {
+  font-size:10px; font-weight:700; color:#9ca3af;
+  letter-spacing:1px; margin-bottom:3px;
+  display:flex; align-items:center; gap:4px;
+}
+.row-label .dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
+.compare-row p {
+  font-size:12px; font-weight:600; color:#1f2937; line-height:1.5;
+}
+
+/* ══════════════════════════════
+   S3d  三家AI产品对比
+══════════════════════════════ */
+.s3d { background:#ffffff; padding:36px 28px 28px; align-items:flex-start; }
+
+.s3d-eyebrow {
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--orange); margin-bottom:8px; display:block; width:100%; text-align:center;
+}
+.s3d h2 {
+  font-size:22px; font-weight:900; color:#111827;
+  text-align:center; margin-bottom:4px;
+}
+.s3d-sub {
+  font-size:12px; color:#9ca3af; text-align:center;
+  margin-bottom:20px; letter-spacing:2px;
+}
+
+.brand-grid {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; width:100%;
+}
+
+.brand-col {
+  border-radius:14px; overflow:hidden; border:1.5px solid #f3f4f6;
+}
+
+.brand-head {
+  padding:14px 14px 10px;
+  border-bottom:1px solid #f3f4f6;
+  text-align:center;
+}
+.brand-head .brand-name {
+  font-size:15px; font-weight:900; line-height:1; margin-bottom:2px;
+}
+.brand-openai .brand-name { color:#111827; }
+.brand-anthropic .brand-name { color:#c96442; }
+.brand-google .brand-name { color:#1a73e8; }
+
+.brand-section { padding:10px 12px; }
+.brand-section + .brand-section { border-top:1px solid #f9fafb; }
+
+.section-type {
+  font-size:10px; font-weight:700; color:#9ca3af;
+  letter-spacing:1px; margin-bottom:6px;
+  display:flex; align-items:center; gap:4px;
+}
+.section-type .t-dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
+
+.product-name {
+  font-size:14px; font-weight:800; color:#111827; margin-bottom:3px;
+}
+.product-desc {
+  font-size:11px; color:#6b7280; line-height:1.5;
+}
+
+.brand-note {
+  width:100%; text-align:center; margin-top:14px;
+  font-size:11px; color:#9ca3af;
+}
+
+/* ══════════════════════════════
+   S4  四大模块
+══════════════════════════════ */
+.s4 { background:#0a0f1e; }
+
+.s4-eyebrow {
+  font-size:12px; letter-spacing:4px; color:var(--orange);
+  font-weight:700; margin-bottom:20px;
+}
+.s4 h2 {
+  font-size:40px; font-weight:900; color:var(--white);
+  letter-spacing:-1px; margin-bottom:36px; line-height:1.2;
+}
+
+.mod4 {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;
+}
+.mod-card {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px; padding:22px 20px; text-align:left;
+}
+.mod-n { font-size:10px; color:var(--orange); font-weight:700; letter-spacing:2px; margin-bottom:10px; }
+.mod-card h3 { font-size:17px; font-weight:800; color:var(--white); margin-bottom:6px; }
+.mod-card p { font-size:12px; color:rgba(255,255,255,0.35); line-height:1.6; }
+
+/* ══════════════════════════════
+   S5  课程目录
+══════════════════════════════ */
+.s5 { background:#ffffff; }
+
+.s5-eyebrow {
+  font-size:11px; letter-spacing:4px; color:var(--orange);
+  font-weight:700; margin-bottom:20px;
+}
+.s5 h2 {
+  font-size:36px; font-weight:900; color:#0a0f1e;
+  letter-spacing:-1px; margin-bottom:32px; line-height:1.25;
+}
+
+.toc { width:100%; display:flex; flex-direction:column; }
+.toc-r {
+  display:flex; align-items:center; gap:20px;
+  padding:18px 0; border-bottom:1px solid #f3f4f6; text-align:left;
+}
+.toc-r:last-child { border-bottom:none; }
+.toc-w {
+  font-size:13px; font-weight:800; color:var(--orange);
+  min-width:36px; letter-spacing:1px;
+}
+.toc-r h3 { font-size:18px; font-weight:800; color:#0a0f1e; margin-bottom:2px; }
+.toc-r p { font-size:12px; color:#9ca3af; }
+
+/* ══════════════════════════════
+   S6–S9  每周（深色，左对齐）
+══════════════════════════════ */
+.wk-slide {
+  background:var(--dark);
+  align-items:flex-start; text-align:left;
+  padding:52px 48px;
+}
+
+.wk-badge {
+  display:inline-block; margin-bottom:16px;
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--orange); border:1px solid rgba(232,115,74,.3);
+  padding:5px 14px; border-radius:50px;
+}
+
+.wk-slide h2 {
+  font-size:30px; font-weight:900; color:var(--white);
+  line-height:1.25; margin-bottom:8px; letter-spacing:-0.5px;
+}
+.wk-desc { font-size:14px; color:rgba(255,255,255,0.35); margin-bottom:24px; }
+.wk-divider { width:100%; height:1px; background:rgba(255,255,255,0.07); margin-bottom:20px; }
+
+.wk-list { display:flex; flex-direction:column; width:100%; }
+.wk-i {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:13px 0; border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.wk-i:last-child { border-bottom:none; }
+.wk-n {
+  font-size:10px; color:var(--orange); font-weight:700;
+  letter-spacing:1px; min-width:20px; padding-top:3px;
+}
+.wk-i h4 { font-size:15px; font-weight:700; color:var(--white); margin-bottom:2px; }
+.wk-i p { font-size:12px; color:rgba(255,255,255,0.3); }
+
+.wk-goal {
+  margin-top:18px; width:100%;
+  background:rgba(74,222,128,0.07); border:1px solid rgba(74,222,128,0.2);
+  border-radius:10px; padding:13px 18px;
+  display:flex; align-items:center; gap:12px;
+}
+.goal-t { font-size:10px; color:#4ade80; font-weight:700; letter-spacing:1px; white-space:nowrap; }
+.wk-goal p { font-size:13px; color:rgba(255,255,255,0.6); }
+
+/* ══════════════════════════════
+   S10  成果（深色）
+══════════════════════════════ */
+.s10 { background:var(--dark); }
+
+.s10-eyebrow {
+  font-size:11px; letter-spacing:4px; color:var(--orange);
+  font-weight:700; margin-bottom:20px;
+}
+.s10 h2 {
+  font-size:38px; font-weight:900; color:var(--white);
+  letter-spacing:-1px; margin-bottom:32px; line-height:1.2;
+}
+
+.out-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;
+}
+.out-card {
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:14px 18px;
+  display:flex; align-items:center; gap:10px; text-align:left;
+}
+.out-card.full {
+  grid-column:span 2; justify-content:center; text-align:center;
+  background:rgba(232,115,74,0.1); border-color:rgba(232,115,74,0.3);
+}
+.out-i { font-size:10px; color:var(--orange); font-weight:700; min-width:18px; letter-spacing:1px; }
+.out-card span { font-size:13px; font-weight:600; color:rgba(255,255,255,0.75); line-height:1.4; }
+.out-card.full span { color:var(--white); font-size:14px; }
+
+/* ══════════════════════════════
+   S11  CTA
+══════════════════════════════ */
+.s11 { background:var(--dark); }
+
+.s11 .glow-a {
+  width:700px; height:700px;
+  background:var(--orange); opacity:0.08;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  border-radius:50%; filter:blur(120px);
+}
+
+.s11-badge {
+  display:inline-block; margin-bottom:28px;
+  background:rgba(232,115,74,.12); border:1px solid rgba(232,115,74,.3);
+  color:var(--orange); font-size:11px; font-weight:700;
+  letter-spacing:3px; padding:7px 20px; border-radius:50px;
+}
+
+.s11 h2 {
+  font-size:52px; font-weight:900; color:var(--white);
+  line-height:1.1; margin-bottom:20px; letter-spacing:-2px;
+}
+.s11 h2 em { font-style:normal; color:var(--orange); display:block; }
+
+.s11-sub {
+  font-size:16px; color:rgba(255,255,255,0.35);
+  line-height:1.8; margin-bottom:48px;
+}
+
+.cta-btn {
+  display:inline-block; background:var(--orange); color:var(--white);
+  font-size:18px; font-weight:800; padding:20px 64px;
+  border-radius:50px; letter-spacing:1px; cursor:pointer;
+  box-shadow:0 16px 48px rgba(232,115,74,.4);
+  transition:transform .2s, box-shadow .2s;
+}
+.cta-btn:hover {
+  transform:translateY(-2px);
+  box-shadow:0 20px 56px rgba(232,115,74,.5);
+}
+
+.s11-foot {
+  margin-top:28px; font-size:11px;
+  color:rgba(255,255,255,.15); letter-spacing:2px;
+}
+</style>
+</head>
+<body>
+
+<div class="nav" id="nav"></div>
+
+<div class="deck" id="deck">
+
+  <!-- S1 封面 -->
+  <div class="slide s1" data-dark="1">
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <p class="s1-label">壹拾青年 · 青年AI成长计划</p>
+    <h1>给自己搭一套<em>真正能用的</em><br>AI 工作系统</h1>
+    <p class="s1-desc">不是学工具，是搭系统<br>4 周后，AI 替你干活</p>
+    <div class="s1-stats">
+      <div class="s1-stat">
+        <span class="s1-stat-n">4<span>周</span></span>
+        <span class="s1-stat-l">集训<br>搭好系统</span>
+      </div>
+      <div class="s1-stat">
+        <span class="s1-stat-n">1<span>月</span></span>
+        <span class="s1-stat-l">跟练<br>边用边优化</span>
+      </div>
+      <div class="s1-stat">
+        <span class="s1-stat-n">9<span>套</span></span>
+        <span class="s1-stat-l">系统<br>真实交付</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 痛点 -->
+  <div class="slide s2" data-dark="0">
+    <p class="s2-label">你是不是这样</p>
+    <h2>学了一堆工具，<br>但工作<em>没轻松多少</em></h2>
+    <div class="pain-row">
+      <div class="pain-card"><span class="ico">😮‍💨</span><p>各种工具试了一遍，真正交付还是靠自己手动搞</p></div>
+      <div class="pain-card"><span class="ico">📚</span><p>提示词教程收藏一堆，每次用都重新想怎么写</p></div>
+      <div class="pain-card"><span class="ico">🌀</span><p>工具越来越多，脑子越来越乱，效率没提升多少</p></div>
+      <div class="pain-card"><span class="ico">😓</span><p>偶尔用 AI 写个文案，真正要交付的事还是自己上</p></div>
+    </div>
+  </div>
+
+  <!-- S3 核心洞察 -->
+  <div class="slide s3" data-dark="1">
+    <div class="glow glow-a"></div>
+    <p class="s3-eyebrow">根本原因</p>
+    <p class="s3-pre">问题不在工具，也不在提示词写得够不够好。</p>
+    <h2>你缺的不是工具，<br>是一套<em>属于你自己的</em><br>AI 工作系统</h2>
+  </div>
+
+  <!-- S3b AI七层能力结构 -->
+  <div class="slide s3b" data-dark="1">
+    <span class="s3b-eyebrow">一文讲透 AI 全链路</span>
+    <h2>AI 的七层关系</h2>
+    <div class="layers">
+      <div class="layer layer-7">
+        <span class="layer-lv">7</span>
+        <div class="layer-body">
+          <h4>Skills · AI 的技能包</h4>
+          <p class="sub">可直接调用的专业能力、业务技能与经验库</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(232,115,74,.15);color:#e8734a">价值落地</span>
+      </div>
+      <div class="layer layer-6">
+        <span class="layer-lv">6</span>
+        <div class="layer-body">
+          <h4>MCP · 通信协议标准</h4>
+          <p class="sub">AI 接外部工具、数据、系统的万能插头</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(239,68,68,.12);color:#ef4444">开放互联</span>
+      </div>
+      <div class="layer layer-5">
+        <span class="layer-lv">5</span>
+        <div class="layer-body">
+          <h4>Harness · AI 的"家规 / 安全间"</h4>
+          <p class="sub">约束 AI 行为、权限与边界</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(249,115,22,.12);color:#f97316">风险控制</span>
+      </div>
+      <div class="layer layer-4">
+        <span class="layer-lv">4</span>
+        <div class="layer-body">
+          <h4>Agent · 全能自主大管家</h4>
+          <p class="sub">给一个目标，自己拆步骤、执行、汇总结果</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(234,179,8,.12);color:#eab308">自主执行</span>
+      </div>
+      <div class="layer layer-3">
+        <span class="layer-lv">3</span>
+        <div class="layer-body">
+          <h4>上下文 (Context) · AI 的专属记忆</h4>
+          <p class="sub">记住对话历史、用户偏好与背景信息，不断片</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(16,185,129,.12);color:#10b981">信息关联</span>
+      </div>
+      <div class="layer layer-2">
+        <span class="layer-lv">2</span>
+        <div class="layer-body">
+          <h4>提示词 (Prompt) · 指令入口</h4>
+          <p class="sub">人和 AI 交互的唯一入口，决定输出质量</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(59,130,246,.12);color:#3b82f6">指令输入</span>
+      </div>
+      <div class="layer layer-1">
+        <span class="layer-lv">1</span>
+        <div class="layer-body">
+          <h4>Token · AI 理解世界的最小原子</h4>
+          <p class="sub">一切理解、记忆、生成的基础，越多越贵</p>
+        </div>
+        <span class="layer-tag" style="background:rgba(99,102,241,.12);color:#6366f1">基础单元</span>
+      </div>
+    </div>
+    <p style="font-size:11px;color:rgba(255,255,255,0.18);margin-top:12px;width:100%;text-align:center">由下向上层层支撑 · 由上向下能力渗透</p>
+  </div>
+
+  <!-- S3c Chat vs Agent -->
+  <div class="slide s3c" data-dark="0">
+    <span class="s3c-eyebrow">一张图看懂两种工作方式的核心区别</span>
+    <h2>Chat 模式 vs Agent 模式</h2>
+    <div class="compare-wrap">
+
+      <div class="compare-col chat">
+        <div class="compare-head">
+          <span class="ico">💬</span>
+          <h3>Chat 模式</h3>
+        </div>
+        <div class="compare-rows">
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#6366f1"></span>工作方式</span>
+            <p>你问一句，AI 答一句</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#6366f1"></span>核心能力</span>
+            <p>对话、解释、生成内容、提供建议</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#6366f1"></span>任务特点</span>
+            <p>适合单轮或短链接任务</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#6366f1"></span>用户角色</span>
+            <p>用户主导流程，AI 负责回应</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#6366f1"></span>工具使用</span>
+            <p>通常不主动调用外部工具</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#6366f1"></span>典型场景</span>
+            <p>写文案、答疑、总结、头脑风暴</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="compare-col agent">
+        <div class="compare-head">
+          <span class="ico">🤖</span>
+          <h3>Agent 模式</h3>
+        </div>
+        <div class="compare-rows">
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#e8734a"></span>工作方式</span>
+            <p>你给目标，AI 拆解并连续执行</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#e8734a"></span>核心能力</span>
+            <p>规划、调用工具、跨步骤完成任务</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#e8734a"></span>任务特点</span>
+            <p>适合多步骤、长链接任务</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#e8734a"></span>用户角色</span>
+            <p>用户定方向，AI 主动推进流程</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#e8734a"></span>工具使用</span>
+            <p>调用浏览器、代码、文件、API 等</p>
+          </div>
+          <div class="compare-row">
+            <span class="row-label"><span class="dot" style="background:#e8734a"></span>典型场景</span>
+            <p>做研究、整理资料、施工执行项目</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- S3d 三家AI产品对比 -->
+  <div class="slide s3d" data-dark="0">
+    <span class="s3d-eyebrow">三家 AI 产品对比</span>
+    <h2>OpenAI · Anthropic · Google</h2>
+    <p class="s3d-sub">三公司核心产品功能简要对比</p>
+    <div class="brand-grid">
+
+      <div class="brand-col brand-openai">
+        <div class="brand-head">
+          <p class="brand-name">OpenAI</p>
+        </div>
+        <div class="brand-section">
+          <p class="section-type"><span class="t-dot" style="background:#10b981"></span>Chat 产品</p>
+          <p class="product-name">ChatGPT</p>
+          <p class="product-desc">最广泛使用的 AI 对话产品，支持插件与联网</p>
+        </div>
+        <div class="brand-section">
+          <p class="section-type"><span class="t-dot" style="background:#f97316"></span>Agent 产品</p>
+          <p class="product-name">Codex</p>
+          <p class="product-desc">强力作业的智能编程助手</p>
+        </div>
+      </div>
+
+      <div class="brand-col brand-anthropic">
+        <div class="brand-head">
+          <p class="brand-name">ANTHROPIC</p>
+        </div>
+        <div class="brand-section">
+          <p class="section-type"><span class="t-dot" style="background:#10b981"></span>Chat 产品</p>
+          <p class="product-name">Claude</p>
+          <p class="product-desc">长文本、深度推理、更安全可控的 AI 助手</p>
+        </div>
+        <div class="brand-section">
+          <p class="section-type"><span class="t-dot" style="background:#f97316"></span>Agent 产品</p>
+          <p class="product-name">Claude Code</p>
+          <p class="product-desc">代码与 AI 工具调用，终端直接操作</p>
+        </div>
+      </div>
+
+      <div class="brand-col brand-google">
+        <div class="brand-head">
+          <p class="brand-name">Google</p>
+        </div>
+        <div class="brand-section">
+          <p class="section-type"><span class="t-dot" style="background:#10b981"></span>Chat 产品</p>
+          <p class="product-name">Gemini</p>
+          <p class="product-desc">深度融合 Google 生态，多模态能力强</p>
+        </div>
+        <div class="brand-section">
+          <p class="section-type"><span class="t-dot" style="background:#f97316"></span>Agent 产品</p>
+          <p class="product-name">Jules</p>
+          <p class="product-desc">Google AI coding agent，自主执行开发任务</p>
+        </div>
+      </div>
+
+    </div>
+    <p class="brand-note">三公司均在 Agent 方向全力押注，竞争格局快速演进</p>
+  </div>
+
+  <!-- S4 四大模块 -->
+  <div class="slide s4" data-dark="1">
+    <p class="s4-eyebrow">我们的答案</p>
+    <h2>一个属于你的<br>AI 超级中枢</h2>
+    <div class="mod4">
+      <div class="mod-card"><p class="mod-n">01</p><h3>个人知识库</h3><p>你的经验和积累，变成可随时调用的第二大脑</p></div>
+      <div class="mod-card"><p class="mod-n">02</p><h3>自动化工作流</h3><p>重复的事情交给流程，你只做需要判断的部分</p></div>
+      <div class="mod-card"><p class="mod-n">03</p><h3>专属 AI 助手</h3><p>懂你风格、懂你业务，不是每次从零开始</p></div>
+      <div class="mod-card"><p class="mod-n">04</p><h3>能力复利机制</h3><p>每次工作都在沉淀，系统越用越聪明</p></div>
+    </div>
+  </div>
+
+  <!-- S5 课程目录 -->
+  <div class="slide s5" data-dark="0">
+    <p class="s5-eyebrow">四周四层系统</p>
+    <h2>从会用 AI，<br>到拥有自己的 AI 操作系统</h2>
+    <div class="toc">
+      <div class="toc-r"><span class="toc-w">W01</span><div><h3>AI 软硬件系统</h3><p>完成全部基础设施部署，让系统先跑起来</p></div></div>
+      <div class="toc-r"><span class="toc-w">W02</span><div><h3>知识库与第二大脑</h3><p>理解并部署属于自己的 AI 第二大脑</p></div></div>
+      <div class="toc-r"><span class="toc-w">W03</span><div><h3>超级 AI 工作流</h3><p>搭建并跑通你的 AI 工作系统</p></div></div>
+      <div class="toc-r"><span class="toc-w">W04</span><div><h3>Skill 与持续升级</h3><p>深度理解 Skill，让 AI 开始持续升级</p></div></div>
+    </div>
+  </div>
+
+  <!-- S6 W01 -->
+  <div class="slide wk-slide" data-dark="1">
+    <span class="wk-badge">WEEK 01</span>
+    <h2>把地基打好：<br>部署你的 AI 基础设施</h2>
+    <p class="wk-desc">工具选对、配置好、跑通——这周结束，你的 AI 环境就绪</p>
+    <div class="wk-divider"></div>
+    <div class="wk-list">
+      <div class="wk-i"><span class="wk-n">01</span><div><h4>搭建你的专属 AI 助手</h4><p>配置一个真正了解你的 AI，而不是通用问答机</p></div></div>
+      <div class="wk-i"><span class="wk-n">02</span><div><h4>部署核心工具链</h4><p>Claude Code、Obsidian、自动化工具，按需选配</p></div></div>
+      <div class="wk-i"><span class="wk-n">03</span><div><h4>画出你的 AI 系统地图</h4><p>搞清楚信息怎么进来、怎么处理、怎么输出</p></div></div>
+      <div class="wk-i"><span class="wk-n">04</span><div><h4>跑通第一个真实工作场景</h4><p>用你自己的真实工作做一次完整测试</p></div></div>
+      <div class="wk-i"><span class="wk-n">05</span><div><h4>建立第一套 AI 工作流</h4><p>让系统真正开始运行</p></div></div>
+    </div>
+    <div class="wk-goal"><span class="goal-t">本周交付</span><p>一套可以正常运转的 AI 工作环境</p></div>
+  </div>
+
+  <!-- S7 W02 -->
+  <div class="slide wk-slide" data-dark="1">
+    <span class="wk-badge">WEEK 02</span>
+    <h2>让 AI 认识你：<br>搭建个人知识系统</h2>
+    <p class="wk-desc">把你的经验和积累变成 AI 能调用的资产</p>
+    <div class="wk-divider"></div>
+    <div class="wk-list">
+      <div class="wk-i"><span class="wk-n">01</span><div><h4>盘点你已有的知识资产</h4><p>找出你真正积累了什么，哪些值得沉淀进系统</p></div></div>
+      <div class="wk-i"><span class="wk-n">02</span><div><h4>建立统一的信息入口</h4><p>灵感、会议记录、文章资料，不再散落四处</p></div></div>
+      <div class="wk-i"><span class="wk-n">03</span><div><h4>构建个人知识库</h4><p>搭起来，连起来，让 AI 真的能用你的积累来工作</p></div></div>
+      <div class="wk-i"><span class="wk-n">04</span><div><h4>训练 AI 读懂你的风格</h4><p>让它输出的内容听起来是你说的，不是模板</p></div></div>
+      <div class="wk-i"><span class="wk-n">05</span><div><h4>设计知识持续更新机制</h4><p>每次工作都在给系统喂新东西，形成正循环</p></div></div>
+    </div>
+    <div class="wk-goal"><span class="goal-t">本周交付</span><p>一个真正认识你、能代表你的 AI 知识库</p></div>
+  </div>
+
+  <!-- S8 W03 -->
+  <div class="slide wk-slide" data-dark="1">
+    <span class="wk-badge">WEEK 03</span>
+    <h2>让 AI 替你干活：<br>跑通工作流闭环</h2>
+    <p class="wk-desc">从单点使用到系统协作——AI 真正接进你的日常工作</p>
+    <div class="wk-divider"></div>
+    <div class="wk-list">
+      <div class="wk-i"><span class="wk-n">01</span><div><h4>设计你的主工作流</h4><p>拆开你最常做的事，找出哪些环节可以交给 AI</p></div></div>
+      <div class="wk-i"><span class="wk-n">02</span><div><h4>学会向 AI 委派任务</h4><p>不是让它帮你写，而是让它帮你做——这是两件事</p></div></div>
+      <div class="wk-i"><span class="wk-n">03</span><div><h4>建立人机协作节奏</h4><p>什么时候你判断，什么时候 AI 执行，分工清楚</p></div></div>
+      <div class="wk-i"><span class="wk-n">04</span><div><h4>把工作流延伸到多个场景</h4><p>内容创作、客户跟进、学习整理，全面接入</p></div></div>
+      <div class="wk-i"><span class="wk-n">05</span><div><h4>完成从头到尾的完整实战</h4><p>用真实项目跑一遍，验证整套系统是否好用</p></div></div>
+    </div>
+    <div class="wk-goal"><span class="goal-t">本周交付</span><p>一套能稳定跑起来的个人 AI 工作流</p></div>
+  </div>
+
+  <!-- S9 W04 -->
+  <div class="slide wk-slide" data-dark="1">
+    <span class="wk-badge">WEEK 04</span>
+    <h2>让系统越来越好：<br>建立持续升级机制</h2>
+    <p class="wk-desc">让系统具备自我进化的能力</p>
+    <div class="wk-divider"></div>
+    <div class="wk-list">
+      <div class="wk-i"><span class="wk-n">01</span><div><h4>理解「能力模块」是什么</h4><p>把重复用到的方法固化下来，下次直接调用</p></div></div>
+      <div class="wk-i"><span class="wk-n">02</span><div><h4>把你的经验变成可复用模块</h4><p>你踩过的坑、总结过的方法，都能进入系统</p></div></div>
+      <div class="wk-i"><span class="wk-n">03</span><div><h4>建立模块积累机制</h4><p>每完成一件事，系统就比上次更聪明一点</p></div></div>
+      <div class="wk-i"><span class="wk-n">04</span><div><h4>设计系统迭代节奏</h4><p>定期复盘哪里不顺手，改完测一遍</p></div></div>
+      <div class="wk-i"><span class="wk-n">05</span><div><h4>完成整体系统升级</h4><p>四周成果整合，形成你自己的 AI 操作系统 1.0</p></div></div>
+    </div>
+    <div class="wk-goal"><span class="goal-t">本周交付</span><p>一套会越用越好的 AI 系统，和持续升级它的方法</p></div>
+  </div>
+
+  <!-- S10 成果 -->
+  <div class="slide s10" data-dark="1">
+    <p class="s10-eyebrow">结业成果</p>
+    <h2>不是证书，<br>是真实可用的系统</h2>
+    <div class="out-grid">
+      <div class="out-card"><span class="out-i">01</span><span>专属 AI 助手</span></div>
+      <div class="out-card"><span class="out-i">02</span><span>个人知识库</span></div>
+      <div class="out-card"><span class="out-i">03</span><span>自动化工作流</span></div>
+      <div class="out-card"><span class="out-i">04</span><span>内容生产系统</span></div>
+      <div class="out-card"><span class="out-i">05</span><span>学习管理系统</span></div>
+      <div class="out-card"><span class="out-i">06</span><span>任务项目管理</span></div>
+      <div class="out-card"><span class="out-i">07</span><span>AI 能力模块库</span></div>
+      <div class="out-card"><span class="out-i">08</span><span>系统升级方法论</span></div>
+      <div class="out-card full"><span class="out-i">09</span><span>属于你自己的 AI 操作系统 1.0</span></div>
+    </div>
+  </div>
+
+  <!-- S11 CTA -->
+  <div class="slide s11" data-dark="1">
+    <div class="glow glow-a"></div>
+    <div class="s11-badge">限额招募中</div>
+    <h2>4 周后，<br><em>AI 真的在替你干活</em></h2>
+    <p class="s11-sub">壹拾青年手把手带你搭完整套系统<br>不是听课，是做出来</p>
+    <div class="cta-btn">立即报名</div>
+    <p class="s11-foot">壹拾青年 · 青年AI成长计划</p>
+  </div>
+
+  <!-- S12 我推荐的AI工具 -->
+  <div class="slide" style="background:#ffffff;padding:0;justify-content:flex-start;" data-dark="0">
+    <div style="width:100%;height:100%;overflow-y:auto;padding:36px 32px 28px;text-align:left;">
+      <p style="font-size:11px;font-weight:700;letter-spacing:3px;color:#e8734a;margin-bottom:8px">我推荐的 AI 工具</p>
+      <h2 style="font-size:22px;font-weight:900;color:#111827;margin-bottom:16px;letter-spacing:-0.5px">这些工具，课程里都会用到</h2>
+
+      <!-- 推荐：2列卡片 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-bottom:8px">
+        <div style="background:#FFF3E8;border:1.5px solid #FBD4C5;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#e8734a;letter-spacing:1px;margin-bottom:5px">协作管理</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">飞书</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">文档+知识库+多维表格，AI 深度集成</p>
+        </div>
+        <div style="background:#F0F4FF;border:1.5px solid #C7D7FD;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#6366f1;letter-spacing:1px;margin-bottom:5px">AI 编程</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">Claude Code</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">终端直接操作，构建专属 Agent</p>
+        </div>
+        <div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#10b981;letter-spacing:1px;margin-bottom:5px">第二大脑</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">Obsidian</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">本地知识库，双向链接</p>
+        </div>
+        <div style="background:#FDF4FF;border:1.5px solid #E9D5FF;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#a855f7;letter-spacing:1px;margin-bottom:5px">自动化</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">WorkBuddy</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">AI 工作流编排</p>
+        </div>
+        <div style="background:#F0FDFA;border:1.5px solid #99F6E4;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#0d9488;letter-spacing:1px;margin-bottom:5px">AI 设计</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">Canva 可画</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">零基础快速出图出视频</p>
+        </div>
+        <div style="background:#FFF8EE;border:1.5px solid #FDE68A;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#d97706;letter-spacing:1px;margin-bottom:5px">大模型</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">DeepSeek</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">国产顶级模型，性价比极高</p>
+        </div>
+        <div style="background:#FFF8EE;border:1.5px solid #FDE68A;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#d97706;letter-spacing:1px;margin-bottom:5px">AI 写作</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">GetDraft</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">快速生成高质量初稿</p>
+        </div>
+        <div style="background:#FFF8EE;border:1.5px solid #FDE68A;border-radius:12px;padding:14px">
+          <p style="font-size:10px;font-weight:700;color:#d97706;letter-spacing:1px;margin-bottom:5px">AI 视频</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">开拍</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">脚本到成片全流程</p>
+        </div>
+        <div style="background:#FFF8EE;border:1.5px solid #FDE68A;border-radius:12px;padding:14px;grid-column:span 2">
+          <p style="font-size:10px;font-weight:700;color:#d97706;letter-spacing:1px;margin-bottom:5px">AI 沟通</p>
+          <p style="font-size:18px;font-weight:900;color:#111827;margin-bottom:3px">Hermes</p>
+          <p style="font-size:11px;color:#6b7280;line-height:1.5">智能邮件与沟通自动化，醒来前 AI 已替你工作了 5 小时</p>
+        </div>
+      </div>
+
+      <!-- 避坑区 -->
+      <p style="font-size:10px;font-weight:700;color:#ef4444;letter-spacing:2px;margin-bottom:6px">⚠ 避坑提示</p>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="background:#FEF2F2;border:1.5px solid #FECACA;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div><p style="font-size:16px;font-weight:800;color:#111827;margin-bottom:2px">Midjourney</p><p style="font-size:11px;color:#6b7280">专业图像工具，上手门槛高</p></div>
+          <span style="font-size:11px;font-weight:700;color:#ef4444;border:1px solid #FECACA;padding:4px 10px;border-radius:6px;background:#fff;white-space:nowrap">普通用户不推荐</span>
+        </div>
+        <div style="background:#FEF2F2;border:1.5px solid #FECACA;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div><p style="font-size:16px;font-weight:800;color:#111827;margin-bottom:2px">OpenClaw</p><p style="font-size:11px;color:#6b7280">功能局限，体验不稳定</p></div>
+          <span style="font-size:11px;font-weight:700;color:#ef4444;border:1px solid #FECACA;padding:4px 10px;border-radius:6px;background:#fff;white-space:nowrap">不推荐使用</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S12b Hermes 一天 -->
+  <div class="slide" style="background:#fafaf8;align-items:flex-start;text-align:left;padding:36px 32px 28px;" data-dark="0">
+    <p style="font-size:11px;font-weight:700;letter-spacing:3px;color:#e8734a;margin-bottom:8px">Hermes 使用场景</p>
+    <h2 style="font-size:20px;font-weight:900;color:#111827;margin-bottom:4px;letter-spacing:-0.3px">我的 Hermes 支持我的一天</h2>
+    <p style="font-size:12px;color:#9ca3af;margin-bottom:20px">每天在我醒来之前，已经有一个 AI 团队开始工作。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">03:00前</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">知识检索</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">睡前浏览的内容自动整理，归档进知识库</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">05:00前</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">AI 世界资讯</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">帮我生成当日 AI 领域新趋势摘要</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">07:00</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">第一次深层思考</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">与 AI 协作，完成当日最重要的思考任务</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">07:10</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">小红书情绪追踪</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">寻找相关词汇，整理博主选题方向</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">08:30</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">Morning Check-in</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">AI 汇报当前进展，同步最新任务状态</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">12:00</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">第二次深层思考</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">回顾上午输入，AI 进行二次整合分析</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">18:00</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">今日活跃总结</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">整合全天数据，生成工作日报</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #f3f4f6;border-radius:10px;padding:12px 14px">
+        <p style="font-size:10px;font-weight:700;color:#e8734a;margin-bottom:4px">19:00</p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin-bottom:3px">今晚写什么</p>
+        <p style="font-size:11px;color:#6b7280;line-height:1.6">一起讨论下一篇内容方向，完成选题</p>
+      </div>
+
+    </div>
+
+    <div style="margin-top:12px;width:100%;border-left:3px solid #e8734a;padding:10px 14px;background:#fff7f4;border-radius:0 8px 8px 0">
+      <p style="font-size:12px;color:#374151;line-height:1.7">「当我醒来的时候，Hermes 已经上了五个小时的班——它能替我思考，也能以所有者的视角，把问题摆在我面前。」</p>
+    </div>
+  </div>
+
+  <!-- S13 Agent 大字 -->
+  <div class="slide" style="background:#f5f0e8;" data-dark="0">
+    <p style="font-family:Georgia,'Times New Roman',serif;font-size:80px;font-weight:400;color:#1a1a1a;letter-spacing:8px">Agent</p>
+    <p style="font-size:14px;color:#9ca3af;margin-top:16px;letter-spacing:3px">全能自主大管家</p>
+  </div>
+
+  <!-- S14 知识库 大字 -->
+  <div class="slide" style="background:#f5f0e8;" data-dark="0">
+    <p style="font-family:Georgia,'Times New Roman',serif;font-size:72px;font-weight:400;color:#1a1a1a;letter-spacing:16px">知 识 库</p>
+    <p style="font-size:14px;color:#9ca3af;margin-top:16px;letter-spacing:3px">你的经验，永远在线</p>
+  </div>
+
+  <!-- S15 视频 大字 -->
+  <div class="slide" style="background:#f5f0e8;" data-dark="0">
+    <p style="font-family:Georgia,'Times New Roman',serif;font-size:72px;font-weight:400;color:#1a1a1a;letter-spacing:24px">视　　频</p>
+    <p style="font-size:14px;color:#9ca3af;margin-top:16px;letter-spacing:3px">AI 视频创作能力</p>
+  </div>
+
+  <!-- S16 交付成果九宫格 -->
+  <div class="slide" style="background:#0f172a;align-items:flex-start;text-align:left;padding:44px 36px;" data-dark="1">
+    <p style="font-size:11px;font-weight:700;letter-spacing:3px;color:#e8734a;margin-bottom:12px;width:100%;text-align:center">交付成果</p>
+    <h2 style="font-size:22px;font-weight:900;color:#fff;margin-bottom:24px;width:100%;text-align:center;letter-spacing:-0.5px">四周后，你将拥有这九套系统</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">01</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">专属 AI Agent</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">02</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">AI 第二大脑</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">03</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">知识库系统</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">04</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">AI 工作流</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">05</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">AI Skill 系统</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">06</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">AI 内容生产系统</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">07</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">AI 学习系统</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">08</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">AI 管理系统</p>
+      </div>
+      <div style="background:rgba(232,115,74,0.1);border:1px solid rgba(232,115,74,0.3);border-radius:12px;padding:18px 16px">
+        <p style="font-size:10px;color:#e8734a;font-weight:700;letter-spacing:1px;margin-bottom:8px">09</p>
+        <p style="font-size:14px;font-weight:800;color:#fff">持续升级的 AI 操作系统</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S17 聊天通道 -->
+  <div class="slide" style="background:#ffffff;" data-dark="0">
+    <p style="font-size:13px;font-weight:700;letter-spacing:4px;color:#e8734a;margin-bottom:24px">壹拾青年</p>
+    <p style="font-size:72px;font-weight:900;color:#111827;letter-spacing:-2px;line-height:1">聊天通道</p>
+    <p style="font-size:16px;color:#9ca3af;margin-top:20px;letter-spacing:1px">扫码 / 点击加入，直接聊</p>
+  </div>
+
+</div>
+
+<script>
+const deck = document.getElementById('deck');
+const slides = [...document.querySelectorAll('.slide')];
+const nav = document.getElementById('nav');
+
+slides.forEach((s, i) => {
+  const p = document.createElement('div');
+  p.className = 'pip';
+  if (i === 0) p.classList.add('on');
+  p.onclick = () => s.scrollIntoView({ behavior:'smooth' });
+  nav.appendChild(p);
+});
+
+const pips = [...document.querySelectorAll('.pip')];
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const i = slides.indexOf(e.target);
+    pips.forEach((p, j) => p.classList.toggle('on', j === i));
+  });
+}, { threshold: 0.6, root: deck });
+
+slides.forEach(s => io.observe(s));
+
+document.addEventListener('keydown', e => {
+  const cur = slides.findIndex(s => {
+    const r = s.getBoundingClientRect();
+    return r.top > -10 && r.top < window.innerHeight * 0.5;
+  });
+  if (e.key === 'ArrowDown' && cur < slides.length - 1) slides[cur+1].scrollIntoView({behavior:'smooth'});
+  if (e.key === 'ArrowUp' && cur > 0) slides[cur-1].scrollIntoView({behavior:'smooth'});
+});
+</script>
+</body>
+</html>
