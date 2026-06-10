@@ -8,213 +8,199 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #0d1117;
-    color: #fff;
+    background: #ffffff;
+    color: #111827;
     font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
     line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  .tag {
-    display: inline-block;
-    font-size: 12px;
-    color: #888;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  /* ── Hero ── */
+  /* ── Hero（深色）── */
   .hero {
-    background: #0d1117;
-    padding: 64px 40px 56px;
-    border-bottom: 1px solid #1e2530;
+    background: #0f172a;
+    color: #fff;
+    padding: 56px 32px 48px;
   }
 
   .hero-series {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
   }
 
   .hero h1 {
-    font-size: 38px;
+    font-size: 34px;
     font-weight: 800;
     line-height: 1.25;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     letter-spacing: -0.5px;
   }
 
-  .hero h1 span {
+  .hero h1 em {
+    font-style: normal;
     color: #e8734a;
   }
 
   .hero-sub {
-    font-size: 16px;
-    color: #aaa;
+    font-size: 15px;
+    color: #94a3b8;
     margin-bottom: 40px;
   }
 
   .hero-stats {
     display: flex;
-    gap: 48px;
+    gap: 40px;
+    border-top: 1px solid #1e293b;
+    padding-top: 28px;
   }
 
-  .stat-item {
-    display: flex;
-    flex-direction: column;
-  }
+  .stat-item { display: flex; flex-direction: column; }
 
   .stat-num {
-    font-size: 36px;
+    font-size: 40px;
     font-weight: 800;
     color: #fff;
     line-height: 1;
   }
 
   .stat-label {
-    font-size: 13px;
-    color: #666;
+    font-size: 12px;
+    color: #64748b;
     margin-top: 6px;
+    line-height: 1.6;
   }
 
-  /* ── Pain Point ── */
-  .pain {
-    padding: 56px 40px;
-    border-bottom: 1px solid #1e2530;
+  /* ── 通用 section ── */
+  section {
+    padding: 48px 32px;
+    border-bottom: 1px solid #f1f5f9;
   }
 
-  .pain h2 {
+  .label {
+    font-size: 12px;
+    color: #e8734a;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .label-gray {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+
+  h2.section-h {
     font-size: 26px;
     font-weight: 800;
+    line-height: 1.3;
+    color: #111827;
     margin-bottom: 16px;
-    line-height: 1.4;
   }
 
-  .pain h2 span { color: #e8734a; }
+  h2.section-h em {
+    font-style: normal;
+    color: #e8734a;
+  }
 
+  /* ── Pain ── */
   .pain-body {
-    font-size: 15px;
-    color: #888;
+    font-size: 14px;
+    color: #6b7280;
     line-height: 1.9;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
 
   .quote {
     border-left: 3px solid #e8734a;
-    padding: 16px 20px;
-    background: #141920;
+    padding: 14px 18px;
+    background: #fff7f4;
     border-radius: 0 8px 8px 0;
   }
 
   .quote p {
-    font-size: 15px;
-    color: #ccc;
+    font-size: 14px;
+    color: #374151;
     line-height: 1.8;
   }
 
-  .quote strong { color: #fff; }
+  .quote strong { color: #111827; }
 
   /* ── Modules ── */
-  .modules {
-    padding: 56px 40px;
-    border-bottom: 1px solid #1e2530;
-  }
-
-  .section-title {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 8px;
-  }
-
-  .section-sub {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 36px;
-  }
-
   .module-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 0;
+    border-top: 1px solid #e5e7eb;
+    border-left: 1px solid #e5e7eb;
+    margin-top: 4px;
   }
 
   .module-card {
-    background: #141920;
-    border: 1px solid #1e2530;
-    border-radius: 12px;
-    padding: 24px;
+    padding: 20px 18px;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
   }
 
   .module-num {
     font-size: 11px;
     color: #e8734a;
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-
-  .module-card h3 {
-    font-size: 17px;
     font-weight: 700;
+    letter-spacing: 1px;
     margin-bottom: 8px;
   }
 
+  .module-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
   .module-card p {
-    font-size: 13px;
-    color: #777;
+    font-size: 12px;
+    color: #9ca3af;
     line-height: 1.7;
   }
 
   /* ── Weeks ── */
-  .weeks {
-    padding: 0 40px 56px;
-  }
-
-  .week-block {
-    margin-bottom: 48px;
-  }
-
-  .week-header {
-    padding: 28px 0 20px;
-    border-bottom: 1px solid #1e2530;
-    margin-bottom: 24px;
-  }
+  .week-block { margin-bottom: 48px; }
+  .week-block:last-child { margin-bottom: 0; }
 
   .week-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: #e8734a;
     letter-spacing: 2px;
     margin-bottom: 6px;
   }
 
-  .week-header h2 {
-    font-size: 24px;
+  .week-block h2 {
+    font-size: 22px;
     font-weight: 800;
+    color: #111827;
     line-height: 1.3;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
-  .week-header p {
-    font-size: 14px;
-    color: #666;
+  .week-desc {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
   }
 
-  .week-items {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+  .week-items { display: flex; flex-direction: column; gap: 0; }
 
   .week-item {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    padding: 18px 20px;
-    background: #141920;
-    border-radius: 10px;
-    border: 1px solid #1e2530;
+    padding: 16px 0;
+    border-bottom: 1px solid #f1f5f9;
   }
 
   .item-num {
@@ -222,77 +208,60 @@
     color: #e8734a;
     font-weight: 700;
     letter-spacing: 1px;
-    padding-top: 2px;
-    min-width: 24px;
+    padding-top: 3px;
+    min-width: 20px;
   }
 
   .item-content h4 {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 4px;
+    color: #111827;
+    margin-bottom: 3px;
   }
 
   .item-content p {
-    font-size: 13px;
-    color: #666;
+    font-size: 12px;
+    color: #9ca3af;
   }
 
   .week-goal {
     margin-top: 20px;
-    background: #0f1f1a;
-    border: 1px solid #1a3a2a;
-    border-radius: 10px;
-    padding: 16px 20px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 14px 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .week-goal .goal-tag {
+  .goal-tag {
     font-size: 11px;
-    color: #4caf85;
+    color: #16a34a;
     font-weight: 700;
     letter-spacing: 1px;
     white-space: nowrap;
   }
 
   .week-goal p {
-    font-size: 14px;
-    color: #ccc;
+    font-size: 13px;
+    color: #374151;
   }
 
   /* ── Outcomes ── */
-  .outcomes {
-    padding: 56px 40px;
-    background: #0a0e14;
-    border-top: 1px solid #1e2530;
-  }
+  .outcomes { background: #f8fafc; }
 
-  .outcomes h2 {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 8px;
-  }
-
-  .outcomes .section-sub {
-    margin-bottom: 32px;
-  }
-
-  .outcome-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .outcome-list { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
 
   .outcome-item {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px 20px;
-    background: #141920;
-    border-radius: 10px;
-    border: 1px solid #1e2530;
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e7eb;
   }
+
+  .outcome-item:last-child { border-bottom: none; }
 
   .outcome-index {
     font-size: 11px;
@@ -303,29 +272,31 @@
   }
 
   .outcome-item span {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
+    color: #111827;
   }
 
-  /* ── Footer CTA ── */
+  /* ── CTA ── */
   .cta {
-    padding: 56px 40px;
+    background: #0f172a;
+    color: #fff;
     text-align: center;
-    border-top: 1px solid #1e2530;
+    border-bottom: none;
   }
 
   .cta h2 {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
-    margin-bottom: 8px;
     line-height: 1.4;
+    margin-bottom: 10px;
   }
 
-  .cta h2 span { color: #e8734a; }
+  .cta h2 em { font-style: normal; color: #e8734a; }
 
   .cta p {
-    font-size: 15px;
-    color: #666;
+    font-size: 14px;
+    color: #94a3b8;
     margin-bottom: 32px;
   }
 
@@ -335,16 +306,10 @@
     color: #fff;
     font-size: 16px;
     font-weight: 700;
-    padding: 16px 48px;
+    padding: 15px 48px;
     border-radius: 50px;
     letter-spacing: 1px;
     cursor: pointer;
-  }
-
-  @media (max-width: 600px) {
-    .hero h1 { font-size: 28px; }
-    .module-grid { grid-template-columns: 1fr; }
-    .hero-stats { gap: 28px; }
   }
 </style>
 </head>
@@ -353,7 +318,7 @@
 <!-- Hero -->
 <section class="hero">
   <p class="hero-series">壹拾青年「青年AI大学习」系列 2 · 卡欧科斗</p>
-  <h1>打造你的<span>超级个体</span><br>AI 操作系统</h1>
+  <h1>打造你的<em>超级个体</em><br>AI 操作系统</h1>
   <p class="hero-sub">用 1 个月时间，搭建属于你的 AI 工作系统。</p>
   <div class="hero-stats">
     <div class="stat-item">
@@ -368,8 +333,9 @@
 </section>
 
 <!-- Pain Point -->
-<section class="pain">
-  <h2>给你一套属于你自己的<br><span>AI 操作系统。</span></h2>
+<section>
+  <p class="label-gray">可以教会你用 AI 工具，但更重要的是</p>
+  <h2 class="section-h">给你一套属于你自己的<br><em>AI 操作系统。</em></h2>
   <p class="pain-body">
     很多人接触 AI 已经一年多了，但使用方式依然停留在问问题、写文案、生成图片、偶尔处理工作。工具越来越多，资料越来越多，想法越来越多，工作却没有因此变得更轻松。
   </p>
@@ -379,10 +345,9 @@
 </section>
 
 <!-- Core Modules -->
-<section class="modules">
-  <span class="tag">核心模块</span>
-  <h2 class="section-title">你将拥有一个<br>AI 超级中枢系统</h2>
-  <p class="section-sub">四周四层，从工具到系统。</p>
+<section>
+  <p class="label">核心吸引点</p>
+  <h2 class="section-h">你将拥有一个<br>AI 超级中枢系统</h2>
   <div class="module-grid">
     <div class="module-card">
       <p class="module-num">01</p>
@@ -408,15 +373,15 @@
 </section>
 
 <!-- Weeks -->
-<section class="weeks">
+<section>
+  <p class="label">四周四层系统</p>
+  <h2 class="section-h" style="margin-bottom:40px">从会用 AI，<br>到拥有自己的 AI 操作系统</h2>
 
   <!-- W01 -->
   <div class="week-block">
-    <div class="week-header">
-      <p class="week-label">WEEK 01</p>
-      <h2>完成部署全部<br>AI 软硬件系统</h2>
-      <p>第一周，先把 AI 操作系统的底座搭起来。</p>
-    </div>
+    <p class="week-label">WEEK 01</p>
+    <h2>完成部署全部<br>AI 软硬件系统</h2>
+    <p class="week-desc">第一周，先把 AI 操作系统的底座搭起来。</p>
     <div class="week-items">
       <div class="week-item">
         <span class="item-num">01</span>
@@ -455,11 +420,9 @@
 
   <!-- W02 -->
   <div class="week-block">
-    <div class="week-header">
-      <p class="week-label">WEEK 02</p>
-      <h2>理解并部署知识库<br>AI 第二大脑</h2>
-      <p>你的经验、知识和资料开始沉淀。</p>
-    </div>
+    <p class="week-label">WEEK 02</p>
+    <h2>理解并部署知识库<br>AI 第二大脑</h2>
+    <p class="week-desc">你的经验、知识和资料开始沉淀。</p>
     <div class="week-items">
       <div class="week-item">
         <span class="item-num">01</span>
@@ -505,11 +468,9 @@
 
   <!-- W03 -->
   <div class="week-block">
-    <div class="week-header">
-      <p class="week-label">WEEK 03</p>
-      <h2>搭建并跑通你的<br>超级 AI 工作流</h2>
-      <p>让 AI 从工具变成伙伴。</p>
-    </div>
+    <p class="week-label">WEEK 03</p>
+    <h2>搭建并跑通你的<br>超级 AI 工作流</h2>
+    <p class="week-desc">让 AI 从工具变成伙伴。</p>
     <div class="week-items">
       <div class="week-item">
         <span class="item-num">01</span>
@@ -555,11 +516,9 @@
 
   <!-- W04 -->
   <div class="week-block">
-    <div class="week-header">
-      <p class="week-label">WEEK 04</p>
-      <h2>深度理解 Skill，<br>让 AI 开始持续升级</h2>
-      <p>理解未来 AI 的核心能力。</p>
-    </div>
+    <p class="week-label">WEEK 04</p>
+    <h2>深度理解 Skill，<br>让 AI 开始持续升级</h2>
+    <p class="week-desc">理解未来 AI 的核心能力。</p>
     <div class="week-items">
       <div class="week-item">
         <span class="item-num">01</span>
@@ -607,9 +566,8 @@
 
 <!-- Outcomes -->
 <section class="outcomes">
-  <span class="tag">结业成果</span>
-  <h2 class="section-title">四周之后，<br>你将拥有什么成果</h2>
-  <p class="section-sub">9 套系统，完整交付。</p>
+  <p class="label-gray">课程收获</p>
+  <h2 class="section-h">四周之后，<br>你将拥有什么成果</h2>
   <div class="outcome-list">
     <div class="outcome-item"><span class="outcome-index">01</span><span>专属 AI Agent</span></div>
     <div class="outcome-item"><span class="outcome-index">02</span><span>AI 第二大脑</span></div>
@@ -625,7 +583,7 @@
 
 <!-- CTA -->
 <section class="cta">
-  <h2>从会用 AI，<br>到拥有自己的 <span>AI 操作系统</span></h2>
+  <h2>从会用 AI，<br>到拥有自己的 <em>AI 操作系统</em></h2>
   <p>现在开始，4 周后你的工作方式将彻底不同。</p>
   <div class="cta-btn">立即加入</div>
 </section>
