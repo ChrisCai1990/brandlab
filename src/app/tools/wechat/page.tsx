@@ -481,6 +481,32 @@ function convertHtmlToWechat(html: string): string {
   return `<section style="max-width:640px;margin:0 auto;">${content}</section>`;
 }
 
+// ─── Local image detection ───────────────────────────────────────────────────
+
+function isRemoteUrl(src: string): boolean {
+  return /^(https?:)?\/\//i.test(src) || src.startsWith("data:");
+}
+
+function findLocalImageSrcs(html: string): string[] {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const set = new Set<string>();
+  doc.querySelectorAll("img[src]").forEach(img => {
+    const src = img.getAttribute("src") || "";
+    if (src && !isRemoteUrl(src)) set.add(src);
+  });
+  return Array.from(set);
+}
+
+function replaceImgSrcs(html: string, map: Record<string, string>): string {
+  let result = html;
+  for (const [localSrc, url] of Object.entries(map)) {
+    if (!url) continue;
+    const escaped = localSrc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    result = result.replace(new RegExp(`(["'])${escaped}\\1`, "g"), `$1${url}$1`);
+  }
+  return result;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function WechatConverterPage() {
@@ -496,6 +522,13 @@ export default function WechatConverterPage() {
   const previewRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Local image → uploaded URL mapping
+  const [localImgSrcs, setLocalImgSrcs] = useState<string[]>([]);
+  const [imgUrlMap, setImgUrlMap] = useState<Record<string, string>>({});
+  const [uploadingSrc, setUploadingSrc] = useState<string | null>(null);
+  const imgFileInputRef = useRef<HTMLInputElement>(null);
+  const pendingLocalSrc = useRef<string>("");
+
   // Debounced auto-conversion on source change
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -503,6 +536,7 @@ export default function WechatConverterPage() {
       setOutput("");
       setPreviewUrl(prev => { if (prev) URL.revokeObjectURL(prev); return ""; });
       setError("");
+      setLocalImgSrcs([]);
       return;
     }
     timerRef.current = setTimeout(() => {
@@ -511,6 +545,7 @@ export default function WechatConverterPage() {
         setPreviewUrl(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(blob); });
         setOutput(convertHtmlToWechat(source));
         setError("");
+        setLocalImgSrcs(findLocalImageSrcs(source));
       } catch (err) {
         setError(err instanceof Error ? err.message : "处理失败");
       }
@@ -525,8 +560,40 @@ export default function WechatConverterPage() {
       const text = await f.text();
       setSource(text);
       setFileName(f.name);
+      setImgUrlMap({});
     } catch (err) {
       setError(err instanceof Error ? err.message : "处理失败");
+    }
+  }, []);
+
+  // Apply uploaded URLs into source HTML whenever the map changes
+  useEffect(() => {
+    if (Object.keys(imgUrlMap).length === 0) return;
+    setSource(prev => replaceImgSrcs(prev, imgUrlMap));
+  }, [imgUrlMap]);
+
+  const handlePickImageFor = (localSrc: string) => {
+    pendingLocalSrc.current = localSrc;
+    imgFileInputRef.current?.click();
+  };
+
+  const handleImageFileSelected = useCallback(async (f: File) => {
+    const localSrc = pendingLocalSrc.current;
+    if (!localSrc) return;
+    setUploadingSrc(localSrc);
+    setError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", f);
+      const res = await fetch("/api/tools/upload-image", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "上传失败");
+      const fullUrl = `https://brandlab.ink${data.url}`;
+      setImgUrlMap(prev => ({ ...prev, [localSrc]: fullUrl }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "上传失败");
+    } finally {
+      setUploadingSrc(null);
     }
   }, []);
 
@@ -539,6 +606,8 @@ export default function WechatConverterPage() {
     setSource("");
     setFileName("");
     setOutput("");
+    setLocalImgSrcs([]);
+    setImgUrlMap({});
     setPreviewUrl(prev => { if (prev) URL.revokeObjectURL(prev); return ""; });
     setError("");
   };
@@ -591,6 +660,8 @@ export default function WechatConverterPage() {
         </button>
         <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
+        <input ref={imgFileInputRef} type="file" accept="image/*" className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFileSelected(f); e.target.value = ""; }} />
 
         {fileName ? (
           <span className="text-sm text-[#888888] truncate max-w-xs">{fileName}</span>
@@ -612,9 +683,9 @@ export default function WechatConverterPage() {
           )}
           <button
             onClick={handleCopy}
-            disabled={!output}
+            disabled={!output || localImgSrcs.some(s => !imgUrlMap[s])}
             className={`flex items-center gap-2 px-5 py-2 rounded-none text-sm font-medium transition-all ${
-              !output
+              !output || localImgSrcs.some(s => !imgUrlMap[s])
                 ? "bg-gray-100 text-[#ccc] cursor-not-allowed"
                 : copied
                 ? "bg-[#111111] text-white"
@@ -640,6 +711,36 @@ export default function WechatConverterPage() {
           </button>
         </div>
       </div>
+
+      {/* Local image upload panel */}
+      {localImgSrcs.length > 0 && (
+        <div className="border-b border-gray-200 bg-[#fafafa] shrink-0 px-6 py-3">
+          <div className="text-xs text-[#888888] mb-2">
+            检测到 {localImgSrcs.length} 张本地图片，需先上传获取公网地址，否则粘贴到公众号会丢图：
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {localImgSrcs.map(src => {
+              const uploaded = imgUrlMap[src];
+              const busy = uploadingSrc === src;
+              return (
+                <button
+                  key={src}
+                  onClick={() => handlePickImageFor(src)}
+                  disabled={busy}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none border text-xs font-medium transition-all ${
+                    uploaded
+                      ? "border-green-600 text-green-700 bg-green-50"
+                      : "border-[#1f1f1f] text-[#333] hover:border-[#333] hover:bg-white"
+                  }`}
+                  title={src}
+                >
+                  {uploaded ? "✓" : busy ? "上传中…" : "↑"} {src.split("/").pop()}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Split panels — always visible */}
       <div className="flex-1 flex overflow-hidden">
