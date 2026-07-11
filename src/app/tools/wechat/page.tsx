@@ -553,18 +553,65 @@ export default function WechatConverterPage() {
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [source]);
 
-  const handleFile = useCallback(async (f: File) => {
-    if (!f.name.match(/\.(html|htm)$/i)) { setError("请上传 .html 文件"); return; }
+  // Upload one image file, returns its public URL (throws on failure)
+  const uploadImageFile = useCallback(async (f: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", f);
+    const res = await fetch("/api/tools/upload-image", { method: "POST", body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "上传失败");
+    return `https://brandlab.ink${data.url}`;
+  }, []);
+
+  // Given image files + the HTML's local img srcs, upload every matched file
+  // and return a src→url map. Matching is by filename basename (case-insensitive).
+  const autoUploadImages = useCallback(async (imgFiles: File[], srcs: string[]) => {
+    if (imgFiles.length === 0 || srcs.length === 0) return;
+    const byName = new Map<string, File>();
+    for (const f of imgFiles) byName.set(f.name.toLowerCase(), f);
+    let done = 0;
+    for (const src of srcs) {
+      const base = (src.split(/[\\/]/).pop() || src).toLowerCase();
+      const file = byName.get(base);
+      if (!file) continue;
+      setUploadingSrc(src);
+      try {
+        const url = await uploadImageFile(file);
+        setImgUrlMap(prev => ({ ...prev, [src]: url }));
+        done++;
+      } catch (err) {
+        setError(`「${base}」上传失败：${err instanceof Error ? err.message : "未知错误"}`);
+      }
+    }
+    setUploadingSrc(null);
+    const unmatched = srcs.filter(s => !byName.has((s.split(/[\\/]/).pop() || s).toLowerCase()));
+    if (unmatched.length > 0) {
+      setError(`已自动上传 ${done} 张图；还有 ${unmatched.length} 张未在拖入文件里找到，需手动上传`);
+    }
+  }, [uploadImageFile]);
+
+  // Accepts a mix of files: one .html + any number of image files.
+  // The HTML is loaded, then its local images are auto-uploaded by filename.
+  const handleFiles = useCallback(async (files: File[]) => {
+    const htmlFile = files.find(f => /\.(html|htm)$/i.test(f.name));
+    const imgFiles = files.filter(f => /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(f.name));
+    if (!htmlFile) { setError("请至少拖入一个 .html 文件"); return; }
     setError("");
     try {
-      const text = await f.text();
-      setSource(text);
-      setFileName(f.name);
+      const text = await htmlFile.text();
+      setFileName(htmlFile.name);
       setImgUrlMap({});
+      setSource(text);
+      if (imgFiles.length > 0) {
+        const srcs = findLocalImageSrcs(text);
+        await autoUploadImages(imgFiles, srcs);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "处理失败");
     }
-  }, []);
+  }, [autoUploadImages]);
+
+  const handleFile = useCallback((f: File) => { handleFiles([f]); }, [handleFiles]);
 
   // Apply uploaded URLs into source HTML whenever the map changes
   useEffect(() => {
@@ -583,12 +630,7 @@ export default function WechatConverterPage() {
     setUploadingSrc(localSrc);
     setError("");
     try {
-      const formData = new FormData();
-      formData.append("file", f);
-      const res = await fetch("/api/tools/upload-image", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "上传失败");
-      const fullUrl = `https://brandlab.ink${data.url}`;
+      const fullUrl = await uploadImageFile(f);
       setImgUrlMap(prev => ({ ...prev, [localSrc]: fullUrl }));
     } catch (err) {
       setError(err instanceof Error ? err.message : "上传失败");
@@ -599,8 +641,9 @@ export default function WechatConverterPage() {
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault(); setIsDragging(false);
-    const f = e.dataTransfer.files[0]; if (f) handleFile(f);
-  }, [handleFile]);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) handleFiles(files);
+  }, [handleFiles]);
 
   const handleClear = () => {
     setSource("");
@@ -658,15 +701,15 @@ export default function WechatConverterPage() {
           </svg>
           导入文件
         </button>
-        <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
+        <input ref={fileInputRef} type="file" multiple accept=".html,.htm,image/*" className="hidden"
+          onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) handleFiles(fs); e.target.value = ""; }} />
         <input ref={imgFileInputRef} type="file" accept="image/*" className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFileSelected(f); e.target.value = ""; }} />
 
         {fileName ? (
           <span className="text-sm text-[#888888] truncate max-w-xs">{fileName}</span>
         ) : (
-          <span className="text-sm text-[#9ca3af]">支持 CSS class 写法 · 内联样式 · 拖拽上传</span>
+          <span className="text-sm text-[#9ca3af]">可一次拖入 HTML + 图片，按文件名自动上传配图</span>
         )}
 
         {error && <span className="text-sm text-red-500 shrink-0">{error}</span>}
@@ -716,7 +759,12 @@ export default function WechatConverterPage() {
       {localImgSrcs.length > 0 && (
         <div className="border-b border-gray-200 bg-[#fafafa] shrink-0 px-6 py-3">
           <div className="text-xs text-[#888888] mb-2">
-            检测到 {localImgSrcs.length} 张本地图片，需先上传获取公网地址，否则粘贴到公众号会丢图：
+            {(() => {
+              const doneCount = localImgSrcs.filter(s => imgUrlMap[s]).length;
+              if (doneCount === localImgSrcs.length)
+                return `${localImgSrcs.length} 张本地图片已全部上传，可直接复制到公众号 ✓`;
+              return `检测到 ${localImgSrcs.length} 张本地图片（已上传 ${doneCount} 张）。未自动上传的可点下方按钮手动选文件，否则粘贴到公众号会丢图：`;
+            })()}
           </div>
           <div className="flex flex-wrap gap-2">
             {localImgSrcs.map(src => {

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-brandlab 一键部署脚本
+brandlab 提交推送脚本（build 验证 + commit + push GitHub）
+⚠️ 已迁到 Chris 私人服务器（39.106.218.225），push 后不会自动上线，
+   还需 SSH 登服务器 pull+build+pm2 restart（脚本末尾会打印步骤）。
 用法: python deploy.py "提交说明"
       python deploy.py "提交说明" --no-build   # 跳过本地 build 验证
 """
@@ -75,7 +77,14 @@ def main():
         print("✗ git push 失败")
         sys.exit(1)
 
-    print("\n✓ 部署已触发！Railway 正在构建，约 2-3 分钟后生效。")
+    print("\n✓ 代码已推送到 GitHub。")
+    print("⚠️ 已迁到 Chris 私人服务器，push 不会自动上线，还需登服务器构建重启：")
+    print("   ssh root@39.106.218.225")
+    print("   cd /opt/brandlab && git pull")
+    print("   NODE_OPTIONS=--max-old-space-size=2560 npm run build")
+    print("   cp -r .next/static .next/standalone/.next/static")
+    print("   cp -r public .next/standalone/public")
+    print("   cd .next/standalone && PORT=3000 HOSTNAME=127.0.0.1 pm2 restart brandlab && pm2 save")
 
 
 if __name__ == "__main__":

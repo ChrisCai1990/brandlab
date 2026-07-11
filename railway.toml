@@ -1,3 +1,5 @@
+# ⚠️ 已弃用（2026-07-11）：BrandLab 已迁到 Chris 私人 ECS 39.106.218.225，
+# 用 Next.js standalone + PM2 + Nginx 部署，不再走 Railway。此文件仅留档，服务器不读取。
 [build]
 builder = "dockerfile"
 
